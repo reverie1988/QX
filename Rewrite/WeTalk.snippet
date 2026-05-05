@@ -1,0 +1,8 @@
+#!name=WeTalk
+#!desc=WeTalk 抓包保存账号参数
+
+[rewrite_local]
+^https:\/\/api\.wetalkapp\.com\/app\/queryBalanceAndBonus url script-request-header https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/WeTalk.js
+
+[mitm]
+hostname = api.wetalkapp.com
