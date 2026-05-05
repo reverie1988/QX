@@ -1,0 +1,10 @@
+{
+  "name": "Steak QX Scripts",
+  "description": "个人 Quantumult X 脚本任务仓库",
+  "task": [
+    {
+      "config": "30 8 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/Demo.js, tag=Demo任务, enabled=true",
+      "addons": "https://raw.githubusercontent.com/你的用户名/QX/main/Rewrite/Demo.snippet"
+    }
+  ]
+}
