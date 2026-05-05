@@ -12,7 +12,7 @@
       "config": "0 0 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe清空所有账号.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/PingMe.png, tag=PingMe清空所有账号, enabled=true"
     },
     {
-      "config": "0 0 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/节点纯净度查询.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/IPLC.png, tag=节点纯净度查询, enabled=true"
+      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/节点纯净度查询.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/IPLC.png, tag=节点纯净度查询, enabled=true"
     }
   ]
 }
