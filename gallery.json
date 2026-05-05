@@ -18,6 +18,15 @@
       "config": "17 3,5 * * * https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/WeTalk.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/wetalk.png, tag=WeTalk签到, enabled=true"
     },
     {
+      "config": "17 3,5 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/WeTalk删除账号.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/wetalk.png, tag=WeTalk删除账号, enabled=true"
+    },
+    {
+      "config": "17 3,5 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/WeTalk查看所有账号.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/wetalk.png, tag=WeTalk查看所有账号, enabled=true"
+    },
+    {
+      "config": "17 3,5 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/WeTalk清空所有账号.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/wetalk.png, tag=WeTalk清空所有账号, enabled=true"
+    },
+    {
       "config": "1 1 1 1 1 https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/山东今日油价.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/SINOPEC.png, tag=山东今日油价, enabled=true"
     },
     {
