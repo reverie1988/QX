@@ -51,7 +51,7 @@
       "config": "0 6 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/全球新闻速览.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/CNN.png, tag=全球新闻速览, enabled=true"
     },
     {
-      "config": "4 3 1 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/GLaDOS_Task.js, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/GlaDos.png, tag=GLaDOS查看账号, enabled=false"
+      "config": "4 3 1 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/GLaDOS_Task.js, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/GlaDos.png, tag=GLaDOS签到, enabled=false"
     },
     {
       "config": "1 1 1 1 1 https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/GLaDOS_Capture.js, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/GlaDos.png, tag=GLaDOS账号提取, enabled=false",
