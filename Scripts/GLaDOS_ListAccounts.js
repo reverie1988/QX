@@ -10,7 +10,11 @@
 const SCRIPT_NAME = 'GLaDOS';
 const STORE_KEY = 'glados_accounts_v1';
 
+// 是否联网查询最新状态和积分
 const QUERY_REMOTE_STATUS = true;
+
+// 是否在日志中显示完整 Cookie
+// 不建议开启，Cookie 属于敏感信息
 const SHOW_COOKIE_IN_LOG = false;
 
 const STATUS_URL = 'https://glados.cloud/api/user/status';
@@ -22,6 +26,8 @@ const HEADERS_TEMPLATE = {
   'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1',
   'Accept': 'application/json, text/plain, */*'
 };
+
+// ========== 工具函数 ==========
 
 function nowTime() {
   const d = new Date();
@@ -56,9 +62,34 @@ function shortText(text, maxLen) {
   return s.length > maxLen ? s.slice(0, maxLen) + '...' : s;
 }
 
+function formatNumber(value, fallback) {
+  if (value === undefined || value === null || value === '') {
+    return fallback || '未知';
+  }
+
+  const n = Number(value);
+
+  if (isNaN(n)) {
+    return fallback || '未知';
+  }
+
+  return String(parseInt(n, 10));
+}
+
+function formatDays(value) {
+  return formatNumber(value, '未知');
+}
+
+function formatPoints(value) {
+  return formatNumber(value, '未知');
+}
+
 function maskCookie(cookie) {
   if (!cookie) return '';
-  if (SHOW_COOKIE_IN_LOG) return String(cookie);
+
+  if (SHOW_COOKIE_IN_LOG) {
+    return String(cookie);
+  }
 
   return String(cookie)
     .replace(/(koa:sess=)[^;]+/gi, '$1***')
@@ -76,6 +107,8 @@ function formatTime(ts) {
     return '未知';
   }
 }
+
+// ========== 本地存储 ==========
 
 function loadStore() {
   const raw = $prefs.valueForKey(STORE_KEY);
@@ -98,16 +131,23 @@ function loadStore() {
     return {
       ok: false,
       empty: false,
+      raw,
       store: null
     };
   }
 
-  if (!store.accounts) store.accounts = {};
-  if (!Array.isArray(store.order)) store.order = Object.keys(store.accounts);
+  if (!store.accounts) {
+    store.accounts = {};
+  }
+
+  if (!Array.isArray(store.order)) {
+    store.order = Object.keys(store.accounts);
+  }
 
   return {
     ok: true,
     empty: false,
+    raw,
     store
   };
 }
@@ -119,6 +159,8 @@ function saveStore(store) {
 function getIds(store) {
   return (store.order || []).filter(id => store.accounts && store.accounts[id]);
 }
+
+// ========== 网络查询 ==========
 
 function makeRequest(url, cookie) {
   const headers = Object.assign({}, HEADERS_TEMPLATE, {
@@ -188,15 +230,25 @@ function updateAccountFromQuery(store, id, q) {
 
   if (q.email) {
     acc.email = String(q.email).trim().toLowerCase();
-    acc.alias = acc.alias || acc.email;
+
+    if (!acc.alias || String(acc.alias).indexOf('ck_') === 0) {
+      acc.alias = acc.email;
+    }
   }
 
-  if (q.leftDays !== undefined) acc.leftDays = q.leftDays;
-  if (q.points !== undefined) acc.points = q.points;
+  if (q.leftDays !== undefined) {
+    acc.leftDays = q.leftDays;
+  }
+
+  if (q.points !== undefined) {
+    acc.points = q.points;
+  }
 
   acc.lastQueryAt = Date.now();
   acc.updatedAt = Date.now();
 }
+
+// ========== 主程序 ==========
 
 function main() {
   const loaded = loadStore();
@@ -204,10 +256,11 @@ function main() {
   if (!loaded.ok) {
     logBlock('❌ 数据解析失败', [
       `存储 Key：${STORE_KEY}`,
-      '原因：JSON 解析失败'
+      '原因：JSON 解析失败',
+      `原始数据预览：${shortText(loaded.raw || '', 500)}`
     ]);
 
-    $notify(SCRIPT_NAME, '❌ 数据解析失败', STORE_KEY);
+    $notify(SCRIPT_NAME, '❌ 数据解析失败', `请检查 ${STORE_KEY}`);
     $done();
     return;
   }
@@ -269,8 +322,8 @@ function main() {
         `序号：${index + 1}`,
         `账号 ID：${id}`,
         `邮箱：${acc.email || '未获取'}`,
-        `剩余天数：${acc.leftDays !== undefined ? acc.leftDays : '未获取'}`,
-        `积分：${acc.points !== undefined ? acc.points : '未获取'}`,
+        `剩余天数：${formatDays(acc.leftDays)} 天`,
+        `积分：${formatPoints(acc.points)}`,
         `创建时间：${formatTime(acc.createdAt)}`,
         `更新时间：${formatTime(acc.updatedAt)}`,
         `最近查询：${formatTime(acc.lastQueryAt)}`,
@@ -280,7 +333,7 @@ function main() {
 
       notifyRows.push(
         `${index + 1}. ${acc.email || acc.alias || id}\n` +
-        `剩余：${acc.leftDays !== undefined ? acc.leftDays : '未知'} 天｜积分：${acc.points !== undefined ? acc.points : '未知'}`
+        `剩余：${formatDays(acc.leftDays)} 天｜积分：${formatPoints(acc.points)}`
       );
     });
   });
