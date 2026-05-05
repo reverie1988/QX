@@ -49,6 +49,19 @@
     },
     {
       "config": "0 6 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/全球新闻速览.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/CNN.png, tag=全球新闻速览, enabled=true"
+    },
+    {
+      "config": "0 0 1 1 * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/GLaDOS_Capture.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/glados.png, tag=GLaDOS账号提取, enabled=false",
+      "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/GLaDOS.snippet"
+    },
+    {
+      "config": "30 8 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/GLaDOS_ListAccounts.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/glados-list.png, tag=GLaDOS查看账号, enabled=false"
+    },
+    {
+      "config": "30 8 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/GLaDOS_DeleteAccount.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/glados-delete.png, tag=GLaDOS删除账号, enabled=false"
+    },
+    {
+      "config": "30 8 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/GLaDOS_ClearAccounts.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/glados-clear.png, tag=GLaDOS清空账号, enabled=false"
     }
   ]
 }
