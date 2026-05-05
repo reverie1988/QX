@@ -12,10 +12,10 @@
       "config": "1 1 1 1 1 https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe清空所有账号.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/PingMe.png, tag=PingMe清空所有账号, enabled=true"
     },
     {
-      "config": "1 1 1 1 1 https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe签到.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/PingMe.png, tag=PingMe签到, enabled=true"
+      "config": "13 3,5 * * * https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/PingMe.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/PingMe.png, tag=PingMe签到, enabled=true"
     },
     {
-      "config": "1 1 1 1 1 https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/WeTalk签到.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/wetalk.png, tag=WeTalk签到, enabled=true"
+      "config": "17 3,5 * * * https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/WeTalk.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/wetalk.png, tag=WeTalk签到, enabled=true"
     },
     {
       "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/节点纯净度查询.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/IPLC.png, tag=节点纯净度查询, enabled=true"
