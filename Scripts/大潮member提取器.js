@@ -164,7 +164,7 @@ function extractMember() {
     ]);
 
     notify(
-      '🌟 大潮 member',
+      '🌟 member',
       '❌ JSON 解析失败',
       shortText(memberValue, 300),
       memberValue
@@ -205,7 +205,7 @@ function extractMember() {
   ]);
 
   notify(
-    '🌟 大潮 member 已提取',
+    '🌟 member 已提取',
     `ID: ${parsedData.id || '未知'}`,
     memberValue,
     memberValue
