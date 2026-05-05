@@ -28,7 +28,7 @@ const DELETE_TARGET = 'fp_xxxxxxxxxxxx';
 const DELETE_TARGET = '';
 const DELETE_INDEX = 1;
 */
-const DELETE_TARGET = '';
+const DELETE_TARGET = 'reverie1988@vip.qq.com';
 const DELETE_INDEX = 0;
 
 function nowTime() {
