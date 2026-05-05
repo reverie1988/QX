@@ -3,8 +3,7 @@
   "description": "个人 Quantumult X 脚本任务仓库",
   "task": [
     {
-      "config": "30 8 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe删除账号.js, tag=PingMe删除账号, enabled=true",
-      "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/Demo.snippet"
+      "config": "30 8 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe删除账号.js, tag=PingMe删除账号, enabled=true"
     }
   ]
 }
