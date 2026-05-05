@@ -3,7 +3,7 @@
   "description": "Reverie の Quantumult X 脚本任务仓库",
   "task": [
     {
-      "config": "30 8 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe删除账号.js, img-url=https://github.com/reverie1988/QX/blob/bfb0d9fe1078a4b462965e8e832b80499972ffdc/icons/apps/PingMe.png, tag=PingMe删除账号, enabled=false"
+      "config": "30 8 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe删除账号.js, img-url=https://github.com/reverie1988/QX/blob/main/icons/apps/PingMe.png, tag=PingMe删除账号, enabled=false"
     },
     {
       "config": "30 8 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe查看所有账号.js, tag=PingMe查看所有账号, enabled=true"
