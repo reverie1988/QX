@@ -3,13 +3,13 @@
   "description": "Reverie の Quantumult X 脚本任务仓库",
   "task": [
     {
-      "config": "30 8 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe删除账号.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/refs/heads/main/Icon/PingMe.png, tag=PingMe删除账号, enabled=true"
+      "config": "0 0 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe删除账号.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/refs/heads/main/Icon/PingMe.png, tag=PingMe删除账号, enabled=true"
     },
     {
-      "config": "30 8 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe查看所有账号.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/refs/heads/main/Icon/PingMe.png, tag=PingMe查看所有账号, enabled=true"
+      "config": "0 0 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe查看所有账号.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/refs/heads/main/Icon/PingMe.png, tag=PingMe查看所有账号, enabled=true"
     },
     {
-      "config": "30 8 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe清空所有账号.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/refs/heads/main/Icon/PingMe.png, tag=PingMe清空所有账号, enabled=true"
+      "config": "0 0 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe清空所有账号.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/refs/heads/main/Icon/PingMe.png, tag=PingMe清空所有账号, enabled=true"
     }
   ]
 }
