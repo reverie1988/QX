@@ -337,4 +337,3 @@ function finishError(msg) {
     htmlMessage
   });
 }
-
