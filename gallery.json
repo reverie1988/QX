@@ -3,13 +3,13 @@
   "description": "Reverie の Quantumult X 脚本任务仓库",
   "task": [
     {
-      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe删除账号.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/PingMe.png, tag=PingMe删除账号, enabled=true"
+      "config": "1 1 1 1 1 https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe删除账号.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/PingMe.png, tag=PingMe删除账号, enabled=true"
     },
     {
-      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe查看所有账号.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/PingMe.png, tag=PingMe查看所有账号, enabled=true"
+      "config": "1 1 1 1 1 https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe查看所有账号.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/PingMe.png, tag=PingMe查看所有账号, enabled=true"
     },
     {
-      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe清空所有账号.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/PingMe.png, tag=PingMe清空所有账号, enabled=true"
+      "config": "1 1 1 1 1 https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe清空所有账号.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/PingMe.png, tag=PingMe清空所有账号, enabled=true"
     },
     {
       "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/节点纯净度查询.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/IPLC.png, tag=节点纯净度查询, enabled=true"
@@ -18,13 +18,13 @@
       "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/流媒体解锁查询.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/Unlock.png, tag=流媒体解锁查询, enabled=true"
     },
     {
-      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/山东今日油价.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/SINOPEC.png, tag=山东今日油价, enabled=true"
+      "config": "1 1 1 1 1 https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/山东今日油价.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/SINOPEC.png, tag=山东今日油价, enabled=true"
     },
     {
-      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/每天60s读懂世界.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/CNN.png, tag=每天60s读懂世界, enabled=true"
+      "config": "0 8 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/每天60s读懂世界.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/CNN.png, tag=每天60s读懂世界, enabled=true"
     },
     {
-      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/全球新闻速览.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/BBC.png, tag=全球新闻速览, enabled=true"
+      "config": "1 1 1 1 1 https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/全球新闻速览.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/BBC.png, tag=全球新闻速览, enabled=true"
     }
   ]
 }
