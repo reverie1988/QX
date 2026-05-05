@@ -5,7 +5,7 @@
     {
       "config": "30 8 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe删除账号.js, tag=PingMe删除账号, enabled=true",
       "config": "30 8 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe查看所有账号.js, tag=PingMe查看所有账号, enabled=true",
-      "config": "30 8 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe清空所有账号.js, tag=PingMe清空所有账号, enabled=true",
+      "config": "30 8 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe清空所有账号.js, tag=PingMe清空所有账号, enabled=true"
     }
   ]
 }
