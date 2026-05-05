@@ -3,6 +3,10 @@
   "description": "Reverie の Quantumult X 脚本任务仓库",
   "task": [
     {
+      "config": "1 1 1 1 1 https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/大潮member提取器.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/dachao.png, tag=大潮member提取器, enabled=false",
+      "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/DCTX.snippet"
+    },
+    {
       "config": "13 3,5 * * * https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/PingMe.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/PingMe.png, tag=PingMe签到, enabled=true",
       "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/PingMe.snippet"
     },
