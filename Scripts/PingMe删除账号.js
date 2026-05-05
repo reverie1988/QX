@@ -2,7 +2,7 @@ const scriptName = 'PingMe';
 const storeKey = 'pingme_accounts_v1';
 
 // 改成你通知里看到的 id
-const DELETE_ID = '1459d1b42fbe';
+const DELETE_ID = '1459d1b42fbe'; // id
 
 function loadStore() {
   const raw = $prefs.valueForKey(storeKey);
