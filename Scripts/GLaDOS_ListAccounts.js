@@ -2,30 +2,18 @@
 /*
 @Name：GLaDOS 查看本地账号
 @Description：
-- 查看 QX 本地保存的 GLaDOS 账号
-- 可查询剩余天数和积分
-- 不执行签到，不执行兑换
+- 只查看 QX 本地保存的 GLaDOS 账号
+- 不进行网络查询
+- 不执行签到
+- 不执行兑换
 */
 
 const SCRIPT_NAME = 'GLaDOS';
 const STORE_KEY = 'glados_accounts_v1';
 
-// 是否联网查询最新状态和积分
-const QUERY_REMOTE_STATUS = true;
-
 // 是否在日志中显示完整 Cookie
 // 不建议开启，Cookie 属于敏感信息
 const SHOW_COOKIE_IN_LOG = false;
-
-const STATUS_URL = 'https://glados.cloud/api/user/status';
-const POINTS_URL = 'https://glados.cloud/api/user/points';
-
-const HEADERS_TEMPLATE = {
-  'Referer': 'https://glados.cloud/console/checkin',
-  'Origin': 'https://glados.cloud',
-  'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1',
-  'Accept': 'application/json, text/plain, */*'
-};
 
 // ========== 工具函数 ==========
 
@@ -85,7 +73,7 @@ function formatPoints(value) {
 }
 
 function maskCookie(cookie) {
-  if (!cookie) return '';
+  if (!cookie) return '未保存';
 
   if (SHOW_COOKIE_IN_LOG) {
     return String(cookie);
@@ -117,6 +105,7 @@ function loadStore() {
     return {
       ok: true,
       empty: true,
+      raw: '',
       store: {
         version: 1,
         accounts: {},
@@ -152,100 +141,8 @@ function loadStore() {
   };
 }
 
-function saveStore(store) {
-  $prefs.setValueForKey(JSON.stringify(store), STORE_KEY);
-}
-
 function getIds(store) {
   return (store.order || []).filter(id => store.accounts && store.accounts[id]);
-}
-
-// ========== 网络查询 ==========
-
-function makeRequest(url, cookie) {
-  const headers = Object.assign({}, HEADERS_TEMPLATE, {
-    'Cookie': cookie
-  });
-
-  return $task.fetch({
-    url: url,
-    method: 'GET',
-    headers: headers
-  }).then(res => {
-    return {
-      ok: true,
-      statusCode: res.statusCode || res.status || 0,
-      body: res.body || ''
-    };
-  }).catch(err => {
-    return {
-      ok: false,
-      error: err && err.error ? err.error : String(err)
-    };
-  });
-}
-
-function queryAccount(acc) {
-  const result = {
-    email: acc.email || '',
-    leftDays: acc.leftDays,
-    points: acc.points,
-    error: ''
-  };
-
-  return makeRequest(STATUS_URL, acc.cookie).then(statusRes => {
-    if (!statusRes.ok) {
-      result.error = '状态查询失败：' + statusRes.error;
-      return result;
-    }
-
-    const statusJson = safeJsonParse(statusRes.body);
-
-    if (statusJson && statusJson.data) {
-      result.email = statusJson.data.email || result.email;
-      result.leftDays = statusJson.data.leftDays;
-    }
-
-    return makeRequest(POINTS_URL, acc.cookie);
-  }).then(pointsRes => {
-    if (pointsRes && pointsRes.ok) {
-      const pointsJson = safeJsonParse(pointsRes.body);
-
-      if (pointsJson && pointsJson.points !== undefined) {
-        result.points = pointsJson.points;
-      }
-    }
-
-    return result;
-  }).catch(e => {
-    result.error = e && e.message ? e.message : String(e);
-    return result;
-  });
-}
-
-function updateAccountFromQuery(store, id, q) {
-  const acc = store.accounts[id];
-
-  if (!acc) return;
-
-  if (q.email) {
-    acc.email = String(q.email).trim().toLowerCase();
-
-    if (!acc.alias || String(acc.alias).indexOf('ck_') === 0) {
-      acc.alias = acc.email;
-    }
-  }
-
-  if (q.leftDays !== undefined) {
-    acc.leftDays = q.leftDays;
-  }
-
-  if (q.points !== undefined) {
-    acc.points = q.points;
-  }
-
-  acc.lastQueryAt = Date.now();
-  acc.updatedAt = Date.now();
 }
 
 // ========== 主程序 ==========
@@ -254,24 +151,35 @@ function main() {
   const loaded = loadStore();
 
   if (!loaded.ok) {
-    logBlock('❌ 数据解析失败', [
+    logBlock('❌ 本地数据解析失败', [
       `存储 Key：${STORE_KEY}`,
       '原因：JSON 解析失败',
       `原始数据预览：${shortText(loaded.raw || '', 500)}`
     ]);
 
-    $notify(SCRIPT_NAME, '❌ 数据解析失败', `请检查 ${STORE_KEY}`);
+    $notify(
+      SCRIPT_NAME,
+      '❌ 本地数据解析失败',
+      `请检查 ${STORE_KEY}`
+    );
+
     $done();
     return;
   }
 
   if (loaded.empty) {
-    logBlock('📭 暂无 GLaDOS 账号', [
+    logBlock('📭 暂无 GLaDOS 本地账号', [
       `存储 Key：${STORE_KEY}`,
-      '请先在 Safari / Edge / Chrome 中登录 glados.cloud 并打开控制台页面'
+      '状态：没有找到本地保存的账号数据',
+      '提示：请先通过浏览器自动提取 Cookie'
     ]);
 
-    $notify(SCRIPT_NAME, '📭 暂无账号', '请先通过浏览器登录 GLaDOS');
+    $notify(
+      SCRIPT_NAME,
+      '📭 暂无本地账号',
+      '请先用 Safari / Edge / Chrome 登录 GLaDOS 并触发抓取'
+    );
+
     $done();
     return;
   }
@@ -282,82 +190,64 @@ function main() {
   if (!ids.length) {
     logBlock('📭 暂无有效账号', [
       `存储 Key：${STORE_KEY}`,
-      '账号列表为空'
+      '状态：存在本地数据，但账号列表为空'
     ]);
 
-    $notify(SCRIPT_NAME, '📭 暂无有效账号', '账号列表为空');
+    $notify(
+      SCRIPT_NAME,
+      '📭 暂无有效账号',
+      '本地账号列表为空'
+    );
+
     $done();
     return;
   }
 
   logBlock('📦 GLaDOS 本地账号总览', [
+    `存储 Key：${STORE_KEY}`,
     `账号数量：${ids.length}`,
-    `远程查询：${QUERY_REMOTE_STATUS ? '开启' : '关闭'}`,
-    `存储 Key：${STORE_KEY}`
+    `数据版本：${store.version || '未知'}`,
+    '网络查询：关闭',
+    `Cookie 显示：${SHOW_COOKIE_IN_LOG ? '完整显示' : '已隐藏'}`
   ]);
 
   const notifyRows = [];
-  let chain = Promise.resolve();
 
   ids.forEach((id, index) => {
-    chain = chain.then(() => {
-      const acc = store.accounts[id];
+    const acc = store.accounts[id] || {};
 
-      if (!QUERY_REMOTE_STATUS) {
-        return {
-          email: acc.email || '',
-          leftDays: acc.leftDays,
-          points: acc.points,
-          error: ''
-        };
-      }
+    const email = acc.email || acc.alias || id || '未知账号';
+    const hasCookie = acc.cookie ? '已保存' : '未保存';
 
-      return queryAccount(acc);
-    }).then(q => {
-      updateAccountFromQuery(store, id, q);
-
-      const acc = store.accounts[id];
-
-      logBlock(`👤 账号 ${index + 1}/${ids.length}`, [
-        `序号：${index + 1}`,
-        `账号 ID：${id}`,
-        `邮箱：${acc.email || '未获取'}`,
-        `剩余天数：${formatDays(acc.leftDays)} 天`,
-        `积分：${formatPoints(acc.points)}`,
-        `创建时间：${formatTime(acc.createdAt)}`,
-        `更新时间：${formatTime(acc.updatedAt)}`,
-        `最近查询：${formatTime(acc.lastQueryAt)}`,
-        `Cookie：${shortText(maskCookie(acc.cookie), 220)}`,
-        q.error ? `查询错误：${q.error}` : ''
-      ]);
-
-      notifyRows.push(
-        `${index + 1}. ${acc.email || acc.alias || id}\n` +
-        `剩余：${formatDays(acc.leftDays)} 天｜积分：${formatPoints(acc.points)}`
-      );
-    });
-  });
-
-  chain.then(() => {
-    saveStore(store);
-
-    $notify(
-      SCRIPT_NAME,
-      `📦 当前共 ${ids.length} 个账号`,
-      notifyRows.join('\n\n')
-    );
-
-    $done();
-  }).catch(e => {
-    const msg = e && e.message ? e.message : String(e);
-
-    logBlock('❌ 查看脚本异常', [
-      `错误：${msg}`
+    logBlock(`👤 账号 ${index + 1}/${ids.length}`, [
+      `序号：${index + 1}`,
+      `账号 ID：${id}`,
+      `邮箱：${acc.email || '未获取'}`,
+      `别名：${acc.alias || '未设置'}`,
+      `Cookie：${hasCookie}`,
+      `Cookie 预览：${shortText(maskCookie(acc.cookie), 220)}`,
+      `剩余天数：${formatDays(acc.leftDays)} 天`,
+      `积分：${formatPoints(acc.points)}`,
+      `创建时间：${formatTime(acc.createdAt)}`,
+      `更新时间：${formatTime(acc.updatedAt)}`,
+      `最近查询：${formatTime(acc.lastQueryAt)}`,
+      `最近任务：${formatTime(acc.lastTaskAt)}`
     ]);
 
-    $notify(SCRIPT_NAME, '❌ 查看失败', msg);
-    $done();
+    notifyRows.push(
+      `${index + 1}. ${email}\n` +
+      `Cookie：${hasCookie}\n` +
+      `剩余：${formatDays(acc.leftDays)} 天｜积分：${formatPoints(acc.points)}`
+    );
   });
+
+  $notify(
+    SCRIPT_NAME,
+    `📦 本地共 ${ids.length} 个账号`,
+    notifyRows.join('\n\n')
+  );
+
+  $done();
 }
 
 main();
