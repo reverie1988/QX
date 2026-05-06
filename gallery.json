@@ -4,7 +4,7 @@
   "task": [
     {
       "config": "13 3,5 * * * https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/PingMe.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/PingMe.png, tag=PingMe签到, enabled=true",
-      "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/PingMe.snippet, tag=PingMe 账号提取, img-url=https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/05icon/zhuanyi(4).png, update-interval=172800, opt-parser=false, enabled=true"
+      "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/PingMe.snippet, tag=PingMe 账号提取, img-url=https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/05icon/chaxun(2).png, update-interval=172800, opt-parser=false, enabled=true"
     },
     {
       "config": "17 3,5 * * * https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/WeTalk.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/wetalk.png, tag=WeTalk签到, enabled=true",
