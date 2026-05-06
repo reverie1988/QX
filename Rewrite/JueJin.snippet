@@ -1,6 +1,6 @@
-[rewrite_local]
-hostname = api.juejin.cn
-^https:\/\/api\.juejin\.cn\/growth_api\/v1\/check_in\? url script-request-header JueJin_QX.js
+; 稀土掘金 APP Cookie 自动提取
+; 打开稀土掘金 APP，触发 check_in 接口后自动保存 Cookie / URL 参数 / User-Agent
 
-[task_local]
-30 8 * * * JueJin_QX.js, tag=稀土掘金签到, enabled=true
+hostname = api.juejin.cn
+
+^https:\/\/api\.juejin\.cn\/growth_api\/v1\/check_in\? url script-request-header https://raw.githubusercontent.com/reverie1988/QX/refs/heads/main/Scripts/JueJin.js
