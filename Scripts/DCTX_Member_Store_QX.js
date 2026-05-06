@@ -6,8 +6,9 @@
 
 特点：
 1. 不保存旧数据
-2. 每次获取 member 都直接更新本地数据
-3. 同账号 member 会被最新数据覆盖
+2. 不保存 history
+3. 每次获取 member 都直接更新本地数据
+4. 自动清理旧版本遗留的 history 字段
 
 QX rewrite 示例：
 hostname = m.aihoge.com
@@ -18,11 +19,11 @@ const SCRIPT_NAME = '大潮 member 本地存储器';
 const STORE_KEY = 'dctx_member_store_v1';
 const LAST_KEY = 'dctx_member_last_v1';
 
-// 是否在日志/通知中显示完整 member。member 属于敏感信息，默认关闭 false。
-const SHOW_FULL_MEMBER_IN_LOG = true;
+// 是否在日志/通知中显示完整 member。member 属于敏感信息，默认关闭。
+const SHOW_FULL_MEMBER_IN_LOG = false;
 
 // 是否在通知里放复制内容。默认关闭，避免误复制/泄露完整 member。
-const COPY_MEMBER_IN_NOTIFY = true;
+const COPY_MEMBER_IN_NOTIFY = false;
 
 function nowTime() {
   const d = new Date();
@@ -124,6 +125,10 @@ function getAccountKey(parsed) {
   );
 }
 
+function getMemberId(parsed) {
+  return normalizeKey(parsed.id || parsed.account_id || parsed.accountId);
+}
+
 function getNickname(parsed) {
   const raw =
     parsed.nickname ||
@@ -185,6 +190,46 @@ function loadStore() {
   return obj;
 }
 
+function cleanupLegacyHistory(store) {
+  if (!store || !store.accounts) return 0;
+
+  let count = 0;
+
+  for (const key of Object.keys(store.accounts)) {
+    const rec = store.accounts[key];
+
+    if (rec && Object.prototype.hasOwnProperty.call(rec, 'history')) {
+      delete rec.history;
+      count++;
+    }
+  }
+
+  return count;
+}
+
+function cleanupDuplicateById(store, currentKey, currentId) {
+  if (!store || !store.accounts || !currentId) return 0;
+
+  let count = 0;
+
+  for (const key of Object.keys(store.accounts)) {
+    if (key === currentKey) continue;
+
+    const rec = store.accounts[key];
+    if (!rec) continue;
+
+    const parsed = safeJsonParse(rec.raw, {});
+    const recId = normalizeKey(rec.id || parsed.id || parsed.account_id || parsed.accountId);
+
+    if (recId && recId === currentId) {
+      delete store.accounts[key];
+      count++;
+    }
+  }
+
+  return count;
+}
+
 function saveStore(store) {
   store.version = 1;
   store.updatedAt = new Date().toLocaleString();
@@ -241,6 +286,7 @@ function extractMember() {
   }
 
   const accountKey = getAccountKey(parsedData);
+  const memberId = getMemberId(parsedData);
 
   if (!accountKey) {
     logBlock('❌ 无法识别账号', [
@@ -259,6 +305,10 @@ function extractMember() {
   }
 
   const store = loadStore();
+
+  const cleanedHistoryCount = cleanupLegacyHistory(store);
+  const cleanedDuplicateCount = cleanupDuplicateById(store, accountKey, memberId);
+
   const now = new Date().toLocaleString();
 
   // 每次获取都直接覆盖，不保存旧数据、不保存 history、不跳过相同数据
@@ -266,7 +316,7 @@ function extractMember() {
     key: accountKey,
     phone: parsedData.phone || parsedData.mobile || '',
     mobile: parsedData.mobile || parsedData.phone || '',
-    id: parsedData.id || parsedData.account_id || parsedData.accountId || '',
+    id: memberId,
     nickname: getNickname(parsedData),
     source: parsedData.source || '',
     expire: parsedData.expire || '',
@@ -276,11 +326,11 @@ function extractMember() {
 
   saveStore(store);
 
-  // 记录最后一次抓取，也直接覆盖
+  // 最后一次抓取记录，也直接覆盖
   $prefs.setValueForKey(
     JSON.stringify({
       key: accountKey,
-      id: parsedData.id || parsedData.account_id || parsedData.accountId || '',
+      id: memberId,
       phone: parsedData.phone || parsedData.mobile || '',
       mobile: parsedData.mobile || parsedData.phone || '',
       nickname: getNickname(parsedData),
@@ -294,20 +344,22 @@ function extractMember() {
 
   logBlock('✅ member 已更新到本地', [
     `账号：${maskPhone(accountKey)}`,
-    `ID：${parsedData.id || parsedData.account_id || parsedData.accountId || '未知'}`,
+    `ID：${memberId || '未知'}`,
     `昵称：${getNickname(parsedData) || '未知'}`,
     `来源：${parsedData.source || '未知'}`,
     `过期：${formatExpire(parsedData.expire)}${parsedData.expire ? ` (${parsedData.expire})` : ''}`,
     `时间：${now}`,
     `本地 Key：${STORE_KEY}`,
     '保存方式：直接覆盖，不保存旧数据',
+    cleanedHistoryCount ? `已清理旧 history 字段：${cleanedHistoryCount} 个` : '',
+    cleanedDuplicateCount ? `已清理重复账号记录：${cleanedDuplicateCount} 个` : '',
     `member 预览：${shortText(maskMemberText(memberValue), 300)}`
   ]);
 
   notify(
     '🌟 member 已更新',
     `账号: ${maskPhone(accountKey)}`,
-    `ID: ${parsedData.id || parsedData.account_id || parsedData.accountId || '未知'}\n时间: ${now}`,
+    `ID: ${memberId || '未知'}\n时间: ${now}`,
     COPY_MEMBER_IN_NOTIFY ? memberValue : ''
   );
 }
