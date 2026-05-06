@@ -23,6 +23,16 @@
       "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/GoogleCN.snippet, tag=Google 自动中文跳转, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Google_03.png, update-interval=172800, opt-parser=false, enabled=true"
     },
     {
+      "config": "30 8,20 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/ZAJK.js, tag=众安健康签到, enabled=true",
+      "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/ZAJK.snippet, tag=众安健康抓包, enabled=true"
+    },
+    {
+      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/ZAJK_Query.js, tag=众安健康账号查询, enabled=true"
+    },
+    {
+      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/ZAJK_Delete.js, tag=众安健康删除账号, enabled=true"
+    },
+    {
       "config": "1 1 1 1 1 https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe删除账号.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/PingMe.png, tag=PingMe删除账号, enabled=false"
     },
     {
