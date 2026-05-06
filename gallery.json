@@ -19,6 +19,12 @@
       "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/大潮member提取器.snippet, tag=大潮 账号提取, img-url=https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/05icon/chaxun(2).png, update-interval=172800, opt-parser=false, enabled=true"
     },
     {
+      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/DCTX_Member_Query_QX.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/dachao.png, tag=大潮member查询, enabled=false"
+    },
+    {
+      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/DCTX_Member_Delete_QX.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/dachao.png, tag=大潮member提取器, enabled=false"
+    },
+    {
       "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/Google_Chinese_Redirect.js, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Google_03.png, tag=Google 自动中文跳转, enabled=false",
       "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/GoogleCN.snippet, tag=Google 自动中文跳转, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Google_03.png, update-interval=172800, opt-parser=false, enabled=true"
     },
