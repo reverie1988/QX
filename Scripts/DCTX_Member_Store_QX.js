@@ -18,11 +18,11 @@ const SCRIPT_NAME = '大潮 member 本地存储器';
 const STORE_KEY = 'dctx_member_store_v1';
 const LAST_KEY = 'dctx_member_last_v1';
 
-// 是否在日志/通知中显示完整 member。member 属于敏感信息，默认关闭。
-const SHOW_FULL_MEMBER_IN_LOG = false;
+// 是否在日志/通知中显示完整 member。member 属于敏感信息，默认关闭 false。
+const SHOW_FULL_MEMBER_IN_LOG = true;
 
 // 是否在通知里放复制内容。默认关闭，避免误复制/泄露完整 member。
-const COPY_MEMBER_IN_NOTIFY = false;
+const COPY_MEMBER_IN_NOTIFY = true;
 
 function nowTime() {
   const d = new Date();
