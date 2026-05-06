@@ -19,7 +19,7 @@
       "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/大潮member提取器.snippet"
     },
     {
-      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/Google_Chinese_Redirect.js, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Google.png, tag=Google 自动中文跳转, enabled=false",
+      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/Google_Chinese_Redirect.js, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Google_03.png, tag=Google 自动中文跳转, enabled=false",
       "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/GoogleCN.snippet"
     },
     {
