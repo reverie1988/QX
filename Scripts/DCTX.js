@@ -6,13 +6,13 @@
 1. 手机号/密码/member id 硬编码在脚本里。
 2. member 从 QX 本地 dctx_member_store_v1 读取。
 3. 每个账号通过 member id 精准匹配自己的本地 member。
-4. 此脚本下载到本地编辑运行。以防个人信息泄露！！！！！！
+4. 不再依赖 Utils.js，改为自动加载 crypto-js + jsencrypt。
 
 账号格式：
 member里的id#手机号#密码
 
 示例：
-1293d521234567890a81234567890f76#13800138000#你的密码
+1293d527550bb307ea8c6edc5f90ef76#13800138000#你的密码
 
 QX task 示例：
 30 30,35,40 9 * * * DCTX_Run_QX.js, tag=大潮提现, enabled=true
@@ -22,9 +22,10 @@ const $ = new Env('💲 大潮提现');
 
 // ========== 多账号硬编码配置 ==========
 // 格式：member里的id#手机号#密码
-// 一行一个账号
+// 一行一个账号。
+// 注意：密码里如果包含 #，也可以正常识别，从第 3 段开始都会当作密码。
 const ACCOUNT_TEXT = `
-1293d521234567890a81234567890f76#13800138000#你的密码
+1293d527550bb307ea8c6edc5f90ef76#13800138000#你的密码
 id2#手机号2#密码2
 `;
 
@@ -39,9 +40,12 @@ const RUN_WITHOUT_LOCAL_MEMBER = true;
 // 是否在日志中显示完整 member。member 是敏感信息，默认关闭。
 const SHOW_FULL_MEMBER_IN_LOG = false;
 
-let Utils = undefined;
+// 依赖缓存 key
+const CRYPTOJS_CACHE_KEY = 'DCTX_CryptoJS_Code_v1';
+const JSENCRYPT_CACHE_KEY = 'DCTX_JSEncrypt_Code_v1';
+
 let CryptoJS = undefined;
-let window = {};
+let JSEncryptClass = undefined;
 
 let signature_key = '';
 let lotteryNotice = '';
@@ -210,10 +214,10 @@ async function main() {
     return;
   }
 
-  Utils = await loadUtils();
+  const libsOk = await loadCryptoAndJSEncrypt();
 
-  if (!Utils) {
-    $.msg($.name, 'Utils 加载失败', '请检查网络或 Utils_Code 缓存');
+  if (!libsOk) {
+    $.msg($.name, '依赖加载失败', 'crypto-js 或 jsencrypt 加载失败，请检查网络');
     return;
   }
 
@@ -624,18 +628,25 @@ function resolveResponse(err, resp, data, resolve) {
 function getBody() {
   const key = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQD6XO7e9YeAOs+cFqwa7ETJ+WXizPqQeXv68i5vqw9pFREsrqiBTRcg7wB0RIp3rJkDpaeVJLsZqYm5TW7FWx/iOiXFc+zCPvaKZric2dXCw27EvlH5rq+zwIPDAJHGAfnn1nmQH7wR3PCatEIb8pz5GFlTHMlluw4ZYmnOwg+thwIDAQAB';
 
-  const encryptor = new (Utils.loadJSEncrypt())();
+  if (!CryptoJS || !JSEncryptClass) {
+    throw new Error('依赖未加载：CryptoJS 或 JSEncryptClass 不存在');
+  }
+
+  const encryptor = new JSEncryptClass();
   encryptor.setPublicKey(key);
 
   const encryptedPassword = encryptor.encrypt(password);
+
+  if (!encryptedPassword) {
+    throw new Error('密码 RSA 加密失败');
+  }
+
   const uuid = generateUUID();
 
   const rawBody = `client_id=${clientId}&password=${encryptedPassword}&phone_number=${phone_number}`;
   const str = `post%%/web/oauth/credential_auth?${rawBody}%%${uuid}%%`;
 
   const body = `client_id=${clientId}&password=${encodeURIComponent(encryptedPassword)}&phone_number=${phone_number}`;
-
-  CryptoJS = Utils.createCryptoJS();
 
   const hash = CryptoJS.HmacSHA256(str, signature_key);
   const sig = CryptoJS.enc.Hex.stringify(hash);
@@ -656,7 +667,9 @@ function getParams(url) {
     path = path.substring(0, path.indexOf('?'));
   }
 
-  CryptoJS = Utils.createCryptoJS();
+  if (!CryptoJS) {
+    throw new Error('依赖未加载：CryptoJS 不存在');
+  }
 
   const sig = CryptoJS.SHA256(
     `${path}&&${sessionId}&&${uuid}&&${time}&&${signatureSalt}&&${tenantId}`
@@ -728,32 +741,124 @@ function generateRandomUA() {
   };
 }
 
-async function loadUtils() {
-  const cache = $.getdata('Utils_Code') || '';
+async function loadCryptoAndJSEncrypt() {
+  const cryptoOk = await loadOneLib({
+    name: 'CryptoJS',
+    cacheKey: CRYPTOJS_CACHE_KEY,
+    urls: [
+      'https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js'
+    ],
+    checker: () => {
+      const g = getGlobalObject();
+      CryptoJS = g.CryptoJS || CryptoJS;
+      return !!(
+        CryptoJS &&
+        CryptoJS.SHA256 &&
+        CryptoJS.HmacSHA256 &&
+        CryptoJS.enc &&
+        CryptoJS.enc.Hex
+      );
+    }
+  });
+
+  const jsEncryptOk = await loadOneLib({
+    name: 'JSEncrypt',
+    cacheKey: JSENCRYPT_CACHE_KEY,
+    urls: [
+      'https://cdn.jsdelivr.net/npm/jsencrypt@3.3.2/bin/jsencrypt.min.js',
+      'https://cdnjs.cloudflare.com/ajax/libs/jsencrypt/3.3.2/jsencrypt.min.js'
+    ],
+    checker: () => {
+      const g = getGlobalObject();
+      JSEncryptClass =
+        g.JSEncrypt ||
+        (g.window && g.window.JSEncrypt) ||
+        (g.self && g.self.JSEncrypt) ||
+        JSEncryptClass;
+
+      return typeof JSEncryptClass === 'function';
+    }
+  });
+
+  console.log(`依赖加载结果：CryptoJS=${cryptoOk ? '✅' : '❌'}，JSEncrypt=${jsEncryptOk ? '✅' : '❌'}`);
+
+  return cryptoOk && jsEncryptOk;
+}
+
+async function loadOneLib({ name, cacheKey, urls, checker }) {
+  const cache = $.getdata(cacheKey) || '';
 
   if (cache && cache.length > 100) {
     try {
-      eval(cache);
-      return creatUtils();
+      prepareGlobalForLib();
+      evalInGlobal(cache);
+
+      if (checker()) {
+        console.log(`✅ ${name} 使用本地缓存`);
+        return true;
+      }
+
+      console.log(`⚠️ ${name} 缓存无效，清空后重新下载`);
+      $.setdata('', cacheKey);
     } catch (e) {
-      console.log(`⚠️ Utils 缓存异常，重新下载：${e.message || e}`);
-      $.setdata('', 'Utils_Code');
+      console.log(`⚠️ ${name} 缓存执行失败，清空后重新下载：${e.message || e}`);
+      $.setdata('', cacheKey);
     }
   }
 
-  return new Promise(resolve => {
-    $.getScript('https://mirror.ghproxy.com/https://raw.githubusercontent.com/xzxxn777/Surge/main/Utils/Utils.js')
-      .then(fn => {
-        try {
-          $.setdata(fn, 'Utils_Code');
-          eval(fn);
-          resolve(creatUtils());
-        } catch (e) {
-          console.log(`❌ Utils 加载失败：${e.message || e}`);
-          resolve(null);
-        }
-      });
-  });
+  for (const url of urls) {
+    try {
+      console.log(`🚀 下载依赖：${name}`);
+      const code = await $.getScript(url);
+
+      if (!code || code.length < 100) {
+        console.log(`⚠️ ${name} 下载内容异常，尝试下一个地址`);
+        continue;
+      }
+
+      prepareGlobalForLib();
+      evalInGlobal(code);
+
+      if (checker()) {
+        $.setdata(code, cacheKey);
+        console.log(`✅ ${name} 加载成功`);
+        return true;
+      }
+
+      console.log(`⚠️ ${name} 加载后检测失败，尝试下一个地址`);
+    } catch (e) {
+      console.log(`⚠️ ${name} 下载/执行异常：${e.message || e}`);
+    }
+  }
+
+  return false;
+}
+
+function getGlobalObject() {
+  if (typeof globalThis !== 'undefined') return globalThis;
+  return Function('return this')();
+}
+
+function prepareGlobalForLib() {
+  const g = getGlobalObject();
+
+  if (!g.window) {
+    g.window = g;
+  }
+
+  if (!g.self) {
+    g.self = g;
+  }
+
+  if (!g.navigator) {
+    g.navigator = {};
+  }
+}
+
+function evalInGlobal(code) {
+  const g = getGlobalObject();
+  Function('window', 'self', 'globalThis', String(code)).call(g, g.window || g, g.self || g, g);
 }
 
 function Env(name) {
@@ -799,14 +904,19 @@ function Env(name) {
     getScript(url) {
       return new Promise(resolve => {
         this.get({ url: url }, (err, resp, body) => {
-          resolve(body || '');
+          if (err) {
+            console.log(`依赖下载失败：${url}，错误：${err}`);
+            resolve('');
+          } else {
+            resolve(body || '');
+          }
         });
       });
     }
 
     get(options, callback) {
       if (typeof $task !== 'undefined') {
-        const opt = typeof options === 'string' ? { url: options } : options;
+        const opt = typeof options === 'string' ? { url: options } : Object.assign({}, options);
         opt.method = 'GET';
 
         $task.fetch(opt).then(resp => {
@@ -823,14 +933,16 @@ function Env(name) {
         }, err => {
           callback(err && err.error ? err.error : err, null, null);
         });
-      } else {
+      } else if (typeof $httpClient !== 'undefined') {
         $httpClient.get(options, callback);
+      } else {
+        callback('未知运行环境，无法发送 GET 请求', null, null);
       }
     }
 
     post(options, callback) {
       if (typeof $task !== 'undefined') {
-        const opt = typeof options === 'string' ? { url: options } : options;
+        const opt = typeof options === 'string' ? { url: options } : Object.assign({}, options);
         opt.method = 'POST';
 
         $task.fetch(opt).then(resp => {
@@ -847,8 +959,10 @@ function Env(name) {
         }, err => {
           callback(err && err.error ? err.error : err, null, null);
         });
-      } else {
+      } else if (typeof $httpClient !== 'undefined') {
         $httpClient.post(options, callback);
+      } else {
+        callback('未知运行环境，无法发送 POST 请求', null, null);
       }
     }
 
