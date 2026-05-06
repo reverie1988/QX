@@ -2,12 +2,13 @@
 /*
 项目: 大潮
 名称: 删除本地 member
-用途: 按账号删除 Quantumult X 本地保存的 member。
+用途: 按序列号删除 Quantumult X 本地保存的 member。
 
 特点：
-1. 可按手机号 / ID / key 删除
-2. 可删除全部
-3. 留空时只列出当前账号，不删除
+1. 使用序列号删除，更直观
+2. 支持删除多个序列号
+3. 支持删除全部
+4. DELETE_INDEXES 留空时只列出当前账号，不删除
 
 QX task 示例：
 0 9 * * * DCTX_Member_Delete_QX.js, tag=大潮member删除, enabled=false
@@ -17,14 +18,16 @@ const SCRIPT_NAME = '大潮 member 删除';
 const STORE_KEY = 'dctx_member_store_v1';
 const LAST_KEY = 'dctx_member_last_v1';
 
-// 在这里填写要删除的账号，可填手机号、ID、key。
+// 在这里填写要删除的序列号。
+// 例如删除第 1 个和第 3 个：
+// const DELETE_INDEXES = [1, 3];
+//
 // 留空时只列出当前已保存账号，不删除。
-const DELETE_TARGETS = [
-  // '13800138000',
-  // '1293d527550bb307ea8c6edc5f90ef76',
+const DELETE_INDEXES = [
+  // 1,
 ];
 
-// 删除全部请改成 true。优先级高于 DELETE_TARGETS。
+// 删除全部请改成 true。优先级高于 DELETE_INDEXES。
 const DELETE_ALL = false;
 
 function safeJsonParse(text, fallback = null) {
@@ -101,23 +104,6 @@ function saveStore(store) {
   return $prefs.setValueForKey(JSON.stringify(store), STORE_KEY);
 }
 
-function recordValues(key, rec) {
-  const parsed = safeJsonParse(rec && rec.raw, {});
-
-  return [
-    key,
-    rec && rec.key,
-    rec && rec.phone,
-    rec && rec.mobile,
-    rec && rec.id,
-    parsed.id,
-    parsed.phone,
-    parsed.mobile,
-    parsed.account_id,
-    parsed.accountId
-  ].map(v => String(v || '').trim()).filter(Boolean);
-}
-
 function getRecordId(rec) {
   const parsed = safeJsonParse(rec && rec.raw, {});
   return rec.id || parsed.id || parsed.account_id || parsed.accountId || '未知';
@@ -126,6 +112,92 @@ function getRecordId(rec) {
 function getRecordExpire(rec) {
   const parsed = safeJsonParse(rec && rec.raw, {});
   return rec.expire || parsed.expire || '';
+}
+
+function getRecordName(rec) {
+  const parsed = safeJsonParse(rec && rec.raw, {});
+  const raw = rec.nickname || parsed.nick_name || parsed.nickname || parsed.nickName || parsed.name || '';
+
+  if (!raw) return '未知';
+
+  try {
+    return decodeURIComponent(raw);
+  } catch (e) {
+    return String(raw);
+  }
+}
+
+function buildList(store) {
+  return Object.keys(store.accounts || {})
+    .map(key => ({
+      key,
+      rec: store.accounts[key]
+    }))
+    .filter(x => x.rec)
+    .sort((a, b) => {
+      const ta = new Date(a.rec.updatedAt || 0).getTime() || 0;
+      const tb = new Date(b.rec.updatedAt || 0).getTime() || 0;
+      return tb - ta;
+    });
+}
+
+function getValidDeleteIndexes(max) {
+  const set = new Set();
+
+  for (const x of DELETE_INDEXES) {
+    const n = Number(x);
+
+    if (Number.isInteger(n) && n >= 1 && n <= max) {
+      set.add(n);
+    }
+  }
+
+  return Array.from(set).sort((a, b) => a - b);
+}
+
+function updateLastKey(store) {
+  const remainKeys = Object.keys(store.accounts || {});
+
+  if (remainKeys.length === 0) {
+    $prefs.removeValueForKey(LAST_KEY);
+    return;
+  }
+
+  const list = buildList(store);
+  const first = list[0] && list[0].rec;
+  const firstKey = list[0] && list[0].key;
+
+  if (first && first.raw) {
+    $prefs.setValueForKey(
+      JSON.stringify({
+        key: first.key || firstKey,
+        id: first.id || '',
+        phone: first.phone || '',
+        mobile: first.mobile || '',
+        nickname: first.nickname || '',
+        source: first.source || '',
+        expire: first.expire || '',
+        updatedAt: first.updatedAt || '',
+        raw: first.raw
+      }),
+      LAST_KEY
+    );
+  }
+}
+
+function renderAccountList(list) {
+  return list.map((item, idx) => {
+    const rec = item.rec;
+    const expireRaw = getRecordExpire(rec);
+
+    return [
+      `${idx + 1}. 账号：${maskPhone(rec.key || item.key)}`,
+      `   ID：${getRecordId(rec)}`,
+      `   昵称：${getRecordName(rec)}`,
+      `   过期：${expireRaw ? `${formatExpire(expireRaw)} (${expireRaw})` : '未知'}`,
+      `   更新时间：${rec.updatedAt || '未知'}`
+    ].join('\n');
+  }).join('\n\n');
 }
 
 function main() {
@@ -142,11 +214,7 @@ function main() {
   }
 
   const store = loadStore();
-  const keys = Object.keys(store.accounts || {});
-  const list = keys.map(k => ({
-    key: k,
-    rec: store.accounts[k]
-  })).filter(x => x.rec);
+  const list = buildList(store);
 
   if (list.length === 0) {
     const msg = `当前没有本地 member 记录\n本地 Key：${STORE_KEY}`;
@@ -157,102 +225,77 @@ function main() {
     return;
   }
 
-  const targets = DELETE_TARGETS
-    .map(v => String(v).trim())
-    .filter(Boolean);
-
-  if (!DELETE_ALL && targets.length === 0) {
+  if (!DELETE_ALL && DELETE_INDEXES.length === 0) {
     const msg = [
-      '未填写 DELETE_TARGETS，本次不会删除。',
+      '未填写 DELETE_INDEXES，本次不会删除。',
       '',
       '当前可删除账号：',
-      ...list.map((item, idx) => {
-        const expireRaw = getRecordExpire(item.rec);
-        return [
-          `${idx + 1}. 账号：${maskPhone(item.rec.key || item.key)}`,
-          `   ID：${getRecordId(item.rec)}`,
-          `   过期：${expireRaw ? `${formatExpire(expireRaw)} (${expireRaw})` : '未知'}`,
-          `   更新时间：${item.rec.updatedAt || '未知'}`
-        ].join('\n');
-      }),
+      renderAccountList(list),
       '',
-      '需要删除哪个账号，就把手机号或 ID 填进 DELETE_TARGETS。'
+      '需要删除哪个账号，就把上面的序列号填进 DELETE_INDEXES。',
+      '例如删除第 1 个：const DELETE_INDEXES = [1];',
+      '例如删除第 1 和第 3 个：const DELETE_INDEXES = [1, 3];'
     ].join('\n');
 
     console.log(`\n【${SCRIPT_NAME}】\n${msg}`);
-    $notify('🌟 大潮 member 删除', '请选择账号', msg);
+    $notify('🌟 大潮 member 删除', '请选择序列号', msg);
+    $done({});
+    return;
+  }
+
+  let deleteIndexes = [];
+
+  if (DELETE_ALL) {
+    deleteIndexes = list.map((_, idx) => idx + 1);
+  } else {
+    deleteIndexes = getValidDeleteIndexes(list.length);
+  }
+
+  if (!deleteIndexes.length) {
+    const msg = [
+      `DELETE_INDEXES 无有效序列号：${JSON.stringify(DELETE_INDEXES)}`,
+      '',
+      `有效范围：1 - ${list.length}`,
+      '',
+      '当前可删除账号：',
+      renderAccountList(list)
+    ].join('\n');
+
+    console.log(`\n【${SCRIPT_NAME}】\n${msg}`);
+    $notify('🌟 大潮 member 删除', '序列号无效', msg);
     $done({});
     return;
   }
 
   const deleted = [];
 
-  for (const item of list) {
-    const key = item.key;
-    const rec = item.rec;
+  for (const index of deleteIndexes) {
+    const item = list[index - 1];
 
-    const values = recordValues(key, rec);
+    if (!item || !item.rec) continue;
 
-    const shouldDelete = DELETE_ALL || targets.some(t => values.includes(t));
+    deleted.push({
+      index,
+      key: item.key,
+      account: item.rec.key || item.key,
+      id: getRecordId(item.rec),
+      name: getRecordName(item.rec)
+    });
 
-    if (shouldDelete) {
-      deleted.push({
-        key,
-        account: rec.key || key,
-        id: getRecordId(rec)
-      });
-
-      delete store.accounts[key];
-    }
-  }
-
-  if (deleted.length === 0) {
-    const msg = [
-      `未匹配到要删除的账号：${targets.join('、')}`,
-      '',
-      '当前已保存账号：',
-      ...list.map((item, idx) => `${idx + 1}. ${maskPhone(item.rec.key || item.key)} / ID: ${getRecordId(item.rec)}`)
-    ].join('\n');
-
-    console.log(`\n【${SCRIPT_NAME}】\n${msg}`);
-    $notify('🌟 大潮 member 删除', '未匹配到账号', msg);
-    $done({});
-    return;
+    delete store.accounts[item.key];
   }
 
   saveStore(store);
+  updateLastKey(store);
 
-  const remainKeys = Object.keys(store.accounts || {});
-
-  if (remainKeys.length === 0) {
-    $prefs.removeValueForKey(LAST_KEY);
-  } else {
-    const firstKey = remainKeys[0];
-    const first = store.accounts[firstKey];
-
-    if (first && first.raw) {
-      $prefs.setValueForKey(
-        JSON.stringify({
-          key: first.key || firstKey,
-          id: first.id || '',
-          phone: first.phone || '',
-          mobile: first.mobile || '',
-          nickname: first.nickname || '',
-          source: first.source || '',
-          expire: first.expire || '',
-          updatedAt: first.updatedAt || '',
-          raw: first.raw
-        }),
-        LAST_KEY
-      );
-    }
-  }
+  const remainList = buildList(store);
 
   const msg = [
     `已删除 ${deleted.length} 个账号 member：`,
-    ...deleted.map(x => `${maskPhone(x.account)} / ID: ${x.id}`),
+    ...deleted.map(x => `${x.index}. ${maskPhone(x.account)} / ID: ${x.id} / 昵称: ${x.name}`),
     '',
-    `剩余：${remainKeys.length} 个`
+    `剩余：${remainList.length} 个`,
+    remainList.length ? '\n当前剩余账号：\n' + renderAccountList(remainList) : ''
   ].join('\n');
 
   console.log(`\n【${SCRIPT_NAME}】\n${msg}`);
