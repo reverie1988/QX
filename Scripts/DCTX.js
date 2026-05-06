@@ -6,6 +6,7 @@
 1. 手机号/密码/member id 硬编码在脚本里。
 2. member 从 QX 本地 dctx_member_store_v1 读取。
 3. 每个账号通过 member id 精准匹配自己的本地 member。
+4. 此脚本下载到本地编辑运行。以防个人信息泄露！！！！！！
 
 账号格式：
 member里的id#手机号#密码
