@@ -20,7 +20,7 @@
     },
     {
       "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/Google_Chinese_Redirect.js, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Google_03.png, tag=Google 自动中文跳转, enabled=false",
-      "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/GoogleCN.snippet"
+      "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/GoogleCN.snippet, tag=Google 自动中文跳转, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Google_03.png, update-interval=172800, opt-parser=false, enabled=true"
     },
     {
       "config": "1 1 1 1 1 https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe删除账号.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/PingMe.png, tag=PingMe删除账号, enabled=false"
