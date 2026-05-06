@@ -1,26 +1,29 @@
+// 2026/05/07
 /******************************
  * Quantumult X 众安健康
  *
  * 功能：
  * 1. 自动提取 Access-Token / Cookie
  * 2. 本地持久化保存账号
- * 3. 多账号签到
- * 4. 浏览任务
- * 5. 领取奖励
- * 6. 查询累计金额 / 可提现金额
+ * 3. 再次抓到 Cookie 自动刷新本地 Cookie
+ * 4. 支持 lemon / caerus / whale 接口抓取
+ * 5. 多账号签到
+ * 6. 浏览任务
+ * 7. 领取奖励
+ * 8. 查询累计金额 / 可提现金额
  *
  * 存储 Key：
  * zajk_accounts_v1
-
-[rewrite_local]
-^https:\/\/ihealth\.zhongan\.com\/api\/lemon\/v1\/(?:wechatApplet\/obtainBaseInfo|common\/activity\/homePage|common\/activity\/signIn|applet\/mgm\/activity\/add\/award|common\/activity\/lottery|common\/activity\/withdraw) url script-request-header https://raw.githubusercontent.com/你的仓库/ZAJK.js
-
-[task_local]
-30 8,20 * * * https://raw.githubusercontent.com/你的仓库/ZAJK.js, tag=众安健康签到, enabled=true
-
-[mitm]
-hostname = ihealth.zhongan.com
-
+ *
+ * rewrite 建议：
+ *
+ * hostname = ihealth.zhongan.com
+ *
+ * ^https:\/\/ihealth\.zhongan\.com\/api\/(?:lemon|caerus|whale)\/ url script-request-header ZAJK.js
+ *
+ * task 示例：
+ *
+ * 30 8,20 * * * ZAJK.js, tag=众安健康签到, enabled=true
  ******************************/
 
 const SCRIPT_NAME = "🏢 众安健康";
@@ -32,25 +35,18 @@ const STORE_KEY = "zajk_accounts_v1";
  * ==============================
  */
 const CONFIG = {
-  // 是否推送任务通知
   NOTIFY: true,
 
-  // 是否推送账号提取通知
   CAPTURE_NOTIFY: true,
 
-  // 账号提取通知间隔，避免频繁通知
   CAPTURE_NOTIFY_INTERVAL: 10 * 60 * 1000,
 
-  // 是否开启调试日志
   DEBUG: false,
 
-  // 是否执行浏览任务
   DO_BROWSE_TASK: true,
 
-  // 是否领取奖励
   DO_CLAIM_REWARD: true,
 
-  // 随机等待，单位毫秒
   DELAY_MIN: 2500,
   DELAY_MAX: 4500,
 
@@ -63,7 +59,11 @@ const CONFIG = {
     "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.23(0x1800172f) NetType/WIFI Language/zh_CN",
 
   REFERER:
-    "https://servicewechat.com/wxbac45cc1588a5a75/210/page-frame.html"
+    "https://servicewechat.com/wxbac45cc1588a5a75/210/page-frame.html",
+
+  // 只有 Cookie、没有 Access-Token 时，是否更新最近一个账号的 Cookie
+  // 多账号频繁切换时，如果担心错绑，可以改成 false
+  COOKIE_ONLY_UPDATE_LATEST: true
 };
 
 /**
@@ -90,11 +90,8 @@ const API = {
 
 /**
  * ==============================
- * 运行环境判断
+ * 运行入口
  * ==============================
- *
- * rewrite 触发：提取账号
- * task 触发：执行任务
  */
 if (typeof $request !== "undefined" && $request.headers) {
   handleCapture();
@@ -111,7 +108,8 @@ function handleCapture() {
   try {
     captureZAJKAccount();
   } catch (e) {
-    console.log(`【${SCRIPT_NAME}】账号提取异常：${e.message}`);
+    console.log(`【${SCRIPT_NAME}】账号提取异常：${e.message || e}`);
+
     if (CONFIG.CAPTURE_NOTIFY) {
       $notify(SCRIPT_NAME, "❌ 账号提取异常", String(e.message || e));
     }
@@ -122,6 +120,7 @@ function handleCapture() {
 
 function captureZAJKAccount() {
   const headers = $request.headers || {};
+  const url = $request.url || "";
 
   const token =
     getHeader(headers, "Access-Token") ||
@@ -133,31 +132,51 @@ function captureZAJKAccount() {
     getHeader(headers, "cookie") ||
     "";
 
-  if (!token) {
-    console.log(`【${SCRIPT_NAME}】未发现 Access-Token，跳过保存`);
+  if (!token && !cookie) {
+    console.log(`【${SCRIPT_NAME}】未发现 Access-Token / Cookie，跳过保存`);
+    console.log(`【${SCRIPT_NAME}】请求地址：${url}`);
     return;
   }
 
   const store = loadAccountStore();
   const now = Date.now();
 
-  const id = findAccountId(store, token, cookie) || makeAccountId(token, cookie);
+  let id =
+    findAccountId(store, token, cookie) ||
+    "";
+
+  if (!id && !token && cookie && CONFIG.COOKIE_ONLY_UPDATE_LATEST) {
+    id = findLatestAccountId(store);
+  }
+
+  if (!id) {
+    id = makeAccountId(token, cookie);
+  }
+
   const old = store.accounts[id] || {};
 
   const isNew = !store.accounts[id];
-  const tokenChanged = old.token && old.token !== token;
+  const tokenChanged = token && old.token !== token;
   const cookieChanged = cookie && old.cookie !== cookie;
+
+  const finalToken = token || old.token || "";
+  const finalCookie = cookie || old.cookie || "";
 
   store.accounts[id] = {
     id,
     alias: old.alias || `众安健康-${id.slice(0, 6)}`,
-    token,
-    cookie: cookie || old.cookie || "",
+    token: finalToken,
+    cookie: finalCookie,
     phone: old.phone || "",
     createdAt: old.createdAt || now,
     updatedAt: now,
-    lastCaptureUrl: $request.url || "",
-    lastNotifiedAt: old.lastNotifiedAt || 0
+    lastCaptureUrl: url,
+    lastCaptureType: getCaptureType(token, cookie),
+    lastNotifiedAt: old.lastNotifiedAt || 0,
+    lastTokenAt: token ? now : old.lastTokenAt || 0,
+    lastCookieAt: cookie ? now : old.lastCookieAt || 0,
+    lastRunAt: old.lastRunAt || "",
+    lastResult: old.lastResult || null
   };
 
   if (!Array.isArray(store.order)) {
@@ -190,19 +209,28 @@ function captureZAJKAccount() {
 
   const msg =
     `账号 ID：${id}\n` +
-    `Token：${maskText(token)}\n` +
-    `Cookie：${cookie ? "已获取" : old.cookie ? "沿用旧 Cookie" : "未获取"}\n` +
+    `Token：${finalToken ? maskText(finalToken) : "未获取"}\n` +
+    `Cookie：${finalCookie ? "已保存" : "未获取"}\n` +
+    `本次抓取：${getCaptureType(token, cookie)}\n` +
+    `来源接口：${shortUrl(url)}\n` +
     `当前共 ${total} 个账号`;
 
-  console.log(`【${SCRIPT_NAME}】账号已保存\n${msg}`);
+  console.log(`【${SCRIPT_NAME}】账号信息已保存\n${msg}`);
 
   if (shouldNotify) {
     $notify(
       SCRIPT_NAME,
-      isNew ? "✅ 新账号已保存" : "✅ 账号信息已更新",
+      isNew ? "✅ 新账号已保存" : "✅ 账号信息已刷新",
       msg
     );
   }
+}
+
+function getCaptureType(token, cookie) {
+  if (token && cookie) return "Token + Cookie";
+  if (token) return "仅 Token";
+  if (cookie) return "仅 Cookie";
+  return "未知";
 }
 
 /**
@@ -218,8 +246,10 @@ async function runTask() {
 
     if (accounts.length === 0) {
       const msg =
-        "❌ 暂无账号数据\n\n" +
-        "请先开启重写和 MitM，然后打开众安健康小程序页面，让 QX 自动提取 Access-Token。";
+        "❌ 暂无可执行账号数据\n\n" +
+        "请先开启重写和 MitM，然后打开众安健康小程序页面，让 QX 自动提取 Access-Token。\n\n" +
+        "推荐 rewrite：\n" +
+        "^https:\\/\\/ihealth\\.zhongan\\.com\\/api\\/(?:lemon|caerus|whale)\\/ url script-request-header ZAJK.js";
 
       console.log(msg);
       notify(SCRIPT_NAME, "配置缺失", msg);
@@ -239,13 +269,25 @@ async function runTask() {
       try {
         const result = await runAccount(account, i + 1);
         notifyList.push(result.notifyMsg);
+
+        updateStoredAccountMeta(account.id, {
+          lastRunAt: Date.now(),
+          lastResult: result.summary
+        });
       } catch (e) {
         const errMsg =
           `👤 账号 ${i + 1}\n` +
-          `❌ 执行失败：${e.message}`;
+          `❌ 执行失败：${e.message || e}`;
 
         console.log(errMsg);
         notifyList.push(errMsg);
+
+        updateStoredAccountMeta(account.id, {
+          lastRunAt: Date.now(),
+          lastResult: {
+            error: e.message || String(e)
+          }
+        });
       }
 
       if (i < accounts.length - 1) {
@@ -261,7 +303,7 @@ async function runTask() {
       );
     }
   } catch (e) {
-    const msg = `❌ 脚本异常：${e.message}`;
+    const msg = `❌ 脚本异常：${e.message || e}`;
     console.log(msg);
     notify(SCRIPT_NAME, "脚本异常", msg);
   } finally {
@@ -276,6 +318,10 @@ async function runTask() {
  */
 async function runAccount(account, index) {
   const { id, token, cookie } = account;
+
+  if (!token) {
+    throw new Error("账号缺少 Access-Token，无法执行任务");
+  }
 
   const userInfo = {
     nickName: account.alias || "未知",
@@ -292,9 +338,6 @@ async function runAccount(account, index) {
 
   const baseHeaders = buildBaseHeaders(token, cookie);
 
-  /**
-   * 1. 获取用户基础信息
-   */
   console.log("🔄 正在获取账户信息...");
   const baseInfo = await postJson(API.BASE_INFO, baseHeaders, {});
 
@@ -319,9 +362,6 @@ async function runAccount(account, index) {
 
   await randomDelay();
 
-  /**
-   * 2. 获取首页数据
-   */
   console.log("🔄 正在获取活动首页...");
   const homeData = await getHomePage(baseHeaders);
 
@@ -331,9 +371,6 @@ async function runAccount(account, index) {
 
   console.log("✅ 活动首页获取成功");
 
-  /**
-   * 3. 签到
-   */
   console.log("🔄 正在签到...");
   const signRes = await postJson(API.SIGN_IN, baseHeaders, activityBody());
 
@@ -347,9 +384,6 @@ async function runAccount(account, index) {
 
   await randomDelay();
 
-  /**
-   * 4. 浏览任务
-   */
   if (CONFIG.DO_BROWSE_TASK) {
     const browseResults = await executeBrowseTasks(token, cookie, homeData);
     summary.browse = browseResults;
@@ -359,9 +393,6 @@ async function runAccount(account, index) {
 
   await randomDelay();
 
-  /**
-   * 5. 领取奖励
-   */
   if (CONFIG.DO_CLAIM_REWARD) {
     const claimResults = await claimRewards(baseHeaders);
     summary.rewards = claimResults;
@@ -371,12 +402,6 @@ async function runAccount(account, index) {
 
   await randomDelay();
 
-  /**
-   * 6. 查询最终金额
-   *
-   * 接口返回单位通常是“分”
-   * 例如：8505 = 85.05元
-   */
   const finalHome = await getHomePage(baseHeaders);
 
   if (finalHome?.code === "0" && finalHome?.result) {
@@ -423,7 +448,7 @@ async function executeBrowseTasks(token, cookie, homeData) {
   }
 
   if (!cookie) {
-    console.log("⚠️ 未填写 Cookie，跳过浏览任务");
+    console.log("⚠️ 未获取 Cookie，跳过浏览任务");
     results.push("未获取 Cookie，跳过浏览任务");
     return results;
   }
@@ -584,6 +609,11 @@ async function postJson(url, headers, bodyObj) {
 
 function request(options) {
   return new Promise((resolve, reject) => {
+    if (typeof $task === "undefined" || !$task.fetch) {
+      reject(new Error("当前环境不支持 $task.fetch，请在 Quantumult X 中运行"));
+      return;
+    }
+
     $task.fetch(options).then(
       response => {
         const statusCode = response.statusCode || response.status || 0;
@@ -752,6 +782,14 @@ function updateStoredAccountMeta(id, meta) {
     store.accounts[id].phone = meta.phone;
   }
 
+  if (meta.lastRunAt) {
+    store.accounts[id].lastRunAt = meta.lastRunAt;
+  }
+
+  if (meta.lastResult) {
+    store.accounts[id].lastResult = meta.lastResult;
+  }
+
   store.accounts[id].updatedAt = Date.now();
   store.updatedAt = Date.now();
 
@@ -759,7 +797,9 @@ function updateStoredAccountMeta(id, meta) {
 }
 
 function findAccountId(store, token, cookie) {
-  const ids = store.order || [];
+  const ids = Array.isArray(store.order)
+    ? store.order
+    : Object.keys(store.accounts || {});
 
   for (const id of ids) {
     const acc = store.accounts[id];
@@ -768,7 +808,7 @@ function findAccountId(store, token, cookie) {
       continue;
     }
 
-    if (acc.token === token) {
+    if (token && acc.token === token) {
       return id;
     }
 
@@ -780,8 +820,24 @@ function findAccountId(store, token, cookie) {
   return "";
 }
 
+function findLatestAccountId(store) {
+  const ids = Array.isArray(store.order)
+    ? store.order.filter(id => store.accounts && store.accounts[id])
+    : Object.keys(store.accounts || {});
+
+  if (!ids.length) return "";
+
+  ids.sort((a, b) => {
+    const aa = store.accounts[a] || {};
+    const bb = store.accounts[b] || {};
+    return Number(bb.updatedAt || bb.createdAt || 0) - Number(aa.updatedAt || aa.createdAt || 0);
+  });
+
+  return ids[0];
+}
+
 function makeAccountId(token, cookie) {
-  return simpleHash(`${token}|${cookie || ""}`).slice(0, 12);
+  return simpleHash(`${token || ""}|${cookie || ""}`).slice(0, 12);
 }
 
 function simpleHash(str) {
@@ -870,6 +926,12 @@ function maskHeaders(headers) {
   }
 
   return obj;
+}
+
+function shortUrl(url) {
+  const s = String(url || "");
+  if (!s) return "";
+  return s.length > 160 ? s.slice(0, 160) + "..." : s;
 }
 
 /**
