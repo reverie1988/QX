@@ -4,6 +4,11 @@
 名称: member 本地存储器
 用途: 从请求头提取 member，仅保存到 Quantumult X 本地 $prefs，不负责提现/领取。
 
+特点：
+1. 不保存旧数据
+2. 每次获取 member 都直接更新本地数据
+3. 同账号 member 会被最新数据覆盖
+
 QX rewrite 示例：
 hostname = m.aihoge.com
 ^https:\/\/m\.aihoge\.com\/api\/publichy\/client\/activity\/info\?source=wechat url script-request-header DCTX_Member_Store_QX.js
@@ -12,7 +17,6 @@ hostname = m.aihoge.com
 const SCRIPT_NAME = '大潮 member 本地存储器';
 const STORE_KEY = 'dctx_member_store_v1';
 const LAST_KEY = 'dctx_member_last_v1';
-const MAX_HISTORY_PER_ACCOUNT = 0;
 
 // 是否在日志/通知中显示完整 member。member 属于敏感信息，默认关闭。
 const SHOW_FULL_MEMBER_IN_LOG = false;
@@ -55,14 +59,24 @@ function shortText(text, maxLen) {
 
 function maskPhone(phone) {
   const s = String(phone || '');
-  if (/^\d{11}$/.test(s)) return s.slice(0, 3) + '****' + s.slice(7);
-  if (s.length > 6) return s.slice(0, 3) + '****' + s.slice(-3);
+
+  if (/^\d{11}$/.test(s)) {
+    return s.slice(0, 3) + '****' + s.slice(7);
+  }
+
+  if (s.length > 6) {
+    return s.slice(0, 3) + '****' + s.slice(-3);
+  }
+
   return s || '未知';
 }
 
 function maskMemberText(text) {
   if (!text) return '';
-  if (SHOW_FULL_MEMBER_IN_LOG) return String(text);
+
+  if (SHOW_FULL_MEMBER_IN_LOG) {
+    return String(text);
+  }
 
   return String(text)
     .replace(/("token"\s*:\s*")[^"]+/gi, '$1***')
@@ -79,12 +93,18 @@ function maskMemberText(text) {
 
 function getHeaderIgnoreCase(headers, name) {
   if (!headers) return '';
+
   const target = String(name).toLowerCase();
+
   for (const k in headers) {
-    if (Object.prototype.hasOwnProperty.call(headers, k) && String(k).toLowerCase() === target) {
+    if (
+      Object.prototype.hasOwnProperty.call(headers, k) &&
+      String(k).toLowerCase() === target
+    ) {
       return headers[k];
     }
   }
+
   return '';
 }
 
@@ -105,12 +125,41 @@ function getAccountKey(parsed) {
 }
 
 function getNickname(parsed) {
-  const raw = parsed.nickname || parsed.nickName || parsed.nick_name || parsed.name || '';
+  const raw =
+    parsed.nickname ||
+    parsed.nickName ||
+    parsed.nick_name ||
+    parsed.name ||
+    '';
+
   try {
     return decodeURIComponent(raw);
   } catch (e) {
     return raw;
   }
+}
+
+function formatExpire(expire) {
+  if (expire === undefined || expire === null || expire === '') {
+    return '未知';
+  }
+
+  const n = Number(expire);
+
+  if (!n || isNaN(n)) {
+    return String(expire);
+  }
+
+  const ms = n < 10000000000 ? n * 1000 : n;
+  const d = new Date(ms);
+
+  if (isNaN(d.getTime())) {
+    return String(expire);
+  }
+
+  const p = x => String(x).padStart(2, '0');
+
+  return `${d.getFullYear()}/${p(d.getMonth() + 1)}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
 }
 
 function emptyStore() {
@@ -124,8 +173,15 @@ function emptyStore() {
 function loadStore() {
   const raw = $prefs.valueForKey(STORE_KEY);
   const obj = safeJsonParse(raw, emptyStore());
-  if (!obj || typeof obj !== 'object') return emptyStore();
-  if (!obj.accounts || typeof obj.accounts !== 'object') obj.accounts = {};
+
+  if (!obj || typeof obj !== 'object') {
+    return emptyStore();
+  }
+
+  if (!obj.accounts || typeof obj.accounts !== 'object') {
+    obj.accounts = {};
+  }
+
   return obj;
 }
 
@@ -139,7 +195,11 @@ function notify(title, subtitle, body, copyText) {
   const option = {
     'media-url': 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f465.png'
   };
-  if (copyText) option['update-pasteboard'] = copyText;
+
+  if (copyText) {
+    option['update-pasteboard'] = copyText;
+  }
+
   $notify(title, subtitle, body, option);
 }
 
@@ -164,44 +224,44 @@ function extractMember() {
   }
 
   const parsedData = safeJsonParse(memberValue);
+
   if (!parsedData) {
     logBlock('❌ member 不是有效 JSON', [
       `member 预览：${shortText(maskMemberText(memberValue), 300)}`
     ]);
-    notify('🌟 member', '❌ JSON 解析失败', shortText(maskMemberText(memberValue), 300), COPY_MEMBER_IN_NOTIFY ? memberValue : '');
+
+    notify(
+      '🌟 member',
+      '❌ JSON 解析失败',
+      shortText(maskMemberText(memberValue), 300),
+      COPY_MEMBER_IN_NOTIFY ? memberValue : ''
+    );
+
     return;
   }
 
   const accountKey = getAccountKey(parsedData);
+
   if (!accountKey) {
     logBlock('❌ 无法识别账号', [
       'member 中未找到 mobile/phone/account_id/id 字段',
       `member 预览：${shortText(maskMemberText(memberValue), 300)}`
     ]);
-    notify('🌟 member', '❌ 未识别账号', 'member 中缺少 mobile/phone/id，未保存', '');
+
+    notify(
+      '🌟 member',
+      '❌ 未识别账号',
+      'member 中缺少 mobile/phone/id，未保存',
+      ''
+    );
+
     return;
   }
 
   const store = loadStore();
-  const old = store.accounts[accountKey];
-  if (old && old.raw === memberValue) {
-    logBlock('⏸ 数据未变化', [
-      `账号：${maskPhone(accountKey)}`,
-      `ID：${parsedData.id || old.id || '未知'}`,
-      '状态：与本地保存数据完全相同，跳过保存'
-    ]);
-    return;
-  }
-
   const now = new Date().toLocaleString();
-  const history = old && Array.isArray(old.history) ? old.history : [];
-  if (old && old.raw) {
-    history.unshift({
-      time: old.updatedAt || '',
-      raw: old.raw
-    });
-  }
 
+  // 每次获取都直接覆盖，不保存旧数据、不保存 history、不跳过相同数据
   store.accounts[accountKey] = {
     key: accountKey,
     phone: parsedData.phone || parsedData.mobile || '',
@@ -211,32 +271,43 @@ function extractMember() {
     source: parsedData.source || '',
     expire: parsedData.expire || '',
     updatedAt: now,
-    raw: memberValue,
-    history: history.slice(0, MAX_HISTORY_PER_ACCOUNT)
+    raw: memberValue
   };
 
   saveStore(store);
-  $prefs.setValueForKey(JSON.stringify({
-    key: accountKey,
-    updatedAt: now,
-    raw: memberValue
-  }), LAST_KEY);
 
-  logBlock('✅ member 已保存到本地', [
+  // 记录最后一次抓取，也直接覆盖
+  $prefs.setValueForKey(
+    JSON.stringify({
+      key: accountKey,
+      id: parsedData.id || parsedData.account_id || parsedData.accountId || '',
+      phone: parsedData.phone || parsedData.mobile || '',
+      mobile: parsedData.mobile || parsedData.phone || '',
+      nickname: getNickname(parsedData),
+      source: parsedData.source || '',
+      expire: parsedData.expire || '',
+      updatedAt: now,
+      raw: memberValue
+    }),
+    LAST_KEY
+  );
+
+  logBlock('✅ member 已更新到本地', [
     `账号：${maskPhone(accountKey)}`,
-    `ID：${parsedData.id || '未知'}`,
+    `ID：${parsedData.id || parsedData.account_id || parsedData.accountId || '未知'}`,
     `昵称：${getNickname(parsedData) || '未知'}`,
     `来源：${parsedData.source || '未知'}`,
-    `过期：${parsedData.expire || '未知'}`,
+    `过期：${formatExpire(parsedData.expire)}${parsedData.expire ? ` (${parsedData.expire})` : ''}`,
     `时间：${now}`,
     `本地 Key：${STORE_KEY}`,
+    '保存方式：直接覆盖，不保存旧数据',
     `member 预览：${shortText(maskMemberText(memberValue), 300)}`
   ]);
 
   notify(
-    '🌟 member 已保存',
+    '🌟 member 已更新',
     `账号: ${maskPhone(accountKey)}`,
-    `ID: ${parsedData.id || '未知'}\n时间: ${now}`,
+    `ID: ${parsedData.id || parsedData.account_id || parsedData.accountId || '未知'}\n时间: ${now}`,
     COPY_MEMBER_IN_NOTIFY ? memberValue : ''
   );
 }
@@ -244,7 +315,9 @@ function extractMember() {
 try {
   extractMember();
 } catch (e) {
-  logBlock('❌ 脚本异常', [`错误：${e && e.message ? e.message : String(e)}`]);
+  logBlock('❌ 脚本异常', [
+    `错误：${e && e.message ? e.message : String(e)}`
+  ]);
 }
 
 $done({});
