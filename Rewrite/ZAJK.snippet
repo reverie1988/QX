@@ -1,0 +1,7 @@
+#!name=众安健康
+#!desc=众安健康 抓包保存 Access-Token / Cookie 账号参数
+
+// 众安健康 抓包保存账号参数
+^https:\/\/ihealth\.zhongan\.com\/api\/lemon\/v1\/(?:wechatApplet\/obtainBaseInfo|common\/activity\/homePage|common\/activity\/signIn|applet\/mgm\/activity\/add\/award|common\/activity\/lottery|common\/activity\/withdraw) url script-request-header https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/ZAJK.js
+
+hostname = ihealth.zhongan.com
