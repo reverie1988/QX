@@ -27,6 +27,10 @@
       "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/GoogleCN.snippet, tag=Google 自动中文跳转, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Google_03.png, update-interval=172800, opt-parser=false, enabled=true"
     },
     {
+      "config": "26 3 * * * https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/JueJin.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/juejin.png, tag=稀土掘金签到, enabled=true",
+      "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/JueJin.snippet, tag=JueJin 账号提取, img-url=https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/05icon/chaxun(2).png, update-interval=172800, opt-parser=false, enabled=true"
+    },
+    {
       "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/DCTX.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/dachao.png, tag=大潮主脚本（下载本地）, enabled=false"
     },
     {
