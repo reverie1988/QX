@@ -4,19 +4,19 @@
   "task": [
     {
       "config": "13 3,5 * * * https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/PingMe.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/PingMe.png, tag=PingMe签到, enabled=true",
-      "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/PingMe.snippet"
+      "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/PingMe.snippet, tag=PingMe 账号提取, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/PingMe.png, update-interval=172800, opt-parser=false, enabled=true"
     },
     {
       "config": "17 3,5 * * * https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/WeTalk.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/wetalk.png, tag=WeTalk签到, enabled=true",
-      "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/WeTalk.snippet"
+      "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/WeTalk.snippet, tag=WeTalk 账号提取, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/wetalk.png, update-interval=172800, opt-parser=false, enabled=true"
     },
     {
       "config": "4 3 1 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/GLaDOS_Task.js, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/GlaDos.png, tag=GLaDOS签到, enabled=false",
-      "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/GLaDOS.snippet"
+      "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/GLaDOS.snippet, tag=GLaDOS 账号提取, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/GlaDos.png, update-interval=172800, opt-parser=false, enabled=true"
     },
     {
       "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/大潮member提取器.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/dachao.png, tag=大潮member提取器, enabled=false",
-      "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/大潮member提取器.snippet"
+      "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/大潮member提取器.snippet, tag=大潮 账号提取, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/dachao, update-interval=172800, opt-parser=false, enabled=true"
     },
     {
       "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/Google_Chinese_Redirect.js, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Google_03.png, tag=Google 自动中文跳转, enabled=false",
