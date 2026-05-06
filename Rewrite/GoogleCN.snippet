@@ -1,0 +1,8 @@
+# Google CN 跳转
+# Author: 自用
+# Description: 将 g.cn / google.cn / google.cn 地图跳转到 google.com / maps.google.com
+
+hostname = g.cn, google.cn, www.google.cn, ditu.google.cn, maps.google.cn
+
+^https?:\/\/(?:www\.)?(?:g|google)\.cn(\/.*)?$ url 302 https://www.google.com$1
+^https?:\/\/(?:ditu|maps)\.google\.cn(\/.*)?$ url 302 https://maps.google.com$1
