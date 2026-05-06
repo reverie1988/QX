@@ -4,7 +4,9 @@
   "task": [
     {
       "config": "3 5,21 * * * https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/PingMe.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/PingMe.png, tag=PingMe签到, enabled=true",
-      "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/PingMe.snippet, tag=PingMe 账号提取, img-url=https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/05icon/chaxun(2).png, update-interval=172800, opt-parser=false, enabled=true",
+      "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/PingMe.snippet, tag=PingMe 账号提取, img-url=https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/05icon/chaxun(2).png, update-interval=172800, opt-parser=false, enabled=true"
+    },
+    {
       "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/PingMe账号查删.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/PingMe.png, tag=PingMe查看所有账号, enabled=false"
     },
     {
