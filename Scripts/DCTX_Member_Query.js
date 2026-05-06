@@ -8,6 +8,7 @@
 1. 不显示历史数量
 2. 自动清理旧版本遗留的 history 字段
 3. expire 时间戳显示为可读时间
+4. 显示哪个账号是最近一次更新记录
 
 QX task 示例：
 0 9 * * * DCTX_Member_Query_QX.js, tag=大潮member查询, enabled=false
@@ -15,11 +16,12 @@ QX task 示例：
 
 const SCRIPT_NAME = '大潮 member 查询';
 const STORE_KEY = 'dctx_member_store_v1';
+const LAST_KEY = 'dctx_member_last_v1';
 
 // 留空查询全部；填写手机号 / ID / key 只查询指定账号。
 const QUERY_TARGETS = [
   // '13800138000',
-  // '271f08ce5f779e87248592165e88523c',
+  // '1293d527550bb307ea8c6edc5f90ef76',
 ];
 
 // 是否显示完整 member。敏感信息，默认关闭。
@@ -102,7 +104,6 @@ function formatExpire(expire) {
     return String(expire);
   }
 
-  // 兼容秒级 / 毫秒级时间戳
   const ms = n < 10000000000 ? n * 1000 : n;
   const d = new Date(ms);
 
@@ -144,6 +145,20 @@ function saveStore(store) {
   return $prefs.setValueForKey(JSON.stringify(store), STORE_KEY);
 }
 
+function loadLastRecord() {
+  const raw = $prefs.valueForKey(LAST_KEY);
+  return safeJsonParse(raw, null);
+}
+
+function saveLastRecord(record) {
+  if (!record) {
+    $prefs.removeValueForKey(LAST_KEY);
+    return;
+  }
+
+  $prefs.setValueForKey(JSON.stringify(record), LAST_KEY);
+}
+
 function cleanupLegacyHistory(store) {
   if (!store || !store.accounts) return 0;
 
@@ -165,21 +180,39 @@ function cleanupLegacyHistory(store) {
   return count;
 }
 
-function matchRecord(rec, targets) {
+function buildList(store) {
+  return Object.keys(store.accounts || {})
+    .map(key => ({
+      key,
+      rec: store.accounts[key]
+    }))
+    .filter(x => x.rec)
+    .sort((a, b) => {
+      const ta = new Date(a.rec.updatedAt || 0).getTime() || 0;
+      const tb = new Date(b.rec.updatedAt || 0).getTime() || 0;
+      return tb - ta;
+    });
+}
+
+function matchRecord(item, targets) {
   if (!targets || targets.length === 0) {
     return true;
   }
 
+  const rec = item.rec;
   const parsed = safeJsonParse(rec.raw, {});
 
   const values = [
+    item.key,
     rec.key,
     rec.phone,
     rec.mobile,
     rec.id,
     parsed.id,
     parsed.phone,
-    parsed.mobile
+    parsed.mobile,
+    parsed.account_id,
+    parsed.accountId
   ].map(v => String(v || '').trim());
 
   return targets.some(t => values.includes(String(t || '').trim()));
@@ -208,6 +241,48 @@ function getRecordId(rec, parsed) {
   return rec.id || parsed.id || parsed.account_id || parsed.accountId || '未知';
 }
 
+function isLastRecord(item, rec, parsed, lastRecord) {
+  if (!lastRecord) return false;
+
+  const id = getRecordId(rec, parsed);
+
+  return (
+    String(lastRecord.key || '') === String(item.key || '') ||
+    String(lastRecord.key || '') === String(rec.key || '') ||
+    String(lastRecord.id || '') === String(id || '') ||
+    String(lastRecord.raw || '') === String(rec.raw || '')
+  );
+}
+
+function repairLastRecordIfNeeded(store, list, lastRecord) {
+  if (!list.length) {
+    saveLastRecord(null);
+    return null;
+  }
+
+  if (!lastRecord) {
+    const first = list[0].rec;
+    const firstKey = list[0].key;
+
+    const repaired = {
+      key: first.key || firstKey,
+      id: first.id || '',
+      phone: first.phone || '',
+      mobile: first.mobile || '',
+      nickname: first.nickname || '',
+      source: first.source || '',
+      expire: first.expire || '',
+      updatedAt: first.updatedAt || '',
+      raw: first.raw || ''
+    };
+
+    saveLastRecord(repaired);
+    return repaired;
+  }
+
+  return lastRecord;
+}
+
 function main() {
   if (typeof $prefs === 'undefined') {
     const msg = '当前环境不支持 $prefs，请在 Quantumult X 中运行';
@@ -224,20 +299,20 @@ function main() {
   const store = loadStore();
   const cleanedHistoryCount = cleanupLegacyHistory(store);
 
-  const list = Object.keys(store.accounts || {})
-    .map(k => store.accounts[k])
-    .filter(Boolean);
+  const list = buildList(store);
+  let lastRecord = loadLastRecord();
+  lastRecord = repairLastRecordIfNeeded(store, list, lastRecord);
 
   const targets = QUERY_TARGETS
     .map(v => String(v).trim())
     .filter(Boolean);
 
-  const selected = list.filter(rec => matchRecord(rec, targets));
+  const selected = list.filter(item => matchRecord(item, targets));
 
   if (selected.length === 0) {
     const msg = list.length === 0
       ? `未找到本地 member\n本地 Key：${STORE_KEY}`
-      : `未匹配到指定账号\n当前已保存：${list.map(x => maskPhone(x.key)).join('、')}`;
+      : `未匹配到指定账号\n当前已保存：${list.map(x => maskPhone(x.rec.key || x.key)).join('、')}`;
 
     console.log(`\n【${SCRIPT_NAME}】${msg}`);
     $notify('🌟 大潮 member 查询', '未找到记录', msg);
@@ -245,20 +320,23 @@ function main() {
     return;
   }
 
-  const blocks = selected.map((rec, idx) => {
+  const blocks = selected.map((item, idx) => {
+    const rec = item.rec;
     const parsed = safeJsonParse(rec.raw, {});
     const expireRaw = getRecordExpire(rec, parsed);
     const expireText = expireRaw
       ? `${formatExpire(expireRaw)} (${expireRaw})`
       : '未知';
+    const lastFlag = isLastRecord(item, rec, parsed, lastRecord) ? '是' : '否';
 
     return [
-      `【${idx + 1}】账号：${maskPhone(rec.key)}`,
+      `【${idx + 1}】账号：${maskPhone(rec.key || item.key)}`,
       `ID：${getRecordId(rec, parsed)}`,
       `昵称：${getRecordNickname(rec, parsed) || '未知'}`,
       `来源：${getRecordSource(rec, parsed)}`,
       `过期：${expireText}`,
       `更新时间：${rec.updatedAt || '未知'}`,
+      `最近更新：${lastFlag}`,
       `member：${shortText(maskMemberText(rec.raw), MAX_MEMBER_PREVIEW_LEN)}`
     ].join('\n');
   });
