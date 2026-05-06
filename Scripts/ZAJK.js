@@ -4,24 +4,25 @@
  *
  * 功能：
  * 1. 自动提取 Access-Token / Cookie
- * 2. 本地持久化保存账号
- * 3. 再次抓到 Cookie 自动刷新本地 Cookie
- * 4. 支持 lemon / caerus / whale 接口抓取
- * 5. 多账号签到
- * 6. 浏览任务
- * 7. 领取奖励
- * 8. 查询累计金额 / 可提现金额
+ * 2. 支持 lemon / whale / caerus 接口抓取
+ * 3. 支持仅 Token、仅 Cookie、Token + Cookie 三种抓取
+ * 4. 本地持久化保存账号
+ * 5. 再次抓到 Token / Cookie 自动刷新本地数据
+ * 6. 多账号签到
+ * 7. 浏览任务
+ * 8. 领取奖励
+ * 9. 查询累计金额 / 可提现金额
  *
  * 存储 Key：
  * zajk_accounts_v1
  *
- * rewrite 建议：
+ * 推荐 rewrite：
  *
  * hostname = ihealth.zhongan.com
  *
- * ^https:\/\/ihealth\.zhongan\.com\/api\/(?:lemon|caerus|whale)\/ url script-request-header ZAJK.js
+ * ^https:\/\/ihealth\.zhongan\.com\/api\/ url script-request-header ZAJK.js
  *
- * task 示例：
+ * 定时任务示例：
  *
  * 30 8,20 * * * ZAJK.js, tag=众安健康签到, enabled=true
  ******************************/
@@ -35,18 +36,25 @@ const STORE_KEY = "zajk_accounts_v1";
  * ==============================
  */
 const CONFIG = {
+  // 是否推送任务通知
   NOTIFY: true,
 
+  // 是否推送账号提取通知
   CAPTURE_NOTIFY: true,
 
+  // 账号提取通知间隔，避免频繁通知
   CAPTURE_NOTIFY_INTERVAL: 10 * 60 * 1000,
 
+  // 是否开启调试日志
   DEBUG: false,
 
+  // 是否执行浏览任务
   DO_BROWSE_TASK: true,
 
+  // 是否领取奖励
   DO_CLAIM_REWARD: true,
 
+  // 随机等待，单位毫秒
   DELAY_MIN: 2500,
   DELAY_MAX: 4500,
 
@@ -56,14 +64,17 @@ const CONFIG = {
   HOST: "ihealth.zhongan.com",
 
   USER_AGENT:
-    "Mozilla/5.0 (iPhone; CPU iPhone OS 14_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.23(0x1800172f) NetType/WIFI Language/zh_CN",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.72(0x18004824) NetType/WIFI Language/zh_CN miniProgram/wxbac45cc1588a5a75",
 
   REFERER:
     "https://servicewechat.com/wxbac45cc1588a5a75/210/page-frame.html",
 
-  // 只有 Cookie、没有 Access-Token 时，是否更新最近一个账号的 Cookie
+  // 只有 Cookie、没有 Access-Token 时，是否更新最近一个已有账号
   // 多账号频繁切换时，如果担心错绑，可以改成 false
-  COOKIE_ONLY_UPDATE_LATEST: true
+  COOKIE_ONLY_UPDATE_LATEST: true,
+
+  // 只有 Token、没有 Cookie 时，是否合并最近一个 Cookie-only 账号
+  TOKEN_ONLY_MERGE_COOKIE_ONLY: true
 };
 
 /**
@@ -93,7 +104,7 @@ const API = {
  * 运行入口
  * ==============================
  */
-if (typeof $request !== "undefined" && $request.headers) {
+if (typeof $request !== "undefined" && $request && $request.headers) {
   handleCapture();
 } else {
   runTask();
@@ -108,10 +119,10 @@ function handleCapture() {
   try {
     captureZAJKAccount();
   } catch (e) {
-    console.log(`【${SCRIPT_NAME}】账号提取异常：${e.message || e}`);
+    console.log(`【${SCRIPT_NAME}】账号提取异常：${e && e.message ? e.message : e}`);
 
     if (CONFIG.CAPTURE_NOTIFY) {
-      $notify(SCRIPT_NAME, "❌ 账号提取异常", String(e.message || e));
+      $notify(SCRIPT_NAME, "❌ 账号提取异常", String(e && e.message ? e.message : e));
     }
   } finally {
     $done({ headers: $request.headers });
@@ -125,6 +136,8 @@ function captureZAJKAccount() {
   const token =
     getHeader(headers, "Access-Token") ||
     getHeader(headers, "access-token") ||
+    getHeader(headers, "Authorization") ||
+    getHeader(headers, "authorization") ||
     "";
 
   const cookie =
@@ -135,29 +148,19 @@ function captureZAJKAccount() {
   if (!token && !cookie) {
     console.log(`【${SCRIPT_NAME}】未发现 Access-Token / Cookie，跳过保存`);
     console.log(`【${SCRIPT_NAME}】请求地址：${url}`);
+    console.log(`【${SCRIPT_NAME}】Header 字段：${Object.keys(headers).join(", ")}`);
     return;
   }
 
   const store = loadAccountStore();
   const now = Date.now();
 
-  let id =
-    findAccountId(store, token, cookie) ||
-    "";
-
-  if (!id && !token && cookie && CONFIG.COOKIE_ONLY_UPDATE_LATEST) {
-    id = findLatestAccountId(store);
-  }
-
-  if (!id) {
-    id = makeAccountId(token, cookie);
-  }
-
+  const id = resolveAccountId(store, token, cookie);
   const old = store.accounts[id] || {};
 
   const isNew = !store.accounts[id];
-  const tokenChanged = token && old.token !== token;
-  const cookieChanged = cookie && old.cookie !== cookie;
+  const tokenChanged = Boolean(token) && old.token !== token;
+  const cookieChanged = Boolean(cookie) && old.cookie !== cookie;
 
   const finalToken = token || old.token || "";
   const finalCookie = cookie || old.cookie || "";
@@ -226,6 +229,26 @@ function captureZAJKAccount() {
   }
 }
 
+function resolveAccountId(store, token, cookie) {
+  let id = findAccountId(store, token, cookie);
+
+  if (id) return id;
+
+  // 只有 Cookie 时，优先更新最近一个已有账号
+  if (!token && cookie && CONFIG.COOKIE_ONLY_UPDATE_LATEST) {
+    id = findLatestAccountId(store);
+    if (id) return id;
+  }
+
+  // 只有 Token 时，如果本地存在最近的 Cookie-only 账号，合并进去
+  if (token && !cookie && CONFIG.TOKEN_ONLY_MERGE_COOKIE_ONLY) {
+    id = findLatestCookieOnlyAccountId(store);
+    if (id) return id;
+  }
+
+  return makeAccountId(token, cookie);
+}
+
 function getCaptureType(token, cookie) {
   if (token && cookie) return "Token + Cookie";
   if (token) return "仅 Token";
@@ -249,7 +272,7 @@ async function runTask() {
         "❌ 暂无可执行账号数据\n\n" +
         "请先开启重写和 MitM，然后打开众安健康小程序页面，让 QX 自动提取 Access-Token。\n\n" +
         "推荐 rewrite：\n" +
-        "^https:\\/\\/ihealth\\.zhongan\\.com\\/api\\/(?:lemon|caerus|whale)\\/ url script-request-header ZAJK.js";
+        "^https:\\/\\/ihealth\\.zhongan\\.com\\/api\\/ url script-request-header ZAJK.js";
 
       console.log(msg);
       notify(SCRIPT_NAME, "配置缺失", msg);
@@ -264,6 +287,7 @@ async function runTask() {
       console.log("\n━━━━━━━━━━━━━━━━━━━━");
       console.log(`🔹 开始第 ${i + 1} 个账号`);
       console.log(`🆔 账号 ID：${account.id || "未知"}`);
+      console.log(`🍪 Cookie：${account.cookie ? "已保存" : "未保存"}`);
       console.log("━━━━━━━━━━━━━━━━━━━━");
 
       try {
@@ -277,7 +301,7 @@ async function runTask() {
       } catch (e) {
         const errMsg =
           `👤 账号 ${i + 1}\n` +
-          `❌ 执行失败：${e.message || e}`;
+          `❌ 执行失败：${e && e.message ? e.message : e}`;
 
         console.log(errMsg);
         notifyList.push(errMsg);
@@ -285,7 +309,7 @@ async function runTask() {
         updateStoredAccountMeta(account.id, {
           lastRunAt: Date.now(),
           lastResult: {
-            error: e.message || String(e)
+            error: e && e.message ? e.message : String(e)
           }
         });
       }
@@ -303,7 +327,7 @@ async function runTask() {
       );
     }
   } catch (e) {
-    const msg = `❌ 脚本异常：${e.message || e}`;
+    const msg = `❌ 脚本异常：${e && e.message ? e.message : e}`;
     console.log(msg);
     notify(SCRIPT_NAME, "脚本异常", msg);
   } finally {
@@ -341,7 +365,7 @@ async function runAccount(account, index) {
   console.log("🔄 正在获取账户信息...");
   const baseInfo = await postJson(API.BASE_INFO, baseHeaders, {});
 
-  if (baseInfo?.code === "0" && baseInfo?.result) {
+  if (baseInfo && baseInfo.code === "0" && baseInfo.result) {
     userInfo.nickName = baseInfo.result.nickName || userInfo.nickName || "未知";
     userInfo.phone = baseInfo.result.phone
       ? maskPhone(baseInfo.result.phone)
@@ -357,7 +381,7 @@ async function runAccount(account, index) {
       });
     }
   } else {
-    console.log(`⚠️ 获取账户信息失败：${baseInfo?.message || "未知错误"}`);
+    console.log(`⚠️ 获取账户信息失败：${baseInfo && baseInfo.message ? baseInfo.message : "未知错误"}`);
   }
 
   await randomDelay();
@@ -365,8 +389,8 @@ async function runAccount(account, index) {
   console.log("🔄 正在获取活动首页...");
   const homeData = await getHomePage(baseHeaders);
 
-  if (homeData?.code !== "0") {
-    throw new Error(homeData?.message || "获取活动首页失败，账号可能失效");
+  if (!homeData || homeData.code !== "0") {
+    throw new Error(homeData && homeData.message ? homeData.message : "获取活动首页失败，账号可能失效");
   }
 
   console.log("✅ 活动首页获取成功");
@@ -374,11 +398,11 @@ async function runAccount(account, index) {
   console.log("🔄 正在签到...");
   const signRes = await postJson(API.SIGN_IN, baseHeaders, activityBody());
 
-  if (signRes?.code === "0") {
+  if (signRes && signRes.code === "0") {
     summary.sign = "签到成功";
     console.log("✅ 签到成功");
   } else {
-    summary.sign = signRes?.message || "签到失败";
+    summary.sign = signRes && signRes.message ? signRes.message : "签到失败";
     console.log(`⚠️ 签到结果：${summary.sign}`);
   }
 
@@ -404,7 +428,7 @@ async function runAccount(account, index) {
 
   const finalHome = await getHomePage(baseHeaders);
 
-  if (finalHome?.code === "0" && finalHome?.result) {
+  if (finalHome && finalHome.code === "0" && finalHome.result) {
     summary.sumAward = formatMoney(finalHome.result.sumAward);
     summary.sumAllowWithdraw = formatMoney(finalHome.result.sumAllowWithdraw);
   }
@@ -440,7 +464,7 @@ async function getHomePage(headers) {
 async function executeBrowseTasks(token, cookie, homeData) {
   const results = [];
 
-  const productRecommend = homeData?.result?.productRecommend;
+  const productRecommend = homeData && homeData.result ? homeData.result.productRecommend : null;
 
   if (!productRecommend || Object.keys(productRecommend).length === 0) {
     console.log("ℹ️ 没有可执行的浏览任务");
@@ -472,12 +496,12 @@ async function executeBrowseTasks(token, cookie, homeData) {
 
     const res = await postJson(API.BROWSE_REWARD, taskHeaders, body);
 
-    if (res?.code === "0") {
+    if (res && res.code === "0") {
       const msg = `浏览任务 ${i + 1}/${maxCount} 完成`;
       console.log(`✅ ${msg}`);
       results.push(msg);
     } else {
-      const msg = `浏览任务 ${i + 1} 失败：${res?.message || "未知错误"}`;
+      const msg = `浏览任务 ${i + 1} 失败：${res && res.message ? res.message : "未知错误"}`;
       console.log(`⚠️ ${msg}`);
       results.push(msg);
     }
@@ -498,14 +522,19 @@ async function claimRewards(headers) {
 
   const home = await getHomePage(headers);
 
-  if (home?.code !== "0") {
-    const msg = `获取奖励列表失败：${home?.message || "未知错误"}`;
+  if (!home || home.code !== "0") {
+    const msg = `获取奖励列表失败：${home && home.message ? home.message : "未知错误"}`;
     console.log(`⚠️ ${msg}`);
     results.push(msg);
     return results;
   }
 
-  const rewardList = home?.result?.valuableRewardList || [];
+  const rewardList =
+    home &&
+    home.result &&
+    Array.isArray(home.result.valuableRewardList)
+      ? home.result.valuableRewardList
+      : [];
 
   if (rewardList.length === 0) {
     console.log("ℹ️ 没有可领取的奖励");
@@ -525,7 +554,7 @@ async function claimRewards(headers) {
 
     const res = await postJson(API.LOTTERY, headers, body);
 
-    if (res?.code === "0") {
+    if (res && res.code === "0") {
       const amountText =
         reward.amount === undefined || reward.amount === null || reward.amount === ""
           ? ""
@@ -535,7 +564,7 @@ async function claimRewards(headers) {
       console.log(`🎉 领取成功：${msg}`);
       results.push(`领取成功：${msg}`);
     } else {
-      const msg = `领取失败：${res?.message || "未知错误"}`;
+      const msg = `领取失败：${res && res.message ? res.message : "未知错误"}`;
       console.log(`⚠️ ${msg}`);
       results.push(msg);
     }
@@ -589,7 +618,7 @@ async function postJson(url, headers, bodyObj) {
     url,
     method: "POST",
     headers,
-    body: JSON.stringify(bodyObj),
+    body: JSON.stringify(bodyObj || {}),
     timeout: 8000
   };
 
@@ -836,6 +865,27 @@ function findLatestAccountId(store) {
   return ids[0];
 }
 
+function findLatestCookieOnlyAccountId(store) {
+  const ids = Array.isArray(store.order)
+    ? store.order.filter(id => store.accounts && store.accounts[id])
+    : Object.keys(store.accounts || {});
+
+  const cookieOnlyIds = ids.filter(id => {
+    const acc = store.accounts[id] || {};
+    return !acc.token && acc.cookie;
+  });
+
+  if (!cookieOnlyIds.length) return "";
+
+  cookieOnlyIds.sort((a, b) => {
+    const aa = store.accounts[a] || {};
+    const bb = store.accounts[b] || {};
+    return Number(bb.updatedAt || bb.createdAt || 0) - Number(aa.updatedAt || aa.createdAt || 0);
+  });
+
+  return cookieOnlyIds[0];
+}
+
 function makeAccountId(token, cookie) {
   return simpleHash(`${token || ""}|${cookie || ""}`).slice(0, 12);
 }
@@ -931,7 +981,7 @@ function maskHeaders(headers) {
 function shortUrl(url) {
   const s = String(url || "");
   if (!s) return "";
-  return s.length > 160 ? s.slice(0, 160) + "..." : s;
+  return s.length > 180 ? s.slice(0, 180) + "..." : s;
 }
 
 /**
