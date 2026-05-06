@@ -15,7 +15,7 @@
       "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/GLaDOS.snippet, tag=GLaDOS 账号提取, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/GlaDos.png, update-interval=172800, opt-parser=false, enabled=true"
     },
     {
-      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/DCTX_Member_Store_QX.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/dachao.png, tag=大潮member提取器, enabled=false",
+      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/DCTX_Member_Store.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/dachao.png, tag=大潮member提取器, enabled=false",
       "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/大潮member提取器.snippet, tag=大潮 账号提取, img-url=https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/05icon/chaxun(2).png, update-interval=172800, opt-parser=false, enabled=true"
     },
     {
@@ -30,10 +30,10 @@
       "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/DCTX.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/dachao.png, tag=大潮主脚本（下载本地）, enabled=false"
     },
     {
-      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/DCTX_Member_Query_QX.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/dachao.png, tag=大潮账号查询, enabled=false"
+      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/DCTX_Member_Query.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/dachao.png, tag=大潮账号查询, enabled=false"
     },
     {
-      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/DCTX_Member_Delete_QX.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/dachao.png, tag=大潮账号删除, enabled=false"
+      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/DCTX_Member_Delete.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/dachao.png, tag=大潮账号删除, enabled=false"
     },
     {
       "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/ZAJK_Query.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/zhongan.png, tag=众安账号查询, enabled=true"
