@@ -1,8 +1,13 @@
-# Google CN 跳转
-# Author: 自用
-# Description: 将 g.cn / google.cn / google.cn 地图跳转到 google.com / maps.google.com
+# Google 自动中文跳转
+# 功能：
+# 1. g.cn / google.cn 跳转到 google.com
+# 2. google.com 自动加 hl=zh-CN
+# 3. maps.google.cn 跳转到 maps.google.com 并加中文参数
 
-hostname = g.cn, google.cn, www.google.cn, ditu.google.cn, maps.google.cn
+hostname = g.cn, google.cn, www.google.cn, google.com, www.google.com, maps.google.com, maps.google.cn, ditu.google.cn
 
-^https?:\/\/(?:www\.)?(?:g|google)\.cn(\/.*)?$ url 302 https://www.google.com$1
-^https?:\/\/(?:ditu|maps)\.google\.cn(\/.*)?$ url 302 https://maps.google.com$1
+^https?:\/\/(?:www\.)?(?:g|google)\.cn(?:\/.*)?$ url script-echo-response https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/Google_Chinese_Redirect.js
+^https?:\/\/(?:ditu|maps)\.google\.cn(?:\/.*)?$ url script-echo-response https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/Google_Chinese_Redirect.js
+
+^https?:\/\/(?:www\.)?google\.com(?!.*[?&]hl=zh-CN)(?:\/.*)?$ url script-echo-response https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/Google_Chinese_Redirect.js
+^https?:\/\/maps\.google\.com(?!.*[?&]hl=zh-CN)(?:\/.*)?$ url script-echo-response https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/Google_Chinese_Redirect.js
