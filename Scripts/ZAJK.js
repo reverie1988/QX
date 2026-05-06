@@ -50,9 +50,6 @@ const CONFIG = {
   // 是否领取奖励
   DO_CLAIM_REWARD: true,
 
-  // 提现功能默认关闭
-  DO_WITHDRAW: false,
-
   // 随机等待，单位毫秒
   DELAY_MIN: 2500,
   DELAY_MAX: 4500,
@@ -88,10 +85,7 @@ const API = {
     "https://ihealth.zhongan.com/api/lemon/v1/applet/mgm/activity/add/award",
 
   LOTTERY:
-    "https://ihealth.zhongan.com/api/lemon/v1/common/activity/lottery",
-
-  WITHDRAW:
-    "https://ihealth.zhongan.com/api/lemon/v1/common/activity/withdraw"
+    "https://ihealth.zhongan.com/api/lemon/v1/common/activity/lottery"
 };
 
 /**
@@ -329,7 +323,7 @@ async function runAccount(account, index) {
    * 2. 获取首页数据
    */
   console.log("🔄 正在获取活动首页...");
-  let homeData = await getHomePage(baseHeaders);
+  const homeData = await getHomePage(baseHeaders);
 
   if (homeData?.code !== "0") {
     throw new Error(homeData?.message || "获取活动首页失败，账号可能失效");
@@ -388,13 +382,6 @@ async function runAccount(account, index) {
   if (finalHome?.code === "0" && finalHome?.result) {
     summary.sumAward = formatMoney(finalHome.result.sumAward);
     summary.sumAllowWithdraw = formatMoney(finalHome.result.sumAllowWithdraw);
-  }
-
-  /**
-   * 7. 提现状态
-   */
-  if (CONFIG.DO_WITHDRAW) {
-    console.log("⚠️ 自动提现开关已开启，但该功能依赖额外风控参数，当前版本不执行自动提现");
   }
 
   console.log(`💰 累计金额：${summary.sumAward}`);
@@ -514,7 +501,12 @@ async function claimRewards(headers) {
     const res = await postJson(API.LOTTERY, headers, body);
 
     if (res?.code === "0") {
-      const msg = `${reward.desc || "奖励"}：${formatMoney(reward.amount)}`;
+      const amountText =
+        reward.amount === undefined || reward.amount === null || reward.amount === ""
+          ? ""
+          : formatMoney(reward.amount);
+
+      const msg = `${reward.desc || "奖励"}${amountText ? "：" + amountText : ""}`;
       console.log(`🎉 领取成功：${msg}`);
       results.push(`领取成功：${msg}`);
     } else {
