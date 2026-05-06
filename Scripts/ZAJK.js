@@ -4,31 +4,34 @@
  *
  * 功能：
  * 1. 自动提取 Access-Token / Cookie
- * 2. 支持 lemon / whale / caerus 接口抓取
- * 3. 支持仅 Token、仅 Cookie、Token + Cookie 三种抓取
- * 4. 本地持久化保存账号
- * 5. 再次抓到 Token / Cookie 自动刷新本地数据
- * 6. 多账号签到
- * 7. 浏览任务
- * 8. 领取奖励1
- * 9. 查询累计金额 / 可提现金额
+ * 2. 支持 lemon / whale / caerus 等接口抓取
+ * 3. 支持仅 Cookie 请求先缓存 Cookie
+ * 4. 抓到 Access-Token 后自动合并最近缓存 Cookie
+ * 5. 再次抓到 Cookie 自动刷新最近 Token 账号的 Cookie
+ * 6. 本地持久化保存账号
+ * 7. 多账号签到
+ * 8. 浏览任务
+ * 9. 领取奖励2
+ * 10. 查询累计金额 / 可提现金额
  *
  * 存储 Key：
  * zajk_accounts_v1
+ * zajk_latest_cookie_v1
  *
  * 推荐 rewrite：
  *
  * hostname = ihealth.zhongan.com
  *
- * ^https:\/\/ihealth\.zhongan\.com\/api\/ url script-request-header ZAJK.js
+ * ^https:\/\/ihealth\.zhongan\.com\/api\/ url script-request-header https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/ZAJK.js
  *
- * 定时任务示例：
+ * 定时任务：
  *
- * 30 8,20 * * * ZAJK.js, tag=众安健康签到, enabled=true
+ * 30 8,20 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/ZAJK.js, tag=众安健康签到, enabled=true
  ******************************/
 
 const SCRIPT_NAME = "🏢 众安健康";
 const STORE_KEY = "zajk_accounts_v1";
+const COOKIE_CACHE_KEY = "zajk_latest_cookie_v1";
 
 /**
  * ==============================
@@ -69,12 +72,11 @@ const CONFIG = {
   REFERER:
     "https://servicewechat.com/wxbac45cc1588a5a75/210/page-frame.html",
 
-  // 只有 Cookie、没有 Access-Token 时，是否更新最近一个已有账号
-  // 多账号频繁切换时，如果担心错绑，可以改成 false
+  // 只有 Cookie、没有 Access-Token 时，是否刷新最近一个已有 Token 账号
   COOKIE_ONLY_UPDATE_LATEST: true,
 
-  // 只有 Token、没有 Cookie 时，是否合并最近一个 Cookie-only 账号
-  TOKEN_ONLY_MERGE_COOKIE_ONLY: true
+  // 有 Token、没有 Cookie 时，是否合并最近缓存的 Cookie
+  TOKEN_MERGE_LATEST_COOKIE: true
 };
 
 /**
@@ -119,10 +121,11 @@ function handleCapture() {
   try {
     captureZAJKAccount();
   } catch (e) {
-    console.log(`【${SCRIPT_NAME}】账号提取异常：${e && e.message ? e.message : e}`);
+    const err = e && e.message ? e.message : String(e);
+    console.log(`【${SCRIPT_NAME}】账号提取异常：${err}`);
 
     if (CONFIG.CAPTURE_NOTIFY) {
-      $notify(SCRIPT_NAME, "❌ 账号提取异常", String(e && e.message ? e.message : e));
+      $notify(SCRIPT_NAME, "❌ 账号提取异常", err);
     }
   } finally {
     $done({ headers: $request.headers });
@@ -133,37 +136,125 @@ function captureZAJKAccount() {
   const headers = $request.headers || {};
   const url = $request.url || "";
 
-  const token =
+  const token = normalizeToken(
     getHeader(headers, "Access-Token") ||
     getHeader(headers, "access-token") ||
     getHeader(headers, "Authorization") ||
     getHeader(headers, "authorization") ||
-    "";
+    ""
+  );
 
   const cookie =
     getHeader(headers, "Cookie") ||
     getHeader(headers, "cookie") ||
     "";
 
+  const now = Date.now();
+
   if (!token && !cookie) {
-    console.log(`【${SCRIPT_NAME}】未发现 Access-Token / Cookie，跳过保存`);
-    console.log(`【${SCRIPT_NAME}】请求地址：${url}`);
-    console.log(`【${SCRIPT_NAME}】Header 字段：${Object.keys(headers).join(", ")}`);
+    console.log(`【${SCRIPT_NAME}】未发现 Access-Token / Cookie，跳过`);
+    console.log(`【${SCRIPT_NAME}】URL：${url}`);
+    console.log(`【${SCRIPT_NAME}】Header：${Object.keys(headers).join(", ")}`);
     return;
   }
 
-  const store = loadAccountStore();
-  const now = Date.now();
+  // 1. 只要抓到 Cookie，就先缓存一份最新 Cookie。
+  //    你的 /api/whale/goods/auth/info 这类接口会走这里。
+  if (cookie) {
+    saveLatestCookie(cookie, url, now);
+  }
 
-  const id = resolveAccountId(store, token, cookie);
+  const store = loadAccountStore();
+
+  // 2. 只有 Cookie、没有 Token：
+  //    不新建无效账号，只尝试刷新最近一个已有 Token 账号。
+  if (!token && cookie) {
+    const latestId = CONFIG.COOKIE_ONLY_UPDATE_LATEST
+      ? findLatestTokenAccountId(store)
+      : "";
+
+    if (latestId && store.accounts[latestId]) {
+      const old = store.accounts[latestId];
+      const changed = old.cookie !== cookie;
+      const canNotify =
+        CONFIG.CAPTURE_NOTIFY &&
+        changed &&
+        now - Number(old.lastNotifiedAt || 0) > CONFIG.CAPTURE_NOTIFY_INTERVAL;
+
+      old.cookie = cookie;
+      old.updatedAt = now;
+      old.lastCookieAt = now;
+      old.lastCaptureUrl = url;
+      old.lastCaptureType = "仅 Cookie";
+      old.lastNotifiedAt = canNotify ? now : old.lastNotifiedAt || 0;
+
+      store.updatedAt = now;
+      saveAccountStore(store);
+
+      const msg =
+        `账号 ID：${latestId}\n` +
+        `Token：${old.token ? maskText(old.token) : "未获取"}\n` +
+        `Cookie：已刷新\n` +
+        `本次抓取：仅 Cookie\n` +
+        `来源接口：${shortUrl(url)}`;
+
+      console.log(`【${SCRIPT_NAME}】Cookie 已刷新到最近账号\n${msg}`);
+
+      if (canNotify) {
+        $notify(SCRIPT_NAME, "✅ Cookie 已刷新", msg);
+      }
+    } else {
+      const cached = loadLatestCookie();
+      const msg =
+        `已缓存 Cookie，但本地还没有可绑定的 Token 账号\n` +
+        `Cookie：${cached.cookie ? "已缓存" : "未缓存"}\n` +
+        `来源接口：${shortUrl(url)}\n\n` +
+        `请继续打开众安健康小程序，触发带 Access-Token 的 lemon 接口。`;
+
+      console.log(`【${SCRIPT_NAME}】${msg}`);
+
+      if (CONFIG.CAPTURE_NOTIFY) {
+        $notify(SCRIPT_NAME, "🍪 Cookie 已缓存", msg);
+      }
+    }
+
+    return;
+  }
+
+  // 3. 有 Token：
+  //    创建/更新账号，并自动合并本次 Cookie 或最近缓存 Cookie。
+  const cachedCookie = loadLatestCookie();
+  const mergedCookie =
+    cookie ||
+    (
+      CONFIG.TOKEN_MERGE_LATEST_COOKIE &&
+      cachedCookie &&
+      cachedCookie.cookie
+        ? cachedCookie.cookie
+        : ""
+    );
+
+  const id =
+    findAccountId(store, token, mergedCookie) ||
+    makeAccountId(token, mergedCookie);
+
   const old = store.accounts[id] || {};
 
   const isNew = !store.accounts[id];
-  const tokenChanged = Boolean(token) && old.token !== token;
-  const cookieChanged = Boolean(cookie) && old.cookie !== cookie;
+  const tokenChanged = Boolean(old.token) && old.token !== token;
+  const cookieChanged = Boolean(mergedCookie) && old.cookie !== mergedCookie;
 
   const finalToken = token || old.token || "";
-  const finalCookie = cookie || old.cookie || "";
+  const finalCookie = mergedCookie || old.cookie || "";
+
+  const canNotify =
+    CONFIG.CAPTURE_NOTIFY &&
+    (
+      isNew ||
+      tokenChanged ||
+      cookieChanged ||
+      now - Number(old.lastNotifiedAt || 0) > CONFIG.CAPTURE_NOTIFY_INTERVAL
+    );
 
   store.accounts[id] = {
     id,
@@ -174,10 +265,14 @@ function captureZAJKAccount() {
     createdAt: old.createdAt || now,
     updatedAt: now,
     lastCaptureUrl: url,
-    lastCaptureType: getCaptureType(token, cookie),
-    lastNotifiedAt: old.lastNotifiedAt || 0,
-    lastTokenAt: token ? now : old.lastTokenAt || 0,
-    lastCookieAt: cookie ? now : old.lastCookieAt || 0,
+    lastCaptureType: cookie
+      ? "Token + Cookie"
+      : finalCookie
+        ? "仅 Token，已合并缓存 Cookie"
+        : "仅 Token",
+    lastNotifiedAt: canNotify ? now : old.lastNotifiedAt || 0,
+    lastTokenAt: now,
+    lastCookieAt: cookie || finalCookie ? now : old.lastCookieAt || 0,
     lastRunAt: old.lastRunAt || "",
     lastResult: old.lastResult || null
   };
@@ -193,19 +288,6 @@ function captureZAJKAccount() {
   store.order = store.order.filter(x => store.accounts[x]);
   store.updatedAt = now;
 
-  const shouldNotify =
-    CONFIG.CAPTURE_NOTIFY &&
-    (
-      isNew ||
-      tokenChanged ||
-      cookieChanged ||
-      now - Number(old.lastNotifiedAt || 0) > CONFIG.CAPTURE_NOTIFY_INTERVAL
-    );
-
-  if (shouldNotify) {
-    store.accounts[id].lastNotifiedAt = now;
-  }
-
   saveAccountStore(store);
 
   const total = store.order.filter(x => store.accounts[x]).length;
@@ -214,46 +296,19 @@ function captureZAJKAccount() {
     `账号 ID：${id}\n` +
     `Token：${finalToken ? maskText(finalToken) : "未获取"}\n` +
     `Cookie：${finalCookie ? "已保存" : "未获取"}\n` +
-    `本次抓取：${getCaptureType(token, cookie)}\n` +
+    `本次抓取：${store.accounts[id].lastCaptureType}\n` +
     `来源接口：${shortUrl(url)}\n` +
     `当前共 ${total} 个账号`;
 
   console.log(`【${SCRIPT_NAME}】账号信息已保存\n${msg}`);
 
-  if (shouldNotify) {
+  if (canNotify) {
     $notify(
       SCRIPT_NAME,
       isNew ? "✅ 新账号已保存" : "✅ 账号信息已刷新",
       msg
     );
   }
-}
-
-function resolveAccountId(store, token, cookie) {
-  let id = findAccountId(store, token, cookie);
-
-  if (id) return id;
-
-  // 只有 Cookie 时，优先更新最近一个已有账号
-  if (!token && cookie && CONFIG.COOKIE_ONLY_UPDATE_LATEST) {
-    id = findLatestAccountId(store);
-    if (id) return id;
-  }
-
-  // 只有 Token 时，如果本地存在最近的 Cookie-only 账号，合并进去
-  if (token && !cookie && CONFIG.TOKEN_ONLY_MERGE_COOKIE_ONLY) {
-    id = findLatestCookieOnlyAccountId(store);
-    if (id) return id;
-  }
-
-  return makeAccountId(token, cookie);
-}
-
-function getCaptureType(token, cookie) {
-  if (token && cookie) return "Token + Cookie";
-  if (token) return "仅 Token";
-  if (cookie) return "仅 Cookie";
-  return "未知";
 }
 
 /**
@@ -272,7 +327,7 @@ async function runTask() {
         "❌ 暂无可执行账号数据\n\n" +
         "请先开启重写和 MitM，然后打开众安健康小程序页面，让 QX 自动提取 Access-Token。\n\n" +
         "推荐 rewrite：\n" +
-        "^https:\\/\\/ihealth\\.zhongan\\.com\\/api\\/ url script-request-header ZAJK.js";
+        "^https:\\/\\/ihealth\\.zhongan\\.com\\/api\\/ url script-request-header https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/ZAJK.js";
 
       console.log(msg);
       notify(SCRIPT_NAME, "配置缺失", msg);
@@ -299,9 +354,11 @@ async function runTask() {
           lastResult: result.summary
         });
       } catch (e) {
+        const err = e && e.message ? e.message : String(e);
+
         const errMsg =
           `👤 账号 ${i + 1}\n` +
-          `❌ 执行失败：${e && e.message ? e.message : e}`;
+          `❌ 执行失败：${err}`;
 
         console.log(errMsg);
         notifyList.push(errMsg);
@@ -309,7 +366,7 @@ async function runTask() {
         updateStoredAccountMeta(account.id, {
           lastRunAt: Date.now(),
           lastResult: {
-            error: e && e.message ? e.message : String(e)
+            error: err
           }
         });
       }
@@ -327,7 +384,7 @@ async function runTask() {
       );
     }
   } catch (e) {
-    const msg = `❌ 脚本异常：${e && e.message ? e.message : e}`;
+    const msg = `❌ 脚本异常：${e && e.message ? e.message : String(e)}`;
     console.log(msg);
     notify(SCRIPT_NAME, "脚本异常", msg);
   } finally {
@@ -341,7 +398,9 @@ async function runTask() {
  * ==============================
  */
 async function runAccount(account, index) {
-  const { id, token, cookie } = account;
+  const id = account.id;
+  const token = account.token;
+  const cookie = account.cookie || "";
 
   if (!token) {
     throw new Error("账号缺少 Access-Token，无法执行任务");
@@ -464,7 +523,10 @@ async function getHomePage(headers) {
 async function executeBrowseTasks(token, cookie, homeData) {
   const results = [];
 
-  const productRecommend = homeData && homeData.result ? homeData.result.productRecommend : null;
+  const productRecommend =
+    homeData && homeData.result
+      ? homeData.result.productRecommend
+      : null;
 
   if (!productRecommend || Object.keys(productRecommend).length === 0) {
     console.log("ℹ️ 没有可执行的浏览任务");
@@ -849,41 +911,27 @@ function findAccountId(store, token, cookie) {
   return "";
 }
 
-function findLatestAccountId(store) {
+function findLatestTokenAccountId(store) {
   const ids = Array.isArray(store.order)
     ? store.order.filter(id => store.accounts && store.accounts[id])
     : Object.keys(store.accounts || {});
 
-  if (!ids.length) return "";
-
-  ids.sort((a, b) => {
-    const aa = store.accounts[a] || {};
-    const bb = store.accounts[b] || {};
-    return Number(bb.updatedAt || bb.createdAt || 0) - Number(aa.updatedAt || aa.createdAt || 0);
-  });
-
-  return ids[0];
-}
-
-function findLatestCookieOnlyAccountId(store) {
-  const ids = Array.isArray(store.order)
-    ? store.order.filter(id => store.accounts && store.accounts[id])
-    : Object.keys(store.accounts || {});
-
-  const cookieOnlyIds = ids.filter(id => {
+  const tokenIds = ids.filter(id => {
     const acc = store.accounts[id] || {};
-    return !acc.token && acc.cookie;
+    return Boolean(acc.token);
   });
 
-  if (!cookieOnlyIds.length) return "";
+  if (!tokenIds.length) {
+    return "";
+  }
 
-  cookieOnlyIds.sort((a, b) => {
+  tokenIds.sort((a, b) => {
     const aa = store.accounts[a] || {};
     const bb = store.accounts[b] || {};
     return Number(bb.updatedAt || bb.createdAt || 0) - Number(aa.updatedAt || aa.createdAt || 0);
   });
 
-  return cookieOnlyIds[0];
+  return tokenIds[0];
 }
 
 function makeAccountId(token, cookie) {
@@ -913,6 +961,55 @@ function simpleHash(str) {
 
 /**
  * ==============================
+ * Cookie 缓存
+ * ==============================
+ */
+function saveLatestCookie(cookie, url, time) {
+  if (!cookie) return;
+
+  const old = loadLatestCookie();
+
+  const data = {
+    cookie,
+    url: url || "",
+    updatedAt: time || Date.now(),
+    oldUrl: old.url || "",
+    oldUpdatedAt: old.updatedAt || 0
+  };
+
+  $prefs.setValueForKey(JSON.stringify(data), COOKIE_CACHE_KEY);
+}
+
+function loadLatestCookie() {
+  const raw = $prefs.valueForKey(COOKIE_CACHE_KEY);
+
+  if (!raw) {
+    return {
+      cookie: "",
+      url: "",
+      updatedAt: 0
+    };
+  }
+
+  try {
+    const obj = JSON.parse(raw);
+
+    return {
+      cookie: obj.cookie || "",
+      url: obj.url || "",
+      updatedAt: obj.updatedAt || 0
+    };
+  } catch (e) {
+    return {
+      cookie: "",
+      url: "",
+      updatedAt: 0
+    };
+  }
+}
+
+/**
+ * ==============================
  * 工具函数
  * ==============================
  */
@@ -926,6 +1023,18 @@ function getHeader(headers, name) {
   }
 
   return "";
+}
+
+function normalizeToken(token) {
+  const s = String(token || "").trim();
+
+  if (!s) return "";
+
+  if (/^Bearer\s+/i.test(s)) {
+    return s.replace(/^Bearer\s+/i, "").trim();
+  }
+
+  return s;
 }
 
 function parseJsonSafe(str) {
@@ -980,7 +1089,9 @@ function maskHeaders(headers) {
 
 function shortUrl(url) {
   const s = String(url || "");
+
   if (!s) return "";
+
   return s.length > 180 ? s.slice(0, 180) + "..." : s;
 }
 
@@ -1017,10 +1128,9 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function debugLog(...args) {
-  if (CONFIG.DEBUG) {
-    console.log(...args);
-  }
+function debugLog() {
+  if (!CONFIG.DEBUG) return;
+  console.log.apply(console, arguments);
 }
 
 function notify(title, subtitle, message) {
