@@ -1,4 +1,19 @@
+#!name=嘉立创
+#!desc=嘉立创小程序 token/secret 自动获取，本地持久化后定时签到、领取第七天奖励并查询豆豆总数
+#!author=Reverie
+#!homepage=https://github.com/reverie1988/QX
+#!date=2026-05-06
 
+; 使用说明：
+; 1. 导入并启用本 snippet
+; 2. 打开嘉立创小程序，进入签到/豆豆相关页面
+; 3. 触发 m.jlc.com/api/activity/ 接口后，会自动保存 x-jlc-accesstoken 和 secretkey
+; 4. 保存成功后，可通过定时任务运行 JLC_QX.js 完成签到
+;
+; 本地持久化 Key：
+; jlc_auth_store_v1
+; jlc_auth_last_v1
+; jlc_last_result_v1
 
 hostname = m.jlc.com
 
