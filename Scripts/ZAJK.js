@@ -5,13 +5,13 @@
  * 功能：
  * 1. 自动提取 Access-Token / Cookie
  * 2. 支持 lemon / whale / caerus 等接口抓取
- * 3. 支持仅 Cookie 请求先缓存 Cookie
- * 4. 抓到 Access-Token 后自动合并最近缓存 Cookie
- * 5. 再次抓到 Cookie 自动刷新最近 Token 账号的 Cookie
+ * 3. Access-Token 作为账号唯一标识，适配多账号
+ * 4. Cookie-only 请求只缓存 Cookie，默认不强行覆盖最近账号，避免串号
+ * 5. 抓到 Access-Token 后自动合并最近缓存 Cookie
  * 6. 本地持久化保存账号
  * 7. 多账号签到
  * 8. 浏览任务
- * 9. 领取奖励2
+ * 9. 领取奖励 3
  * 10. 查询累计金额 / 可提现金额
  *
  * 存储 Key：
@@ -73,10 +73,14 @@ const CONFIG = {
     "https://servicewechat.com/wxbac45cc1588a5a75/210/page-frame.html",
 
   // 只有 Cookie、没有 Access-Token 时，是否刷新最近一个已有 Token 账号
-  COOKIE_ONLY_UPDATE_LATEST: true,
+  // 多账号场景建议保持 false，避免 Cookie 串号
+  COOKIE_ONLY_UPDATE_LATEST: false,
 
   // 有 Token、没有 Cookie 时，是否合并最近缓存的 Cookie
-  TOKEN_MERGE_LATEST_COOKIE: true
+  TOKEN_MERGE_LATEST_COOKIE: true,
+
+  // 缓存 Cookie 的有效合并时间，超过这个时间不自动合并
+  COOKIE_CACHE_MAX_AGE: 10 * 60 * 1000
 };
 
 /**
@@ -139,6 +143,9 @@ function captureZAJKAccount() {
   const token = normalizeToken(
     getHeader(headers, "Access-Token") ||
     getHeader(headers, "access-token") ||
+    getHeader(headers, "AccessToken") ||
+    getHeader(headers, "accessToken") ||
+    getHeader(headers, "x-access-token") ||
     getHeader(headers, "Authorization") ||
     getHeader(headers, "authorization") ||
     ""
@@ -158,23 +165,21 @@ function captureZAJKAccount() {
     return;
   }
 
-  // 1. 只要抓到 Cookie，就先缓存一份最新 Cookie。
-  //    你的 /api/whale/goods/auth/info 这类接口会走这里。
+  const store = loadAccountStore();
+
+  // 1. 只要抓到 Cookie，先缓存到最新 Cookie。
+  // whale / caerus 这类只有 Cookie 的接口会走这里。
   if (cookie) {
     saveLatestCookie(cookie, url, now);
   }
 
-  const store = loadAccountStore();
-
   // 2. 只有 Cookie、没有 Token：
-  //    不新建无效账号，只尝试刷新最近一个已有 Token 账号。
+  // 默认只缓存 Cookie，不新建账号，也不覆盖最近账号，避免多账号串号。
   if (!token && cookie) {
-    const latestId = CONFIG.COOKIE_ONLY_UPDATE_LATEST
-      ? findLatestTokenAccountId(store)
-      : "";
+    const matchedId = findCookieAccountId(store, cookie);
 
-    if (latestId && store.accounts[latestId]) {
-      const old = store.accounts[latestId];
+    if (matchedId && store.accounts[matchedId]) {
+      const old = store.accounts[matchedId];
       const changed = old.cookie !== cookie;
       const canNotify =
         CONFIG.CAPTURE_NOTIFY &&
@@ -185,67 +190,103 @@ function captureZAJKAccount() {
       old.updatedAt = now;
       old.lastCookieAt = now;
       old.lastCaptureUrl = url;
-      old.lastCaptureType = "仅 Cookie";
+      old.lastCaptureType = "仅 Cookie，匹配已有 Cookie";
       old.lastNotifiedAt = canNotify ? now : old.lastNotifiedAt || 0;
 
       store.updatedAt = now;
       saveAccountStore(store);
 
       const msg =
-        `账号 ID：${latestId}\n` +
+        `账号 ID：${matchedId}\n` +
         `Token：${old.token ? maskText(old.token) : "未获取"}\n` +
         `Cookie：已刷新\n` +
-        `本次抓取：仅 Cookie\n` +
+        `本次抓取：仅 Cookie，匹配已有账号\n` +
         `来源接口：${shortUrl(url)}`;
 
-      console.log(`【${SCRIPT_NAME}】Cookie 已刷新到最近账号\n${msg}`);
+      console.log(`【${SCRIPT_NAME}】Cookie 已刷新到匹配账号\n${msg}`);
 
       if (canNotify) {
         $notify(SCRIPT_NAME, "✅ Cookie 已刷新", msg);
       }
-    } else {
-      const cached = loadLatestCookie();
-      const msg =
-        `已缓存 Cookie，但本地还没有可绑定的 Token 账号\n` +
-        `Cookie：${cached.cookie ? "已缓存" : "未缓存"}\n` +
-        `来源接口：${shortUrl(url)}\n\n` +
-        `请继续打开众安健康小程序，触发带 Access-Token 的 lemon 接口。`;
 
-      console.log(`【${SCRIPT_NAME}】${msg}`);
+      return;
+    }
 
-      if (CONFIG.CAPTURE_NOTIFY) {
-        $notify(SCRIPT_NAME, "🍪 Cookie 已缓存", msg);
+    if (CONFIG.COOKIE_ONLY_UPDATE_LATEST) {
+      const latestId = findLatestTokenAccountId(store);
+
+      if (latestId && store.accounts[latestId]) {
+        const old = store.accounts[latestId];
+        const changed = old.cookie !== cookie;
+        const canNotify =
+          CONFIG.CAPTURE_NOTIFY &&
+          changed &&
+          now - Number(old.lastNotifiedAt || 0) > CONFIG.CAPTURE_NOTIFY_INTERVAL;
+
+        old.cookie = cookie;
+        old.updatedAt = now;
+        old.lastCookieAt = now;
+        old.lastCaptureUrl = url;
+        old.lastCaptureType = "仅 Cookie，刷新最近账号";
+        old.lastNotifiedAt = canNotify ? now : old.lastNotifiedAt || 0;
+
+        store.updatedAt = now;
+        saveAccountStore(store);
+
+        const msg =
+          `账号 ID：${latestId}\n` +
+          `Token：${old.token ? maskText(old.token) : "未获取"}\n` +
+          `Cookie：已刷新\n` +
+          `本次抓取：仅 Cookie，刷新最近账号\n` +
+          `来源接口：${shortUrl(url)}`;
+
+        console.log(`【${SCRIPT_NAME}】Cookie 已刷新到最近账号\n${msg}`);
+
+        if (canNotify) {
+          $notify(SCRIPT_NAME, "✅ Cookie 已刷新", msg);
+        }
+
+        return;
       }
+    }
+
+    const cached = loadLatestCookie();
+    const msg =
+      `已缓存 Cookie，等待后续 Access-Token 合并\n` +
+      `Cookie：${cached.cookie ? "已缓存" : "未缓存"}\n` +
+      `来源接口：${shortUrl(url)}\n\n` +
+      `说明：当前是仅 Cookie 请求，不会新建账号，避免多账号串号。`;
+
+    console.log(`【${SCRIPT_NAME}】${msg}`);
+
+    if (CONFIG.CAPTURE_NOTIFY) {
+      $notify(SCRIPT_NAME, "🍪 Cookie 已缓存", msg);
     }
 
     return;
   }
 
   // 3. 有 Token：
-  //    创建/更新账号，并自动合并本次 Cookie 或最近缓存 Cookie。
+  // Token 是账号唯一标识。不同 Token 一定新建或更新不同账号。
+  const oldId = findTokenAccountId(store, token);
+  const id = oldId || makeAccountIdByToken(token);
+  const old = store.accounts[id] || {};
+
   const cachedCookie = loadLatestCookie();
+  const canUseCachedCookie =
+    CONFIG.TOKEN_MERGE_LATEST_COOKIE &&
+    cachedCookie &&
+    cachedCookie.cookie &&
+    now - Number(cachedCookie.updatedAt || 0) <= CONFIG.COOKIE_CACHE_MAX_AGE;
+
   const mergedCookie =
     cookie ||
-    (
-      CONFIG.TOKEN_MERGE_LATEST_COOKIE &&
-      cachedCookie &&
-      cachedCookie.cookie
-        ? cachedCookie.cookie
-        : ""
-    );
-
-  const id =
-    findAccountId(store, token, mergedCookie) ||
-    makeAccountId(token, mergedCookie);
-
-  const old = store.accounts[id] || {};
+    old.cookie ||
+    (canUseCachedCookie ? cachedCookie.cookie : "");
 
   const isNew = !store.accounts[id];
   const tokenChanged = Boolean(old.token) && old.token !== token;
   const cookieChanged = Boolean(mergedCookie) && old.cookie !== mergedCookie;
-
-  const finalToken = token || old.token || "";
-  const finalCookie = mergedCookie || old.cookie || "";
 
   const canNotify =
     CONFIG.CAPTURE_NOTIFY &&
@@ -259,20 +300,20 @@ function captureZAJKAccount() {
   store.accounts[id] = {
     id,
     alias: old.alias || `众安健康-${id.slice(0, 6)}`,
-    token: finalToken,
-    cookie: finalCookie,
+    token,
+    cookie: mergedCookie,
     phone: old.phone || "",
     createdAt: old.createdAt || now,
     updatedAt: now,
     lastCaptureUrl: url,
     lastCaptureType: cookie
       ? "Token + Cookie"
-      : finalCookie
+      : mergedCookie
         ? "仅 Token，已合并缓存 Cookie"
         : "仅 Token",
     lastNotifiedAt: canNotify ? now : old.lastNotifiedAt || 0,
     lastTokenAt: now,
-    lastCookieAt: cookie || finalCookie ? now : old.lastCookieAt || 0,
+    lastCookieAt: cookie ? now : old.lastCookieAt || (mergedCookie ? cachedCookie.updatedAt || now : 0),
     lastRunAt: old.lastRunAt || "",
     lastResult: old.lastResult || null
   };
@@ -294,8 +335,8 @@ function captureZAJKAccount() {
 
   const msg =
     `账号 ID：${id}\n` +
-    `Token：${finalToken ? maskText(finalToken) : "未获取"}\n` +
-    `Cookie：${finalCookie ? "已保存" : "未获取"}\n` +
+    `Token：${token ? maskText(token) : "未获取"}\n` +
+    `Cookie：${mergedCookie ? "已保存" : "未获取"}\n` +
     `本次抓取：${store.accounts[id].lastCaptureType}\n` +
     `来源接口：${shortUrl(url)}\n` +
     `当前共 ${total} 个账号`;
@@ -887,7 +928,9 @@ function updateStoredAccountMeta(id, meta) {
   saveAccountStore(store);
 }
 
-function findAccountId(store, token, cookie) {
+function findTokenAccountId(store, token) {
+  if (!token) return "";
+
   const ids = Array.isArray(store.order)
     ? store.order
     : Object.keys(store.accounts || {});
@@ -895,15 +938,29 @@ function findAccountId(store, token, cookie) {
   for (const id of ids) {
     const acc = store.accounts[id];
 
-    if (!acc) {
-      continue;
-    }
+    if (!acc) continue;
 
-    if (token && acc.token === token) {
+    if (acc.token === token) {
       return id;
     }
+  }
 
-    if (cookie && acc.cookie && acc.cookie === cookie) {
+  return "";
+}
+
+function findCookieAccountId(store, cookie) {
+  if (!cookie) return "";
+
+  const ids = Array.isArray(store.order)
+    ? store.order
+    : Object.keys(store.accounts || {});
+
+  for (const id of ids) {
+    const acc = store.accounts[id];
+
+    if (!acc) continue;
+
+    if (acc.cookie && acc.cookie === cookie) {
       return id;
     }
   }
@@ -934,8 +991,8 @@ function findLatestTokenAccountId(store) {
   return tokenIds[0];
 }
 
-function makeAccountId(token, cookie) {
-  return simpleHash(`${token || ""}|${cookie || ""}`).slice(0, 12);
+function makeAccountIdByToken(token) {
+  return simpleHash(String(token || "")).slice(0, 12);
 }
 
 function simpleHash(str) {
