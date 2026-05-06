@@ -1,1 +1,6 @@
-33
+[rewrite_local]
+hostname = api.juejin.cn
+^https:\/\/api\.juejin\.cn\/growth_api\/v1\/check_in\? url script-request-header JueJin_QX.js
+
+[task_local]
+30 8 * * * JueJin_QX.js, tag=稀土掘金签到, enabled=true
