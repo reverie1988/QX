@@ -6,13 +6,14 @@
  * 1. 自动提取 Access-Token / Cookie
  * 2. 支持 lemon / whale / caerus 等接口抓取
  * 3. Access-Token 作为账号唯一标识，适配多账号
- * 4. Cookie-only 请求只缓存 Cookie，默认不强行覆盖最近账号，避免串号
- * 5. 抓到 Access-Token 后自动合并最近缓存 Cookie
- * 6. 本地持久化保存账号
- * 7. 多账号签到
- * 8. 浏览任务
- * 9. 领取奖励 3
- * 10. 查询累计金额 / 可提现金额
+ * 4. 修复 Token 不同但账号 ID 撞号导致只保存 1 个账号的问题
+ * 5. Cookie-only 请求只缓存 Cookie，默认不强行覆盖最近账号，避免串号
+ * 6. 抓到 Access-Token 后自动合并最近缓存 Cookie
+ * 7. 本地持久化保存账号
+ * 8. 多账号签到
+ * 9. 浏览任务
+ * 10. 领取奖励
+ * 11. 查询累计金额 / 可提现金额
  *
  * 存储 Key：
  * zajk_accounts_v1
@@ -269,7 +270,7 @@ function captureZAJKAccount() {
   // 3. 有 Token：
   // Token 是账号唯一标识。不同 Token 一定新建或更新不同账号。
   const oldId = findTokenAccountId(store, token);
-  const id = oldId || makeAccountIdByToken(token);
+  const id = oldId || makeUniqueAccountIdByToken(store, token);
   const old = store.accounts[id] || {};
 
   const cachedCookie = loadLatestCookie();
@@ -991,29 +992,61 @@ function findLatestTokenAccountId(store) {
   return tokenIds[0];
 }
 
-function makeAccountIdByToken(token) {
-  return simpleHash(String(token || "")).slice(0, 12);
-}
+function makeUniqueAccountIdByToken(store, token) {
+  const baseId = makeAccountIdByToken(token);
+  let id = baseId;
+  let index = 1;
 
-function simpleHash(str) {
-  str = String(str || "");
-
-  let h = 2166136261;
-
-  for (let i = 0; i < str.length; i++) {
-    h ^= str.charCodeAt(i);
-    h +=
-      (h << 1) +
-      (h << 4) +
-      (h << 7) +
-      (h << 8) +
-      (h << 24);
+  while (
+    store &&
+    store.accounts &&
+    store.accounts[id] &&
+    store.accounts[id].token &&
+    store.accounts[id].token !== token
+  ) {
+    id = `${baseId}_${index}`;
+    index++;
   }
 
-  return (
-    ("00000000" + (h >>> 0).toString(16)).slice(-8) +
-    String(str.length).padStart(4, "0")
-  );
+  return id;
+}
+
+function makeAccountIdByToken(token) {
+  const raw = String(token || "").trim();
+
+  if (!raw) {
+    return "unknown_" + Date.now();
+  }
+
+  return "tk_" + hash53(raw).slice(0, 12);
+}
+
+function hash53(str, seed) {
+  str = String(str || "");
+  seed = seed || 0;
+
+  let h1 = 0xdeadbeef ^ seed;
+  let h2 = 0x41c6ce57 ^ seed;
+
+  for (let i = 0; i < str.length; i++) {
+    const ch = str.charCodeAt(i);
+
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+
+  h1 =
+    Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^
+    Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+
+  h2 =
+    Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^
+    Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+
+  const high = (h2 >>> 0).toString(16).padStart(8, "0");
+  const low = (h1 >>> 0).toString(16).padStart(8, "0");
+
+  return high + low + String(str.length).padStart(4, "0");
 }
 
 /**
@@ -1171,7 +1204,10 @@ function formatMoney(value) {
   return (num / 100).toFixed(2) + "元";
 }
 
-function randomDelay(min = CONFIG.DELAY_MIN, max = CONFIG.DELAY_MAX) {
+function randomDelay(min, max) {
+  min = min || CONFIG.DELAY_MIN;
+  max = max || CONFIG.DELAY_MAX;
+
   const delay = randomInt(min, max);
   console.log(`⌛️ 等待 ${delay}ms`);
   return sleep(delay);
