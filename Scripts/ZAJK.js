@@ -292,8 +292,8 @@ async function runAccount(account, index) {
     sign: "未执行",
     browse: [],
     rewards: [],
-    sumAward: "0",
-    sumAllowWithdraw: "0"
+    sumAward: "0.00元",
+    sumAllowWithdraw: "0.00元"
   };
 
   const baseHeaders = buildBaseHeaders(token, cookie);
@@ -379,12 +379,15 @@ async function runAccount(account, index) {
 
   /**
    * 6. 查询最终金额
+   *
+   * 接口返回单位通常是“分”
+   * 例如：8505 = 85.05元
    */
   const finalHome = await getHomePage(baseHeaders);
 
   if (finalHome?.code === "0" && finalHome?.result) {
-    summary.sumAward = finalHome.result.sumAward ?? "0";
-    summary.sumAllowWithdraw = finalHome.result.sumAllowWithdraw ?? "0";
+    summary.sumAward = formatMoney(finalHome.result.sumAward);
+    summary.sumAllowWithdraw = formatMoney(finalHome.result.sumAllowWithdraw);
   }
 
   /**
@@ -511,7 +514,7 @@ async function claimRewards(headers) {
     const res = await postJson(API.LOTTERY, headers, body);
 
     if (res?.code === "0") {
-      const msg = `${reward.desc || "奖励"}：${reward.amount || ""}`;
+      const msg = `${reward.desc || "奖励"}：${formatMoney(reward.amount)}`;
       console.log(`🎉 领取成功：${msg}`);
       results.push(`领取成功：${msg}`);
     } else {
@@ -875,6 +878,25 @@ function maskHeaders(headers) {
   }
 
   return obj;
+}
+
+/**
+ * 金额格式化
+ * 接口返回单位：分
+ * 例如 8505 => 85.05元
+ */
+function formatMoney(value) {
+  if (value === null || value === undefined || value === "") {
+    return "0.00元";
+  }
+
+  const num = Number(value);
+
+  if (isNaN(num)) {
+    return String(value);
+  }
+
+  return (num / 100).toFixed(2) + "元";
 }
 
 function randomDelay(min = CONFIG.DELAY_MIN, max = CONFIG.DELAY_MAX) {
