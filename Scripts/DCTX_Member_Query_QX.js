@@ -4,6 +4,11 @@
 名称: 查询本地 member
 用途: 查询 Quantumult X 本地保存的 member 数据。
 
+特点：
+1. 不显示历史数量
+2. 自动清理旧版本遗留的 history 字段
+3. expire 时间戳显示为可读时间
+
 QX task 示例：
 0 9 * * * DCTX_Member_Query_QX.js, tag=大潮member查询, enabled=false
 */
@@ -20,6 +25,9 @@ const QUERY_TARGETS = [
 // 是否显示完整 member。敏感信息，默认关闭。
 const SHOW_FULL_MEMBER = false;
 
+// 是否自动清理旧版本 history 字段。
+const AUTO_CLEAN_HISTORY = true;
+
 // 通知中 member 最大显示长度
 const MAX_MEMBER_PREVIEW_LEN = SHOW_FULL_MEMBER ? 3000 : 260;
 
@@ -33,12 +41,15 @@ function safeJsonParse(text, fallback = null) {
 
 function maskPhone(phone) {
   const s = String(phone || '');
+
   if (/^\d{11}$/.test(s)) {
     return s.slice(0, 3) + '****' + s.slice(7);
   }
+
   if (s.length > 6) {
     return s.slice(0, 3) + '****' + s.slice(-3);
   }
+
   return s || '未知';
 }
 
@@ -50,7 +61,10 @@ function shortText(text, maxLen) {
 
 function maskMemberText(text) {
   if (!text) return '';
-  if (SHOW_FULL_MEMBER) return String(text);
+
+  if (SHOW_FULL_MEMBER) {
+    return String(text);
+  }
 
   return String(text)
     .replace(/("token"\s*:\s*")[^"]+/gi, '$1***')
@@ -69,6 +83,7 @@ function maskMemberText(text) {
 
 function decodeText(text) {
   if (!text) return '';
+
   try {
     return decodeURIComponent(text);
   } catch (e) {
@@ -82,6 +97,7 @@ function formatExpire(expire) {
   }
 
   const n = Number(expire);
+
   if (!n || isNaN(n)) {
     return String(expire);
   }
@@ -120,6 +136,33 @@ function loadStore() {
   }
 
   return obj;
+}
+
+function saveStore(store) {
+  store.version = 1;
+  store.updatedAt = new Date().toLocaleString();
+  return $prefs.setValueForKey(JSON.stringify(store), STORE_KEY);
+}
+
+function cleanupLegacyHistory(store) {
+  if (!store || !store.accounts) return 0;
+
+  let count = 0;
+
+  for (const key of Object.keys(store.accounts)) {
+    const rec = store.accounts[key];
+
+    if (rec && Object.prototype.hasOwnProperty.call(rec, 'history')) {
+      delete rec.history;
+      count++;
+    }
+  }
+
+  if (count > 0 && AUTO_CLEAN_HISTORY) {
+    saveStore(store);
+  }
+
+  return count;
 }
 
 function matchRecord(rec, targets) {
@@ -169,14 +212,17 @@ function main() {
   if (typeof $prefs === 'undefined') {
     const msg = '当前环境不支持 $prefs，请在 Quantumult X 中运行';
     console.log(`❌ ${msg}`);
+
     if (typeof $notify !== 'undefined') {
       $notify('🌟 大潮 member 查询', '环境错误', msg);
     }
+
     if (typeof $done !== 'undefined') $done({});
     return;
   }
 
   const store = loadStore();
+  const cleanedHistoryCount = cleanupLegacyHistory(store);
 
   const list = Object.keys(store.accounts || {})
     .map(k => store.accounts[k])
@@ -213,12 +259,14 @@ function main() {
       `来源：${getRecordSource(rec, parsed)}`,
       `过期：${expireText}`,
       `更新时间：${rec.updatedAt || '未知'}`,
-      `历史数量：${Array.isArray(rec.history) ? rec.history.length : 0}`,
       `member：${shortText(maskMemberText(rec.raw), MAX_MEMBER_PREVIEW_LEN)}`
     ].join('\n');
   });
 
-  const output = blocks.join('\n\n------------------------------\n\n');
+  const output = [
+    blocks.join('\n\n------------------------------\n\n'),
+    cleanedHistoryCount ? `\n已自动清理旧 history 字段：${cleanedHistoryCount} 个` : ''
+  ].filter(Boolean).join('\n');
 
   console.log(`\n【${SCRIPT_NAME}】\n${output}`);
 
