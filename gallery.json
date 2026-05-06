@@ -40,13 +40,13 @@
       "config": "1 1 1 1 1 https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/山东今日油价.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/SINOPEC.png, tag=山东今日油价, enabled=false"
     },
     {
+      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/节点检测.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/chaxun(2).png, tag=节点检测, enabled=true"
+    },
+    {
       "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/节点纯净度查询.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/IPLC.png, tag=节点纯净度查询, enabled=true"
     },
     {
       "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/流媒体解锁查询.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/Unlock.png, tag=流媒体解锁查询, enabled=true"
-    },
-    {
-      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/节点检测.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/chaxun(2).png, tag=节点检测, enabled=true"
     },
     {
       "config": "8 6 * * * https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/每天60s读懂世界.js, img-url=https://raw.githubusercontent.com/reverie1988/QX/main/Icon/NEWS.png, tag=每天60s读懂世界, enabled=true"
