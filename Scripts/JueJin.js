@@ -6,16 +6,17 @@
 1. 自动从 APP 请求中提取 Cookie 和 URL 参数
 2. 保存到 Quantumult X 本地 $prefs
 3. 定时读取本地数据完成签到
+4. 如果接口返回签到失败，等待 30 秒后自动重试 1 次
 
 抓包接口:
 https://api.juejin.cn/growth_api/v1/check_in?
 
-QX rewrite 示例:
+QX snippet 示例:
 hostname = api.juejin.cn
-^https:\/\/api\.juejin\.cn\/growth_api\/v1\/check_in\? url script-request-header JueJin_QX.js
+^https:\/\/api\.juejin\.cn\/growth_api\/v1\/check_in\? url script-request-header https://raw.githubusercontent.com/reverie1988/QX/refs/heads/main/Scripts/JueJin.js
 
 QX task 示例:
-30 8 * * * JueJin_QX.js, tag=稀土掘金签到, enabled=true
+30 8 * * * https://raw.githubusercontent.com/reverie1988/QX/refs/heads/main/Scripts/JueJin.js, tag=稀土掘金签到, enabled=true
 */
 
 const SCRIPT_NAME = '🌋 稀土掘金';
@@ -28,9 +29,13 @@ const LAST_RESULT_KEY = 'JueJin_LastResult';
 // 是否在日志中显示完整 Cookie。Cookie 是敏感信息，默认关闭。
 const SHOW_FULL_COOKIE_IN_LOG = false;
 
-// 请求重试配置
+// 网络请求失败重试配置
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 2000;
+
+// 签到接口返回失败时，是否 30 秒后再试一次
+const SIGN_FAIL_RETRY_ONCE = true;
+const SIGN_FAIL_RETRY_DELAY = 30000;
 
 const DEFAULT_USER_AGENT = 'xitu 6.7.5 rv:6.7.5.2 (iPhone; iOS 17.1; zh_CN) Cronet';
 
@@ -263,54 +268,46 @@ async function checkIn() {
   ]);
 
   try {
-    const result = await requestWithRetry({
+    let result = await requestWithRetry({
       url: checkInUrl,
       method: 'POST',
       headers,
       body: '{}'
     });
 
-    const errNo = result && result.err_no;
-    const errMsg = result && result.err_msg;
-    const data = result && result.data;
+    let retriedBySignFail = false;
 
-    let notifyMessage = '';
+    if (!isCheckInSuccess(result) && SIGN_FAIL_RETRY_ONCE) {
+      const errNo = result && result.err_no !== undefined ? result.err_no : '未知';
+      const errMsg = result && result.err_msg ? result.err_msg : '未知失败原因';
 
-    if (errMsg === 'success' || errNo === 0) {
-      const incrPoint = data && data.incr_point !== undefined ? data.incr_point : '未知';
-      const sumPoint = data && data.sum_point !== undefined ? data.sum_point : '未知';
-
-      notifyMessage = [
-        '✅ 掘金签到成功',
-        `⛏️ 获得矿石：${incrPoint}`,
-        `🪨 总矿石：${sumPoint}`
-      ].join('\n');
-
-      logBlock('✅ 签到成功', [
-        `获得矿石：${incrPoint}`,
-        `总矿石：${sumPoint}`,
-        `接口消息：${errMsg || 'success'}`
+      logBlock('⚠️ 签到失败，准备自动重试', [
+        `错误码：${errNo}`,
+        `失败原因：${errMsg}`,
+        `等待时间：${SIGN_FAIL_RETRY_DELAY / 1000} 秒`,
+        '重试次数：1 次'
       ]);
-    } else {
-      notifyMessage = [
-        '❌ 掘金签到失败',
-        `错误码：${errNo !== undefined ? errNo : '未知'}`,
-        `错误信息：${errMsg || '未知'}`,
-        `返回：${shortText(JSON.stringify(result), 500)}`
-      ].join('\n');
 
-      logBlock('❌ 签到失败', [
-        `错误码：${errNo !== undefined ? errNo : '未知'}`,
-        `错误信息：${errMsg || '未知'}`,
-        `返回：${shortText(JSON.stringify(result), 500)}`
-      ]);
+      await wait(SIGN_FAIL_RETRY_DELAY);
+
+      retriedBySignFail = true;
+
+      result = await requestWithRetry({
+        url: checkInUrl,
+        method: 'POST',
+        headers,
+        body: '{}'
+      });
     }
+
+    const notifyMessage = buildCheckInMessage(result, retriedBySignFail);
 
     setPrefs(
       LAST_RESULT_KEY,
       JSON.stringify({
         time: new Date().toLocaleString(),
-        success: errMsg === 'success' || errNo === 0,
+        success: isCheckInSuccess(result),
+        retriedBySignFail,
         result
       })
     );
@@ -322,12 +319,85 @@ async function checkIn() {
     const notifyMessage = [
       '❌ 掘金签到请求失败',
       `错误：${err}`,
-      `已重试：${MAX_RETRIES} 次`
+      `网络重试：${MAX_RETRIES} 次`,
+      `失败后延迟重试：${SIGN_FAIL_RETRY_ONCE ? '已开启' : '未开启'}`
     ].join('\n');
 
     console.log(notifyMessage);
     $.msg(SCRIPT_NAME, '请求失败', notifyMessage);
   }
+}
+
+function isCheckInSuccess(result) {
+  if (!result) return false;
+
+  const errNo = result.err_no;
+  const errMsg = result.err_msg;
+
+  if (errMsg === 'success' || errNo === 0) {
+    return true;
+  }
+
+  const msg = String(errMsg || '');
+
+  if (
+    msg.includes('已签到') ||
+    msg.includes('已经签到') ||
+    msg.includes('今日已签到') ||
+    msg.toLowerCase().includes('already')
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+function buildCheckInMessage(result, retriedBySignFail) {
+  const errNo = result && result.err_no;
+  const errMsg = result && result.err_msg;
+  const data = result && result.data;
+
+  const retryText = retriedBySignFail
+    ? '🔁 已在失败后等待 30 秒自动重试 1 次'
+    : '';
+
+  if (isCheckInSuccess(result)) {
+    const incrPoint = data && data.incr_point !== undefined ? data.incr_point : '未知';
+    const sumPoint = data && data.sum_point !== undefined ? data.sum_point : '未知';
+
+    const msg = [
+      '✅ 掘金签到成功',
+      `⛏️ 获得矿石：${incrPoint}`,
+      `🪨 总矿石：${sumPoint}`,
+      retryText
+    ].filter(Boolean).join('\n');
+
+    logBlock('✅ 签到成功', [
+      `获得矿石：${incrPoint}`,
+      `总矿石：${sumPoint}`,
+      `接口消息：${errMsg || 'success'}`,
+      retriedBySignFail ? '说明：首次失败后自动重试成功' : ''
+    ]);
+
+    return msg;
+  }
+
+  const msg = [
+    '❌ 掘金签到失败',
+    `错误码：${errNo !== undefined ? errNo : '未知'}`,
+    `错误信息：${errMsg || '未知'}`,
+    retryText,
+    `返回：${shortText(JSON.stringify(result), 500)}`
+  ].filter(Boolean).join('\n');
+
+  logBlock('❌ 签到失败', [
+    `错误码：${errNo !== undefined ? errNo : '未知'}`,
+    `错误信息：${errMsg || '未知'}`,
+    retriedBySignFail ? '说明：已等待 30 秒自动重试 1 次，仍失败' : '',
+    `返回：${shortText(JSON.stringify(result), 500)}`
+  ]);
+
+  return msg;
 }
 
 async function requestWithRetry(options, retries = 0) {
@@ -357,6 +427,11 @@ function httpRequest(options) {
 
     if (method !== 'GET') {
       opt.body = options.body || '';
+    }
+
+    if (typeof $task === 'undefined' || !$task.fetch) {
+      reject(new Error('当前环境不支持 $task.fetch，请在 Quantumult X 中运行'));
+      return;
     }
 
     $task.fetch(opt).then(
