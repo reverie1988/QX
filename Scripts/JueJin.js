@@ -30,7 +30,7 @@ const LAST_RESULT_KEY = 'JueJin_LastResult';
 const SHOW_FULL_COOKIE_IN_LOG = false;
 
 // 网络请求失败重试配置
-const MAX_RETRIES = 2;
+const MAX_RETRIES = 3;
 const RETRY_DELAY = 2000;
 
 // 签到接口返回失败时，是否 30 秒后再试一次
