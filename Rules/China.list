@@ -1,0 +1,220 @@
+# NAME: China
+# AUTHOR: steak
+# TYPE: Quantumult X Filter
+# DESCRIPTION: 国内域名 / 国内常用服务直连规则，轻量日常版
+# UPDATED: 2026-05-11
+#
+# ================================
+# 使用说明
+# ================================
+# 1. 文件名建议：China.list
+# 2. 适用于：Quantumult X [filter_remote]
+# 3. 策略：direct
+# 4. 这是轻量日常版，包含国内常用 App / 支付 / 视频 / 出行 / 电商 / 云服务
+# 5. 不建议把这份放在 Apple / YouTube / Netflix / Disney 等专用规则前面
+#
+# QX 远程订阅示例：
+# https://raw.githubusercontent.com/你的用户名/你的仓库/main/Rules/China.list, tag=China, force-policy=direct, update-interval=86400, opt-parser=false, enabled=true
+#
+# ================================
+# 规则内容
+# ================================
+HOST-SUFFIX,cn,direct
+HOST-SUFFIX,中国,direct
+HOST-SUFFIX,公司,direct
+HOST-SUFFIX,网络,direct
+# 腾讯 / 微信 / QQ
+HOST-SUFFIX,qq.com,direct
+HOST-SUFFIX,wechat.com,direct
+HOST-SUFFIX,weixin.qq.com,direct
+HOST-SUFFIX,weixin.com,direct
+HOST-SUFFIX,gtimg.com,direct
+HOST-SUFFIX,qpic.cn,direct
+HOST-SUFFIX,tenpay.com,direct
+HOST-SUFFIX,foxmail.com,direct
+HOST-SUFFIX,myqcloud.com,direct
+HOST-SUFFIX,tencent.com,direct
+HOST-SUFFIX,tencent-cloud.com,direct
+HOST-SUFFIX,tencent-cloud.net,direct
+HOST-SUFFIX,qcloud.com,direct
+HOST-SUFFIX,servicewechat.com,direct
+# 阿里 / 淘宝 / 支付宝
+HOST-SUFFIX,alipay.com,direct
+HOST-SUFFIX,alipayobjects.com,direct
+HOST-SUFFIX,alipaydns.com,direct
+HOST-SUFFIX,aliyun.com,direct
+HOST-SUFFIX,aliyuncs.com,direct
+HOST-SUFFIX,aliyuncdn.com,direct
+HOST-SUFFIX,alicdn.com,direct
+HOST-SUFFIX,alibaba.com,direct
+HOST-SUFFIX,alibabacloud.com,direct
+HOST-SUFFIX,taobao.com,direct
+HOST-SUFFIX,tmall.com,direct
+HOST-SUFFIX,tmwsg.com,direct
+HOST-SUFFIX,mmstat.com,direct
+HOST-SUFFIX,cainiao.com,direct
+HOST-SUFFIX,ele.me,direct
+HOST-SUFFIX,elemecdn.com,direct
+HOST-SUFFIX,hellobike.com,direct
+HOST-SUFFIX,1688.com,direct
+HOST-SUFFIX,fliggy.com,direct
+HOST-SUFFIX,feizhu.com,direct
+HOST-SUFFIX,aliyundrive.com,direct
+HOST-SUFFIX,alipan.com,direct
+# 京东
+HOST-SUFFIX,jd.com,direct
+HOST-SUFFIX,jd.hk,direct
+HOST-SUFFIX,jdpay.com,direct
+HOST-SUFFIX,360buyimg.com,direct
+HOST-SUFFIX,360buy.com,direct
+HOST-SUFFIX,jcloud.com,direct
+# 百度
+HOST-SUFFIX,baidu.com,direct
+HOST-SUFFIX,bdimg.com,direct
+HOST-SUFFIX,bdstatic.com,direct
+HOST-SUFFIX,bcebos.com,direct
+HOST-SUFFIX,baidubce.com,direct
+HOST-SUFFIX,baidupcs.com,direct
+HOST-SUFFIX,baidupan.com,direct
+HOST-SUFFIX,hao123.com,direct
+# 小米
+HOST-SUFFIX,mi.com,direct
+HOST-SUFFIX,miui.com,direct
+HOST-SUFFIX,xiaomi.com,direct
+HOST-SUFFIX,xiaomiyoupin.com,direct
+HOST-SUFFIX,mijia.tech,direct
+# 华为 / 荣耀
+HOST-SUFFIX,huawei.com,direct
+HOST-SUFFIX,vmall.com,direct
+HOST-SUFFIX,huaweicloud.com,direct
+HOST-SUFFIX,myhuaweicloud.com,direct
+HOST-SUFFIX,hicloud.com,direct
+HOST-SUFFIX,honor.com,direct
+# OPPO / vivo / 一加
+HOST-SUFFIX,oppo.com,direct
+HOST-SUFFIX,oppo.cn,direct
+HOST-SUFFIX,coloros.com,direct
+HOST-SUFFIX,vivo.com,direct
+HOST-SUFFIX,vivo.com.cn,direct
+HOST-SUFFIX,oneplus.com,direct
+# 生活服务 / 地图 / 出行
+HOST-SUFFIX,meituan.com,direct
+HOST-SUFFIX,dianping.com,direct
+HOST-SUFFIX,dpfile.com,direct
+HOST-SUFFIX,maoyan.com,direct
+HOST-SUFFIX,didi.cn,direct
+HOST-SUFFIX,didiglobal.com,direct
+HOST-SUFFIX,didichuxing.com,direct
+HOST-SUFFIX,didistatic.com,direct
+HOST-SUFFIX,amap.com,direct
+HOST-SUFFIX,autonavi.com,direct
+HOST-SUFFIX,amapauto.com,direct
+HOST-SUFFIX,ctrip.com,direct
+HOST-SUFFIX,qunar.com,direct
+HOST-SUFFIX,elong.com,direct
+HOST-SUFFIX,autohome.com.cn,direct
+HOST-SUFFIX,che168.com,direct
+HOST-SUFFIX,dongchedi.com,direct
+# 政务 / 公共服务 / 银行支付
+HOST-SUFFIX,12306.cn,direct
+HOST-SUFFIX,12306.com,direct
+HOST-SUFFIX,chinatax.gov.cn,direct
+HOST-SUFFIX,gov.cn,direct
+HOST-SUFFIX,95516.com,direct
+HOST-SUFFIX,95516.net,direct
+HOST-SUFFIX,unionpay.com,direct
+HOST-SUFFIX,chinaunionpay.com,direct
+HOST-SUFFIX,icbc.com.cn,direct
+HOST-SUFFIX,ccb.com,direct
+HOST-SUFFIX,abchina.com,direct
+HOST-SUFFIX,bankofchina.com,direct
+HOST-SUFFIX,bankcomm.com,direct
+HOST-SUFFIX,cmbchina.com,direct
+HOST-SUFFIX,psbc.com,direct
+# 国内媒体 / 视频 / 音乐
+HOST-SUFFIX,bilibili.com,direct
+HOST-SUFFIX,bilibili.tv,direct
+HOST-SUFFIX,biliapi.com,direct
+HOST-SUFFIX,biliapi.net,direct
+HOST-SUFFIX,hdslb.com,direct
+HOST-SUFFIX,acgvideo.com,direct
+HOST-SUFFIX,b23.tv,direct
+HOST-SUFFIX,bilivideo.com,direct
+HOST-SUFFIX,bilivideo.net,direct
+HOST-SUFFIX,douyu.com,direct
+HOST-SUFFIX,douyu.tv,direct
+HOST-SUFFIX,huya.com,direct
+HOST-SUFFIX,iqiyi.com,direct
+HOST-SUFFIX,qiyi.com,direct
+HOST-SUFFIX,iqiyipic.com,direct
+HOST-SUFFIX,youku.com,direct
+HOST-SUFFIX,mgtv.com,direct
+HOST-SUFFIX,le.com,direct
+HOST-SUFFIX,pptv.com,direct
+HOST-SUFFIX,kuwo.cn,direct
+HOST-SUFFIX,kugou.com,direct
+HOST-SUFFIX,music.163.com,direct
+HOST-SUFFIX,163.com,direct
+HOST-SUFFIX,126.net,direct
+HOST-SUFFIX,126.com,direct
+HOST-SUFFIX,netease.com,direct
+# 抖音 / 字节跳动
+HOST-SUFFIX,douyin.com,direct
+HOST-SUFFIX,douyincdn.com,direct
+HOST-SUFFIX,douyinpic.com,direct
+HOST-SUFFIX,douyinstatic.com,direct
+HOST-SUFFIX,douyinvod.com,direct
+HOST-SUFFIX,douyinliving.com,direct
+HOST-SUFFIX,amemv.com,direct
+HOST-SUFFIX,snssdk.com,direct
+HOST-SUFFIX,toutiao.com,direct
+HOST-SUFFIX,toutiaostatic.com,direct
+HOST-SUFFIX,toutiaoimg.com,direct
+HOST-SUFFIX,toutiaovod.com,direct
+HOST-SUFFIX,byteimg.com,direct
+HOST-SUFFIX,bytecdn.cn,direct
+HOST-SUFFIX,bytegoofy.com,direct
+HOST-SUFFIX,bytedance.com,direct
+HOST-SUFFIX,bytedance.net,direct
+HOST-SUFFIX,bytedanceapi.com,direct
+HOST-SUFFIX,bytedns.net,direct
+HOST-SUFFIX,ibyteimg.com,direct
+HOST-SUFFIX,pstatp.com,direct
+HOST-SUFFIX,ixigua.com,direct
+HOST-SUFFIX,ixgvideo.com,direct
+HOST-SUFFIX,huoshan.com,direct
+HOST-SUFFIX,huoshanzhibo.com,direct
+HOST-SUFFIX,dcarapi.com,direct
+HOST-SUFFIX,dcarimg.com,direct
+# 新浪微博
+HOST-SUFFIX,weibo.com,direct
+HOST-SUFFIX,weibo.cn,direct
+HOST-SUFFIX,sina.com.cn,direct
+HOST-SUFFIX,sina.com,direct
+HOST-SUFFIX,sinaimg.cn,direct
+HOST-SUFFIX,sinaimg.com,direct
+HOST-KEYWORD,weibo,direct
+# 常见国内开发 / 下载 / 邮箱 / 社区
+HOST-SUFFIX,csdn.com,direct
+HOST-SUFFIX,csdn.net,direct
+HOST-SUFFIX,gitee.com,direct
+HOST-SUFFIX,coding.net,direct
+HOST-SUFFIX,oschina.net,direct
+HOST-SUFFIX,jianshu.com,direct
+HOST-SUFFIX,zhihu.com,direct
+HOST-SUFFIX,zhimg.com,direct
+HOST-SUFFIX,douban.com,direct
+HOST-SUFFIX,doubanio.com,direct
+HOST-SUFFIX,smzdm.com,direct
+HOST-SUFFIX,coolapk.com,direct
+HOST-SUFFIX,sspai.com,direct
+# 国内常见 DNS / CDN
+HOST-SUFFIX,dnspod.cn,direct
+HOST-SUFFIX,dnspod.com,direct
+HOST-SUFFIX,doh.pub,direct
+HOST-SUFFIX,dns.pub,direct
+HOST-SUFFIX,alidns.com,direct
+HOST-SUFFIX,kunlunca.com,direct
+HOST-SUFFIX,kunlunar.com,direct
+HOST-SUFFIX,cdntip.com,direct
+HOST-SUFFIX,cdntips.com,direct
