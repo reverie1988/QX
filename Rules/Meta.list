@@ -1,0 +1,76 @@
+# NAME: Meta
+# AUTHOR: steak
+# TYPE: Quantumult X Filter
+# DESCRIPTION: WhatsApp / Facebook / Instagram / Meta 分流规则
+# SOURCE: Split from GlobalServices.list
+# UPDATED: 2026-05-11
+#
+# ================================
+# 使用说明
+# ================================
+# 1. 文件名：Meta.list
+# 2. 适用于：Quantumult X [filter_remote]
+# 3. 策略组名称：WhatsApp
+# 4. 本文件由原 GlobalServices.list 拆分，便于后续单独维护
+# 5. IP-CIDR / IP6-CIDR 已追加 no-resolve
+#
+# QX 远程订阅示例：
+# https://raw.githubusercontent.com/reverie1988/QX/refs/heads/main/Rules/Meta.list, tag=Meta, force-policy=WhatsApp, update-interval=172800, opt-parser=false, enabled=true
+#
+# ================================
+# 规则统计
+# ================================
+# HOST: 0
+# HOST-SUFFIX: 33
+# HOST-KEYWORD: 4
+# USER-AGENT: 0
+# IP-CIDR: 0
+# IP6-CIDR: 0
+# IP-ASN: 1
+# TOTAL: 38
+#
+# ================================
+# 规则内容
+# ================================
+# WhatsApp / Facebook / Instagram / Meta
+# ================================
+HOST-SUFFIX,aboutfacebook.com,WhatsApp
+HOST-SUFFIX,accountkit.com,WhatsApp
+HOST-SUFFIX,facebook.com,WhatsApp
+HOST-SUFFIX,facebook.net,WhatsApp
+HOST-SUFFIX,facebookmail.com,WhatsApp
+HOST-SUFFIX,facebookmessenger.com,WhatsApp
+HOST-SUFFIX,fb.com,WhatsApp
+HOST-SUFFIX,fb.me,WhatsApp
+HOST-SUFFIX,fbcdn.com,WhatsApp
+HOST-SUFFIX,fbcdn.net,WhatsApp
+HOST-SUFFIX,fbmessenger.com,WhatsApp
+HOST-SUFFIX,fbsbx.com,WhatsApp
+HOST-SUFFIX,fbsbx.net,WhatsApp
+HOST-SUFFIX,fburl.com,WhatsApp
+HOST-SUFFIX,instagram.com,WhatsApp
+HOST-SUFFIX,instagram.net,WhatsApp
+HOST-SUFFIX,cdninstagram.com,WhatsApp
+HOST-SUFFIX,ig.me,WhatsApp
+HOST-SUFFIX,igcdn.com,WhatsApp
+HOST-SUFFIX,threads.net,WhatsApp
+HOST-SUFFIX,m.me,WhatsApp
+HOST-SUFFIX,msngr.com,WhatsApp
+HOST-SUFFIX,oculus.com,WhatsApp
+HOST-SUFFIX,oculuscdn.com,WhatsApp
+HOST-SUFFIX,meta.com,WhatsApp
+HOST-SUFFIX,meta.org,WhatsApp
+HOST-SUFFIX,whatsapp.com,WhatsApp
+HOST-SUFFIX,whatsapp.net,WhatsApp
+HOST-SUFFIX,wa.me,WhatsApp
+HOST-SUFFIX,web.whatsapp.com,WhatsApp
+HOST-SUFFIX,mmg.whatsapp.net,WhatsApp
+HOST-SUFFIX,graph.facebook.com,WhatsApp
+HOST-SUFFIX,graph.instagram.com,WhatsApp
+HOST-KEYWORD,facebook,WhatsApp
+HOST-KEYWORD,instagram,WhatsApp
+HOST-KEYWORD,whatsapp,WhatsApp
+HOST-KEYWORD,fbcdn,WhatsApp
+IP-ASN,32934,WhatsApp
+
+# ================================
