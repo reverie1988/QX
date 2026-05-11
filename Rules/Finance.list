@@ -1,7 +1,7 @@
 # NAME: Finance
 # AUTHOR: steak
 # TYPE: Quantumult X Filter
-# DESCRIPTION: 国外支付钱包 / 支付网关 / Web3 钱包 / 虚拟币交易所 / 行情数据 / 链上浏览器分流规则
+# DESCRIPTION: 国外支付钱包 / 支付网关 / Web3 钱包 / 虚拟支付交易所 / 行情数据 / 链上浏览器分流规则
 # UPDATED: 2026-05-11
 #
 # ================================
@@ -9,8 +9,8 @@
 # ================================
 # 1. 文件名建议：Finance.list
 # 2. 适用于：Quantumult X [filter_remote]
-# 3. 本文件包含两个策略名：支付系统、虚拟币
-# 4. 重要：这份文件不要使用 force-policy，否则会把支付系统和虚拟币全部覆盖成同一个策略
+# 3. 本文件包含两个策略名：虚拟支付、虚拟支付
+# 4. 重要：这份文件不要使用 force-policy，否则会把虚拟支付和虚拟支付全部覆盖成同一个策略
 # 5. 必须放在 Google / Apple / GitHub / China 等通用规则前面
 # 6. 支付、钱包、交易所类服务对节点风控敏感，建议使用稳定、干净、低风险节点
 #
@@ -18,7 +18,7 @@
 # https://raw.githubusercontent.com/你的用户名/你的仓库/main/Rules/Finance.list, tag=Finance, update-interval=86400, opt-parser=false, enabled=true
 #
 # 如果你一定要全部走同一个策略组，可以另建一个“金融服务”策略组，
-# 然后把本文件中的“支付系统”和“虚拟币”统一替换成“金融服务”。
+# 然后把本文件中的“虚拟支付”和“虚拟支付”统一替换成“金融服务”。
 #
 # ================================
 # 规则统计：自建增强版
@@ -27,280 +27,280 @@
 # HOST-SUFFIX: 191
 # HOST-KEYWORD: 9
 # TOTAL: 208
-# 支付系统: 85
-# 虚拟币: 123
+# 虚拟支付: 85
+# 虚拟支付: 123
 #
 # ================================
 # 规则内容
 # ================================
 # ================================
-# 支付系统 / 国外支付钱包
+# 虚拟支付 / 国外支付钱包
 # ================================
 
 # PayPal / Braintree / Venmo
-HOST-SUFFIX,paypal.com,支付系统
-HOST-SUFFIX,paypalobjects.com,支付系统
-HOST-SUFFIX,paypal.me,支付系统
-HOST-SUFFIX,paypal-mktg.com,支付系统
-HOST-SUFFIX,pypl.com,支付系统
-HOST-SUFFIX,braintreepayments.com,支付系统
-HOST-SUFFIX,braintreegateway.com,支付系统
-HOST-SUFFIX,venmo.com,支付系统
+HOST-SUFFIX,paypal.com,虚拟支付
+HOST-SUFFIX,paypalobjects.com,虚拟支付
+HOST-SUFFIX,paypal.me,虚拟支付
+HOST-SUFFIX,paypal-mktg.com,虚拟支付
+HOST-SUFFIX,pypl.com,虚拟支付
+HOST-SUFFIX,braintreepayments.com,虚拟支付
+HOST-SUFFIX,braintreegateway.com,虚拟支付
+HOST-SUFFIX,venmo.com,虚拟支付
 
 # Cash App / Square / Block
-HOST-SUFFIX,cash.app,支付系统
-HOST-SUFFIX,cash.me,支付系统
-HOST-SUFFIX,square.com,支付系统
-HOST-SUFFIX,squareup.com,支付系统
-HOST-SUFFIX,squarecdn.com,支付系统
-HOST-SUFFIX,squareupcdn.com,支付系统
-HOST-SUFFIX,square.site,支付系统
-HOST-SUFFIX,block.xyz,支付系统
+HOST-SUFFIX,cash.app,虚拟支付
+HOST-SUFFIX,cash.me,虚拟支付
+HOST-SUFFIX,square.com,虚拟支付
+HOST-SUFFIX,squareup.com,虚拟支付
+HOST-SUFFIX,squarecdn.com,虚拟支付
+HOST-SUFFIX,squareupcdn.com,虚拟支付
+HOST-SUFFIX,square.site,虚拟支付
+HOST-SUFFIX,block.xyz,虚拟支付
 
 # Wise / Revolut / Skrill / Neteller / Payoneer
-HOST-SUFFIX,wise.com,支付系统
-HOST-SUFFIX,wisecdn.com,支付系统
-HOST-SUFFIX,transferwise.com,支付系统
-HOST-SUFFIX,transferwise.net,支付系统
-HOST-SUFFIX,revolut.com,支付系统
-HOST-SUFFIX,skrill.com,支付系统
-HOST-SUFFIX,skrillcdn.net,支付系统
-HOST-SUFFIX,neteller.com,支付系统
-HOST-SUFFIX,paysafecard.com,支付系统
-HOST-SUFFIX,payoneer.com,支付系统
-HOST-SUFFIX,payoneer-sso.com,支付系统
+HOST-SUFFIX,wise.com,虚拟支付
+HOST-SUFFIX,wisecdn.com,虚拟支付
+HOST-SUFFIX,transferwise.com,虚拟支付
+HOST-SUFFIX,transferwise.net,虚拟支付
+HOST-SUFFIX,revolut.com,虚拟支付
+HOST-SUFFIX,skrill.com,虚拟支付
+HOST-SUFFIX,skrillcdn.net,虚拟支付
+HOST-SUFFIX,neteller.com,虚拟支付
+HOST-SUFFIX,paysafecard.com,虚拟支付
+HOST-SUFFIX,payoneer.com,虚拟支付
+HOST-SUFFIX,payoneer-sso.com,虚拟支付
 
 # Stripe
-HOST,api.stripe.com,支付系统
-HOST,js.stripe.com,支付系统
-HOST,checkout.stripe.com,支付系统
-HOST,m.stripe.network,支付系统
-HOST,q.stripe.com,支付系统
-HOST-SUFFIX,stripe.com,支付系统
-HOST-SUFFIX,stripe.network,支付系统
-HOST-SUFFIX,stripecdn.com,支付系统
-HOST-SUFFIX,stripe.dev,支付系统
-HOST-SUFFIX,stripe.events,支付系统
-HOST-SUFFIX,stripe.global,支付系统
-HOST-SUFFIX,stripe.partners,支付系统
-HOST-SUFFIX,stripe.press,支付系统
+HOST,api.stripe.com,虚拟支付
+HOST,js.stripe.com,虚拟支付
+HOST,checkout.stripe.com,虚拟支付
+HOST,m.stripe.network,虚拟支付
+HOST,q.stripe.com,虚拟支付
+HOST-SUFFIX,stripe.com,虚拟支付
+HOST-SUFFIX,stripe.network,虚拟支付
+HOST-SUFFIX,stripecdn.com,虚拟支付
+HOST-SUFFIX,stripe.dev,虚拟支付
+HOST-SUFFIX,stripe.events,虚拟支付
+HOST-SUFFIX,stripe.global,虚拟支付
+HOST-SUFFIX,stripe.partners,虚拟支付
+HOST-SUFFIX,stripe.press,虚拟支付
 
 # Google Pay
-HOST-SUFFIX,pay.google.com,支付系统
-HOST-SUFFIX,wallet.google.com,支付系统
-HOST-SUFFIX,payments.google.com,支付系统
-HOST-SUFFIX,payments-pa.googleapis.com,支付系统
+HOST-SUFFIX,pay.google.com,虚拟支付
+HOST-SUFFIX,wallet.google.com,虚拟支付
+HOST-SUFFIX,payments.google.com,虚拟支付
+HOST-SUFFIX,payments-pa.googleapis.com,虚拟支付
 
 # Apple Pay
-HOST,apple-pay-gateway.apple.com,支付系统
-HOST,apple-pay-gateway-cert.apple.com,支付系统
-HOST,applepay.cdn-apple.com,支付系统
-HOST-SUFFIX,apple-pay-gateway.apple.com,支付系统
-HOST-SUFFIX,apple-pay-gateway-cert.apple.com,支付系统
-HOST-SUFFIX,applepay.cdn-apple.com,支付系统
+HOST,apple-pay-gateway.apple.com,虚拟支付
+HOST,apple-pay-gateway-cert.apple.com,虚拟支付
+HOST,applepay.cdn-apple.com,虚拟支付
+HOST-SUFFIX,apple-pay-gateway.apple.com,虚拟支付
+HOST-SUFFIX,apple-pay-gateway-cert.apple.com,虚拟支付
+HOST-SUFFIX,applepay.cdn-apple.com,虚拟支付
 
 # GoPay / Gojek GoPay
-HOST-SUFFIX,gopay.com,支付系统
-HOST-SUFFIX,gopay.co.id,支付系统
-HOST-SUFFIX,gojek.com,支付系统
-HOST-SUFFIX,gojekapi.com,支付系统
-HOST-SUFFIX,gojekcdn.com,支付系统
-HOST-KEYWORD,gopay,支付系统
+HOST-SUFFIX,gopay.com,虚拟支付
+HOST-SUFFIX,gopay.co.id,虚拟支付
+HOST-SUFFIX,gojek.com,虚拟支付
+HOST-SUFFIX,gojekapi.com,虚拟支付
+HOST-SUFFIX,gojekcdn.com,虚拟支付
+HOST-KEYWORD,gopay,虚拟支付
 
 # MetaMask / ConsenSys / Infura / Alchemy
-HOST-SUFFIX,metamask.io,支付系统
-HOST-SUFFIX,metamask.app.link,支付系统
-HOST-SUFFIX,consensys.io,支付系统
-HOST-SUFFIX,infura.io,支付系统
-HOST-SUFFIX,infura-ipfs.io,支付系统
-HOST-SUFFIX,alchemy.com,支付系统
-HOST-SUFFIX,alchemyapi.io,支付系统
+HOST-SUFFIX,metamask.io,虚拟支付
+HOST-SUFFIX,metamask.app.link,虚拟支付
+HOST-SUFFIX,consensys.io,虚拟支付
+HOST-SUFFIX,infura.io,虚拟支付
+HOST-SUFFIX,infura-ipfs.io,虚拟支付
+HOST-SUFFIX,alchemy.com,虚拟支付
+HOST-SUFFIX,alchemyapi.io,虚拟支付
 
 # Bitget Wallet / BitKeep
-HOST-SUFFIX,web3.bitget.com,支付系统
-HOST-SUFFIX,bitgetwallet.com,支付系统
-HOST-SUFFIX,bitkeep.com,支付系统
+HOST-SUFFIX,web3.bitget.com,虚拟支付
+HOST-SUFFIX,bitgetwallet.com,虚拟支付
+HOST-SUFFIX,bitkeep.com,虚拟支付
 
 # OKX Wallet
-HOST-SUFFIX,web3.okx.com,支付系统
+HOST-SUFFIX,web3.okx.com,虚拟支付
 
 # Binance Web3 Wallet
-HOST-SUFFIX,web3.binance.com,支付系统
+HOST-SUFFIX,web3.binance.com,虚拟支付
 
 # Trust Wallet / Coinbase Wallet / Phantom / Rainbow / Rabby / WalletConnect
-HOST-SUFFIX,trustwallet.com,支付系统
-HOST-SUFFIX,wallet.coinbase.com,支付系统
-HOST-SUFFIX,phantom.app,支付系统
-HOST-SUFFIX,phantom.com,支付系统
-HOST-SUFFIX,phncdn.com,支付系统
-HOST-SUFFIX,rainbow.me,支付系统
-HOST-SUFFIX,rabby.io,支付系统
-HOST-SUFFIX,debank.com,支付系统
-HOST-SUFFIX,walletconnect.com,支付系统
-HOST-SUFFIX,walletconnect.org,支付系统
-HOST-SUFFIX,token.im,支付系统
-HOST-SUFFIX,imtoken.com,支付系统
+HOST-SUFFIX,trustwallet.com,虚拟支付
+HOST-SUFFIX,wallet.coinbase.com,虚拟支付
+HOST-SUFFIX,phantom.app,虚拟支付
+HOST-SUFFIX,phantom.com,虚拟支付
+HOST-SUFFIX,phncdn.com,虚拟支付
+HOST-SUFFIX,rainbow.me,虚拟支付
+HOST-SUFFIX,rabby.io,虚拟支付
+HOST-SUFFIX,debank.com,虚拟支付
+HOST-SUFFIX,walletconnect.com,虚拟支付
+HOST-SUFFIX,walletconnect.org,虚拟支付
+HOST-SUFFIX,token.im,虚拟支付
+HOST-SUFFIX,imtoken.com,虚拟支付
 
 # Ledger / Trezor / Safe
-HOST-SUFFIX,ledger.com,支付系统
-HOST-SUFFIX,ledgerwallet.com,支付系统
-HOST-SUFFIX,trezor.io,支付系统
-HOST-SUFFIX,safe.global,支付系统
-HOST-SUFFIX,gnosis-safe.io,支付系统
+HOST-SUFFIX,ledger.com,虚拟支付
+HOST-SUFFIX,ledgerwallet.com,虚拟支付
+HOST-SUFFIX,trezor.io,虚拟支付
+HOST-SUFFIX,safe.global,虚拟支付
+HOST-SUFFIX,gnosis-safe.io,虚拟支付
 
 # ================================
-# 虚拟币 / 交易所 / 行情 / 链上浏览器
+# 虚拟支付 / 交易所 / 行情 / 链上浏览器
 # ================================
 
 # Binance / 币安
-HOST-SUFFIX,binance.com,虚拟币
-HOST-SUFFIX,binance.info,虚拟币
-HOST-SUFFIX,binance.me,虚拟币
-HOST-SUFFIX,binance.us,虚拟币
-HOST-SUFFIX,bnbstatic.com,虚拟币
-HOST-SUFFIX,bnbchain.org,虚拟币
-HOST-SUFFIX,binance.org,虚拟币
-HOST-KEYWORD,binance,虚拟币
+HOST-SUFFIX,binance.com,虚拟支付
+HOST-SUFFIX,binance.info,虚拟支付
+HOST-SUFFIX,binance.me,虚拟支付
+HOST-SUFFIX,binance.us,虚拟支付
+HOST-SUFFIX,bnbstatic.com,虚拟支付
+HOST-SUFFIX,bnbchain.org,虚拟支付
+HOST-SUFFIX,binance.org,虚拟支付
+HOST-KEYWORD,binance,虚拟支付
 
 # OKX / 欧易
-HOST-SUFFIX,okx.com,虚拟币
-HOST-SUFFIX,oklink.com,虚拟币
-HOST-SUFFIX,okcoin.com,虚拟币
-HOST-KEYWORD,okx,虚拟币
+HOST-SUFFIX,okx.com,虚拟支付
+HOST-SUFFIX,oklink.com,虚拟支付
+HOST-SUFFIX,okcoin.com,虚拟支付
+HOST-KEYWORD,okx,虚拟支付
 
 # HTX / 火币 / Huobi
-HOST-SUFFIX,htx.com,虚拟币
-HOST-SUFFIX,huobi.com,虚拟币
-HOST-SUFFIX,huobi.pro,虚拟币
-HOST-SUFFIX,huobi.me,虚拟币
-HOST-SUFFIX,hbg.com,虚拟币
-HOST-SUFFIX,hbfile.net,虚拟币
-HOST-KEYWORD,huobi,虚拟币
+HOST-SUFFIX,htx.com,虚拟支付
+HOST-SUFFIX,huobi.com,虚拟支付
+HOST-SUFFIX,huobi.pro,虚拟支付
+HOST-SUFFIX,huobi.me,虚拟支付
+HOST-SUFFIX,hbg.com,虚拟支付
+HOST-SUFFIX,hbfile.net,虚拟支付
+HOST-KEYWORD,huobi,虚拟支付
 
 # Gate
-HOST-SUFFIX,gate.com,虚拟币
-HOST-SUFFIX,gate.io,虚拟币
-HOST-KEYWORD,gateio,虚拟币
+HOST-SUFFIX,gate.com,虚拟支付
+HOST-SUFFIX,gate.io,虚拟支付
+HOST-KEYWORD,gateio,虚拟支付
 
 # Bybit
-HOST-SUFFIX,bybit.com,虚拟币
-HOST-KEYWORD,bybit,虚拟币
+HOST-SUFFIX,bybit.com,虚拟支付
+HOST-KEYWORD,bybit,虚拟支付
 
 # Bitget
-HOST-SUFFIX,bitget.com,虚拟币
-HOST-SUFFIX,bitgetimg.com,虚拟币
-HOST-KEYWORD,bitget,虚拟币
+HOST-SUFFIX,bitget.com,虚拟支付
+HOST-SUFFIX,bitgetimg.com,虚拟支付
+HOST-KEYWORD,bitget,虚拟支付
 
 # MEXC / 抹茶
-HOST-SUFFIX,mexc.com,虚拟币
-HOST-SUFFIX,mexc.co,虚拟币
-HOST-SUFFIX,mexc.fm,虚拟币
-HOST-KEYWORD,mexc,虚拟币
+HOST-SUFFIX,mexc.com,虚拟支付
+HOST-SUFFIX,mexc.co,虚拟支付
+HOST-SUFFIX,mexc.fm,虚拟支付
+HOST-KEYWORD,mexc,虚拟支付
 
 # KuCoin
-HOST-SUFFIX,kucoin.com,虚拟币
-HOST-SUFFIX,kucoin.plus,虚拟币
-HOST-KEYWORD,kucoin,虚拟币
+HOST-SUFFIX,kucoin.com,虚拟支付
+HOST-SUFFIX,kucoin.plus,虚拟支付
+HOST-KEYWORD,kucoin,虚拟支付
 
 # Coinbase / Kraken / Crypto.com / Bitfinex / Bitstamp / OKCoin / Gemini
-HOST-SUFFIX,coinbase.com,虚拟币
-HOST-SUFFIX,coinbasecdn.net,虚拟币
-HOST-SUFFIX,kraken.com,虚拟币
-HOST-SUFFIX,krakenstatic.com,虚拟币
-HOST-SUFFIX,crypto.com,虚拟币
-HOST-SUFFIX,crypto.org,虚拟币
-HOST-SUFFIX,bitfinex.com,虚拟币
-HOST-SUFFIX,bitstamp.net,虚拟币
-HOST-SUFFIX,gemini.com,虚拟币
+HOST-SUFFIX,coinbase.com,虚拟支付
+HOST-SUFFIX,coinbasecdn.net,虚拟支付
+HOST-SUFFIX,kraken.com,虚拟支付
+HOST-SUFFIX,krakenstatic.com,虚拟支付
+HOST-SUFFIX,crypto.com,虚拟支付
+HOST-SUFFIX,crypto.org,虚拟支付
+HOST-SUFFIX,bitfinex.com,虚拟支付
+HOST-SUFFIX,bitstamp.net,虚拟支付
+HOST-SUFFIX,gemini.com,虚拟支付
 
 # BitMart / Bitrue / CoinEx / LBank / Poloniex
-HOST-SUFFIX,bitmart.com,虚拟币
-HOST-SUFFIX,bitrue.com,虚拟币
-HOST-SUFFIX,coinex.com,虚拟币
-HOST-SUFFIX,lbank.com,虚拟币
-HOST-SUFFIX,poloniex.com,虚拟币
+HOST-SUFFIX,bitmart.com,虚拟支付
+HOST-SUFFIX,bitrue.com,虚拟支付
+HOST-SUFFIX,coinex.com,虚拟支付
+HOST-SUFFIX,lbank.com,虚拟支付
+HOST-SUFFIX,poloniex.com,虚拟支付
 
 # 其他常见交易所 / 衍生品 / 地区所
-HOST-SUFFIX,bingx.com,虚拟币
-HOST-SUFFIX,bitmex.com,虚拟币
-HOST-SUFFIX,deribit.com,虚拟币
-HOST-SUFFIX,phemex.com,虚拟币
-HOST-SUFFIX,bitso.com,虚拟币
-HOST-SUFFIX,upbit.com,虚拟币
-HOST-SUFFIX,bithumb.com,虚拟币
-HOST-SUFFIX,coinone.co.kr,虚拟币
-HOST-SUFFIX,bitflyer.com,虚拟币
-HOST-SUFFIX,bitbank.cc,虚拟币
-HOST-SUFFIX,bitvavo.com,虚拟币
-HOST-SUFFIX,coinlist.co,虚拟币
+HOST-SUFFIX,bingx.com,虚拟支付
+HOST-SUFFIX,bitmex.com,虚拟支付
+HOST-SUFFIX,deribit.com,虚拟支付
+HOST-SUFFIX,phemex.com,虚拟支付
+HOST-SUFFIX,bitso.com,虚拟支付
+HOST-SUFFIX,upbit.com,虚拟支付
+HOST-SUFFIX,bithumb.com,虚拟支付
+HOST-SUFFIX,coinone.co.kr,虚拟支付
+HOST-SUFFIX,bitflyer.com,虚拟支付
+HOST-SUFFIX,bitbank.cc,虚拟支付
+HOST-SUFFIX,bitvavo.com,虚拟支付
+HOST-SUFFIX,coinlist.co,虚拟支付
 
 # 行情 / 数据 / 图表
-HOST-SUFFIX,coinmarketcap.com,虚拟币
-HOST-SUFFIX,coingecko.com,虚拟币
-HOST-SUFFIX,coingecko.com.cdn.cloudflare.net,虚拟币
-HOST-SUFFIX,tradingview.com,虚拟币
-HOST-SUFFIX,tradingview-widget.com,虚拟币
-HOST-SUFFIX,cryptocompare.com,虚拟币
-HOST-SUFFIX,defillama.com,虚拟币
-HOST-SUFFIX,dexscreener.com,虚拟币
-HOST-SUFFIX,dextools.io,虚拟币
-HOST-SUFFIX,dune.com,虚拟币
-HOST-SUFFIX,nansen.ai,虚拟币
-HOST-SUFFIX,arkhamintelligence.com,虚拟币
-HOST-SUFFIX,glassnode.com,虚拟币
-HOST-SUFFIX,messari.io,虚拟币
-HOST-SUFFIX,theblock.co,虚拟币
-HOST-SUFFIX,coinglass.com,虚拟币
-HOST-SUFFIX,cointelegraph.com,虚拟币
-HOST-SUFFIX,cryptoslate.com,虚拟币
+HOST-SUFFIX,coinmarketcap.com,虚拟支付
+HOST-SUFFIX,coingecko.com,虚拟支付
+HOST-SUFFIX,coingecko.com.cdn.cloudflare.net,虚拟支付
+HOST-SUFFIX,tradingview.com,虚拟支付
+HOST-SUFFIX,tradingview-widget.com,虚拟支付
+HOST-SUFFIX,cryptocompare.com,虚拟支付
+HOST-SUFFIX,defillama.com,虚拟支付
+HOST-SUFFIX,dexscreener.com,虚拟支付
+HOST-SUFFIX,dextools.io,虚拟支付
+HOST-SUFFIX,dune.com,虚拟支付
+HOST-SUFFIX,nansen.ai,虚拟支付
+HOST-SUFFIX,arkhamintelligence.com,虚拟支付
+HOST-SUFFIX,glassnode.com,虚拟支付
+HOST-SUFFIX,messari.io,虚拟支付
+HOST-SUFFIX,theblock.co,虚拟支付
+HOST-SUFFIX,coinglass.com,虚拟支付
+HOST-SUFFIX,cointelegraph.com,虚拟支付
+HOST-SUFFIX,cryptoslate.com,虚拟支付
 
 # 链上浏览器
-HOST-SUFFIX,etherscan.io,虚拟币
-HOST-SUFFIX,etherscan.com,虚拟币
-HOST-SUFFIX,bscscan.com,虚拟币
-HOST-SUFFIX,solscan.io,虚拟币
-HOST-SUFFIX,arbiscan.io,虚拟币
-HOST-SUFFIX,polygonscan.com,虚拟币
-HOST-SUFFIX,tronscan.org,虚拟币
-HOST-SUFFIX,tronscan.io,虚拟币
-HOST-SUFFIX,basescan.org,虚拟币
-HOST-SUFFIX,optimistic.etherscan.io,虚拟币
-HOST-SUFFIX,lineascan.build,虚拟币
-HOST-SUFFIX,snowtrace.io,虚拟币
-HOST-SUFFIX,celoscan.io,虚拟币
-HOST-SUFFIX,ftmscan.com,虚拟币
-HOST-SUFFIX,moonscan.io,虚拟币
-HOST-SUFFIX,gnosisscan.io,虚拟币
-HOST-SUFFIX,blockscout.com,虚拟币
-HOST-SUFFIX,blockchair.com,虚拟币
-HOST-SUFFIX,blockchain.com,虚拟币
-HOST-SUFFIX,blockstream.info,虚拟币
-HOST-SUFFIX,mempool.space,虚拟币
-HOST-SUFFIX,btc.com,虚拟币
-HOST-SUFFIX,explorer.solana.com,虚拟币
+HOST-SUFFIX,etherscan.io,虚拟支付
+HOST-SUFFIX,etherscan.com,虚拟支付
+HOST-SUFFIX,bscscan.com,虚拟支付
+HOST-SUFFIX,solscan.io,虚拟支付
+HOST-SUFFIX,arbiscan.io,虚拟支付
+HOST-SUFFIX,polygonscan.com,虚拟支付
+HOST-SUFFIX,tronscan.org,虚拟支付
+HOST-SUFFIX,tronscan.io,虚拟支付
+HOST-SUFFIX,basescan.org,虚拟支付
+HOST-SUFFIX,optimistic.etherscan.io,虚拟支付
+HOST-SUFFIX,lineascan.build,虚拟支付
+HOST-SUFFIX,snowtrace.io,虚拟支付
+HOST-SUFFIX,celoscan.io,虚拟支付
+HOST-SUFFIX,ftmscan.com,虚拟支付
+HOST-SUFFIX,moonscan.io,虚拟支付
+HOST-SUFFIX,gnosisscan.io,虚拟支付
+HOST-SUFFIX,blockscout.com,虚拟支付
+HOST-SUFFIX,blockchair.com,虚拟支付
+HOST-SUFFIX,blockchain.com,虚拟支付
+HOST-SUFFIX,blockstream.info,虚拟支付
+HOST-SUFFIX,mempool.space,虚拟支付
+HOST-SUFFIX,btc.com,虚拟支付
+HOST-SUFFIX,explorer.solana.com,虚拟支付
 
 # DEX / DeFi / NFT
-HOST-SUFFIX,uniswap.org,虚拟币
-HOST-SUFFIX,app.uniswap.org,虚拟币
-HOST-SUFFIX,pancakeswap.finance,虚拟币
-HOST-SUFFIX,1inch.io,虚拟币
-HOST-SUFFIX,1inch.exchange,虚拟币
-HOST-SUFFIX,curve.fi,虚拟币
-HOST-SUFFIX,aave.com,虚拟币
-HOST-SUFFIX,compound.finance,虚拟币
-HOST-SUFFIX,opensea.io,虚拟币
-HOST-SUFFIX,blur.io,虚拟币
-HOST-SUFFIX,magiceden.io,虚拟币
+HOST-SUFFIX,uniswap.org,虚拟支付
+HOST-SUFFIX,app.uniswap.org,虚拟支付
+HOST-SUFFIX,pancakeswap.finance,虚拟支付
+HOST-SUFFIX,1inch.io,虚拟支付
+HOST-SUFFIX,1inch.exchange,虚拟支付
+HOST-SUFFIX,curve.fi,虚拟支付
+HOST-SUFFIX,aave.com,虚拟支付
+HOST-SUFFIX,compound.finance,虚拟支付
+HOST-SUFFIX,opensea.io,虚拟支付
+HOST-SUFFIX,blur.io,虚拟支付
+HOST-SUFFIX,magiceden.io,虚拟支付
 
 # 基础链 / Web3 基础设施
-HOST-SUFFIX,ethereum.org,虚拟币
-HOST-SUFFIX,solana.com,虚拟币
-HOST-SUFFIX,polygon.technology,虚拟币
-HOST-SUFFIX,avalanche.network,虚拟币
-HOST-SUFFIX,arbitrum.io,虚拟币
-HOST-SUFFIX,optimism.io,虚拟币
-HOST-SUFFIX,chain.link,虚拟币
-HOST-SUFFIX,thegraph.com,虚拟币
-HOST-SUFFIX,ipfs.io,虚拟币
-HOST-SUFFIX,ipfs.tech,虚拟币
-HOST-SUFFIX,pinata.cloud,虚拟币
+HOST-SUFFIX,ethereum.org,虚拟支付
+HOST-SUFFIX,solana.com,虚拟支付
+HOST-SUFFIX,polygon.technology,虚拟支付
+HOST-SUFFIX,avalanche.network,虚拟支付
+HOST-SUFFIX,arbitrum.io,虚拟支付
+HOST-SUFFIX,optimism.io,虚拟支付
+HOST-SUFFIX,chain.link,虚拟支付
+HOST-SUFFIX,thegraph.com,虚拟支付
+HOST-SUFFIX,ipfs.io,虚拟支付
+HOST-SUFFIX,ipfs.tech,虚拟支付
+HOST-SUFFIX,pinata.cloud,虚拟支付
