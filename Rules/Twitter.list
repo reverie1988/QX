@@ -1,0 +1,72 @@
+# NAME: Twitter
+# AUTHOR: steak
+# TYPE: Quantumult X Filter
+# DESCRIPTION: Twitter / X 分流规则
+# SOURCE: Split from GlobalServices.list
+# UPDATED: 2026-05-11
+#
+# ================================
+# 使用说明
+# ================================
+# 1. 文件名：Twitter.list
+# 2. 适用于：Quantumult X [filter_remote]
+# 3. 策略组名称：Twitter
+# 4. 本文件由原 GlobalServices.list 拆分，便于后续单独维护
+# 5. IP-CIDR / IP6-CIDR 已追加 no-resolve
+#
+# QX 远程订阅示例：
+# https://raw.githubusercontent.com/reverie1988/QX/refs/heads/main/Rules/Twitter.list, tag=Twitter, force-policy=Twitter, update-interval=172800, opt-parser=false, enabled=true
+#
+# ================================
+# 规则统计
+# ================================
+# HOST: 0
+# HOST-SUFFIX: 26
+# HOST-KEYWORD: 2
+# USER-AGENT: 0
+# IP-CIDR: 6
+# IP6-CIDR: 0
+# IP-ASN: 0
+# TOTAL: 34
+#
+# ================================
+# 规则内容
+# ================================
+# Twitter / X
+# ================================
+HOST-SUFFIX,ads-twitter.com,Twitter
+HOST-SUFFIX,cms-twdigitalassets.com,Twitter
+HOST-SUFFIX,grok.com,Twitter
+HOST-SUFFIX,periscope.tv,Twitter
+HOST-SUFFIX,pscp.tv,Twitter
+HOST-SUFFIX,t.co,Twitter
+HOST-SUFFIX,tellapart.com,Twitter
+HOST-SUFFIX,tweetdeck.com,Twitter
+HOST-SUFFIX,twimg.co,Twitter
+HOST-SUFFIX,twimg.com,Twitter
+HOST-SUFFIX,twimg.org,Twitter
+HOST-SUFFIX,twitpic.com,Twitter
+HOST-SUFFIX,twitter.biz,Twitter
+HOST-SUFFIX,twitter.com,Twitter
+HOST-SUFFIX,twitter.jp,Twitter
+HOST-SUFFIX,twittercommunity.com,Twitter
+HOST-SUFFIX,twitterflightschool.com,Twitter
+HOST-SUFFIX,twitterinc.com,Twitter
+HOST-SUFFIX,twitteroauth.com,Twitter
+HOST-SUFFIX,twitterstat.us,Twitter
+HOST-SUFFIX,twtrdns.net,Twitter
+HOST-SUFFIX,twttr.com,Twitter
+HOST-SUFFIX,twttr.net,Twitter
+HOST-SUFFIX,twvid.com,Twitter
+HOST-SUFFIX,vine.co,Twitter
+HOST-SUFFIX,x.com,Twitter
+HOST-KEYWORD,twitter,Twitter
+HOST-KEYWORD,twimg,Twitter
+IP-CIDR,192.133.76.0/22,Twitter,no-resolve
+IP-CIDR,199.59.148.0/22,Twitter,no-resolve
+IP-CIDR,199.96.56.0/21,Twitter,no-resolve
+IP-CIDR,202.160.128.0/22,Twitter,no-resolve
+IP-CIDR,209.237.192.0/19,Twitter,no-resolve
+IP-CIDR,69.195.160.0/19,Twitter,no-resolve
+
+# ================================
