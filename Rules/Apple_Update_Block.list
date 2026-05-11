@@ -1,0 +1,119 @@
+# NAME: Apple_Update_Block
+# AUTHOR: steak
+# TYPE: Quantumult X Filter
+# DESCRIPTION: Block iOS / iPadOS / macOS OTA update detection and download domains
+# SOURCE: User local OTA rules + blackmatrix7 SystemOTA rules
+# UPDATED: 2026-05-11
+#
+# ================================
+# 使用说明
+# ================================
+# 1. 文件名建议：Apple_Update_Block.list
+# 2. 适用于：Quantumult X [filter_remote]
+# 3. 策略名：iOS更新
+# 4. 推荐在 QX 远程规则中使用 force-policy=reject，直接拒绝这些 OTA 域名
+# 5. 必须放在 Apple.list 前面，否则 Apple 全量规则会先命中 OTA 域名
+#
+# QX 推荐订阅示例：
+# https://raw.githubusercontent.com/你的用户名/你的仓库/main/Rules/Apple_Update_Block.list, tag=iOS更新, force-policy=reject, update-interval=86400, opt-parser=false, enabled=true
+#
+# 如果你已经建了名为“iOS更新”的拒绝策略组，也可以用：
+# https://raw.githubusercontent.com/你的用户名/你的仓库/main/Rules/Apple_Update_Block.list, tag=iOS更新, force-policy=iOS更新, update-interval=86400, opt-parser=false, enabled=true
+#
+# ================================
+# 规则统计
+# ================================
+# HOST/HOST-SUFFIX: 92
+#
+HOST,mesu.apple.com,iOS更新
+HOST,gdmf.apple.com,iOS更新
+HOST,appldnld.apple.com,iOS更新
+HOST,updates-http.cdn-apple.com,iOS更新
+HOST,updates.cdn-apple.com,iOS更新
+HOST,swscan.apple.com,iOS更新
+HOST,swcdn.apple.com,iOS更新
+HOST,swdownload.apple.com,iOS更新
+HOST,swdist.apple.com,iOS更新
+HOST,bpapi.apple.com,iOS更新
+HOST,appldnld-cdn.apple.com.akadns.net,iOS更新
+HOST,appldnld-cdn.origin-apple.com.akadns.net,iOS更新
+HOST,appldnld-lb.apple.com.akadns.net,iOS更新
+HOST,appldnld.apple.com.akadns.net,iOS更新
+HOST,appldnld.apple.com.mwcname.com,iOS更新
+HOST,appldnld.g.aaplimg.com,iOS更新
+HOST,configuration.apple.com,iOS更新
+HOST,gdmf-cdn.apple.com.akadns.net,iOS更新
+HOST,gdmf-cdn.origin-apple.com.akadns.net,iOS更新
+HOST,gdmf-lb.apple.com.akadns.net,iOS更新
+HOST,gdmf.apple.com.akadns.net,iOS更新
+HOST,gdmf.apple.com.mwcname.com,iOS更新
+HOST,gdmf.g.aaplimg.com,iOS更新
+HOST,gg-cdn.apple.com.akadns.net,iOS更新
+HOST,gg-cdn.origin-apple.com.akadns.net,iOS更新
+HOST,gg-lb.apple.com.akadns.net,iOS更新
+HOST,gg.apple.com,iOS更新
+HOST,gg.apple.com.akadns.net,iOS更新
+HOST,gg.apple.com.mwcname.com,iOS更新
+HOST,gg.g.aaplimg.com,iOS更新
+HOST,gnf-mdn.apple.com,iOS更新
+HOST,gnf-mr.apple.com,iOS更新
+HOST,gs.apple.com,iOS更新
+HOST,ig.apple.com,iOS更新
+HOST,iphonesubmissions-cdn.apple.com.akadns.net,iOS更新
+HOST,iphonesubmissions-cdn.origin-apple.com.akadns.net,iOS更新
+HOST,iphonesubmissions-lb.apple.com.akadns.net,iOS更新
+HOST,iphonesubmissions.apple.com,iOS更新
+HOST,iphonesubmissions.apple.com.akadns.net,iOS更新
+HOST,iphonesubmissions.apple.com.mwcname.com,iOS更新
+HOST,iphonesubmissions.g.aaplimg.com,iOS更新
+HOST,mesu-cdn.apple.com.akadns.net,iOS更新
+HOST,mesu-cdn.origin-apple.com.akadns.net,iOS更新
+HOST,mesu-lb.apple.com.akadns.net,iOS更新
+HOST,mesu.apple.com.akadns.net,iOS更新
+HOST,mesu.apple.com.mwcname.com,iOS更新
+HOST,mesu.g.aaplimg.com,iOS更新
+HOST,ns.itunes.apple.com,iOS更新
+HOST,ocsp-cdn.apple.com.akadns.net,iOS更新
+HOST,ocsp-cdn.origin-apple.com.akadns.net,iOS更新
+HOST,ocsp-lb.apple.com.akadns.net,iOS更新
+HOST,ocsp.apple.com,iOS更新
+HOST,ocsp.apple.com.akadns.net,iOS更新
+HOST,ocsp.apple.com.mwcname.com,iOS更新
+HOST,ocsp.g.aaplimg.com,iOS更新
+HOST,oscdn.apple.com,iOS更新
+HOST,osrecovery.apple.com,iOS更新
+HOST,radarsubmissions-cdn.apple.com.akadns.net,iOS更新
+HOST,radarsubmissions-cdn.origin-apple.com.akadns.net,iOS更新
+HOST,radarsubmissions-lb.apple.com.akadns.net,iOS更新
+HOST,radarsubmissions.apple.com,iOS更新
+HOST,radarsubmissions.apple.com.akadns.net,iOS更新
+HOST,radarsubmissions.apple.com.mwcname.com,iOS更新
+HOST,radarsubmissions.g.aaplimg.com,iOS更新
+HOST,skl.apple.com,iOS更新
+HOST,swpost.apple.com,iOS更新
+HOST,swscan-cdn.apple.com.akadns.net,iOS更新
+HOST,swscan-cdn.origin-apple.com.akadns.net,iOS更新
+HOST,swscan-lb.apple.com.akadns.net,iOS更新
+HOST,swscan.apple.com.akadns.net,iOS更新
+HOST,swscan.apple.com.mwcname.com,iOS更新
+HOST,swscan.g.aaplimg.com,iOS更新
+HOST,xp-cdn.apple.com.akadns.net,iOS更新
+HOST,xp-cdn.origin-apple.com.akadns.net,iOS更新
+HOST,xp-lb.apple.com.akadns.net,iOS更新
+HOST,xp.apple.com,iOS更新
+HOST,xp.apple.com.akadns.net,iOS更新
+HOST,xp.apple.com.mwcname.com,iOS更新
+HOST,xp.g.aaplimg.com,iOS更新
+HOST-SUFFIX,appldnld-lb.apple.com.akadns.net,iOS更新
+HOST-SUFFIX,appldnld.apple.com,iOS更新
+HOST-SUFFIX,appldnld.apple.com.akadns.net,iOS更新
+HOST-SUFFIX,appldnld.g.aaplimg.com,iOS更新
+HOST-SUFFIX,gdmf.apple.com,iOS更新
+HOST-SUFFIX,gdmf.apple.com.akadns.net,iOS更新
+HOST-SUFFIX,mesu-cdn.apple.com.akadns.net,iOS更新
+HOST-SUFFIX,mesu-cdn.origin-apple.com.akadns.net,iOS更新
+HOST-SUFFIX,mesu.apple.com,iOS更新
+HOST-SUFFIX,mesu.g.aaplimg.com,iOS更新
+HOST-SUFFIX,ocsp-lb.apple.com.akadns.net,iOS更新
+HOST-SUFFIX,ocsp.apple.com,iOS更新
+HOST-SUFFIX,ocsp.g.aaplimg.com,iOS更新
