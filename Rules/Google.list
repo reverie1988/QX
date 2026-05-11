@@ -10,13 +10,13 @@
 # ================================
 # 1. 文件名建议：Google.list
 # 2. 适用于：Quantumult X [filter_remote]
-# 3. 策略组名称：基础策略
+# 3. 策略组名称：基础支持
 # 4. Google 通用规则较宽，必须放在 YouTube / AI / Finance / GitHub 等专用规则后面
-# 5. 如果使用 force-policy，建议 force-policy=基础策略
+# 5. 如果使用 force-policy，建议 force-policy=基础支持
 # 6. 不建议放在 China.list 前面太早的位置之外，避免抢走专用服务规则
 #
 # QX 远程订阅示例：
-# https://raw.githubusercontent.com/你的用户名/你的仓库/main/Rules/Google.list, tag=Google, force-policy=基础策略, update-interval=86400, opt-parser=false, enabled=true
+# https://raw.githubusercontent.com/你的用户名/你的仓库/main/Rules/Google.list, tag=Google, force-policy=基础支持, update-interval=86400, opt-parser=false, enabled=true
 #
 # 如果不想强制覆盖，也可以不写 force-policy：
 # https://raw.githubusercontent.com/你的用户名/你的仓库/main/Rules/Google.list, tag=Google, update-interval=86400, opt-parser=false, enabled=true
@@ -36,33 +36,33 @@
 # 注意：放在 YouTube / AI / Finance / GitHub 后面，避免抢规则
 # ================================
 
-HOST-SUFFIX,google.com,基础策略
-HOST-SUFFIX,googleapis.com,基础策略
-HOST-SUFFIX,gstatic.com,基础策略
-HOST-SUFFIX,googleusercontent.com,基础策略
-HOST-SUFFIX,ggpht.com,基础策略
-HOST-SUFFIX,gmail.com,基础策略
-HOST-SUFFIX,google.com.hk,基础策略
-HOST-SUFFIX,google.co.jp,基础策略
-HOST-SUFFIX,google.de,基础策略
-HOST-SUFFIX,google.co.uk,基础策略
-HOST-SUFFIX,google.com.sg,基础策略
-HOST-SUFFIX,google.com.tw,基础策略
-HOST-SUFFIX,google.com.au,基础策略
-HOST-SUFFIX,google.ca,基础策略
-HOST-SUFFIX,android.com,基础策略
-HOST-SUFFIX,google-analytics.com,基础策略
-HOST-SUFFIX,googletagmanager.com,基础策略
-HOST-SUFFIX,googletagservices.com,基础策略
-HOST-SUFFIX,googlesyndication.com,基础策略
-HOST-SUFFIX,googleadservices.com,基础策略
-HOST-SUFFIX,googleads.g.doubleclick.net,基础策略
-HOST-SUFFIX,doubleclick.net,基础策略
-HOST-SUFFIX,googlevideo.com,基础策略
-HOST-SUFFIX,googleblog.com,基础策略
-HOST-SUFFIX,googleusercontent.cn,基础策略
-HOST-SUFFIX,googleapis.cn,基础策略
-HOST-SUFFIX,chrome.com,基础策略
-HOST-SUFFIX,chromium.org,基础策略
-HOST-SUFFIX,withgoogle.com,基础策略
-HOST-KEYWORD,google,基础策略
+HOST-SUFFIX,google.com,基础支持
+HOST-SUFFIX,googleapis.com,基础支持
+HOST-SUFFIX,gstatic.com,基础支持
+HOST-SUFFIX,googleusercontent.com,基础支持
+HOST-SUFFIX,ggpht.com,基础支持
+HOST-SUFFIX,gmail.com,基础支持
+HOST-SUFFIX,google.com.hk,基础支持
+HOST-SUFFIX,google.co.jp,基础支持
+HOST-SUFFIX,google.de,基础支持
+HOST-SUFFIX,google.co.uk,基础支持
+HOST-SUFFIX,google.com.sg,基础支持
+HOST-SUFFIX,google.com.tw,基础支持
+HOST-SUFFIX,google.com.au,基础支持
+HOST-SUFFIX,google.ca,基础支持
+HOST-SUFFIX,android.com,基础支持
+HOST-SUFFIX,google-analytics.com,基础支持
+HOST-SUFFIX,googletagmanager.com,基础支持
+HOST-SUFFIX,googletagservices.com,基础支持
+HOST-SUFFIX,googlesyndication.com,基础支持
+HOST-SUFFIX,googleadservices.com,基础支持
+HOST-SUFFIX,googleads.g.doubleclick.net,基础支持
+HOST-SUFFIX,doubleclick.net,基础支持
+HOST-SUFFIX,googlevideo.com,基础支持
+HOST-SUFFIX,googleblog.com,基础支持
+HOST-SUFFIX,googleusercontent.cn,基础支持
+HOST-SUFFIX,googleapis.cn,基础支持
+HOST-SUFFIX,chrome.com,基础支持
+HOST-SUFFIX,chromium.org,基础支持
+HOST-SUFFIX,withgoogle.com,基础支持
+HOST-KEYWORD,google,基础支持
