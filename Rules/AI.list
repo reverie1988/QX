@@ -1,0 +1,197 @@
+# NAME: AI
+# AUTHOR: steak
+# TYPE: Quantumult X Filter
+# DESCRIPTION: AI / ChatGPT / OpenAI / Claude / Gemini / Perplexity / Poe / Cursor / Groq / Mistral / DeepSeek / Midjourney 等 AI 服务分流规则
+# UPDATED: 2026-05-11
+#
+# ================================
+# 使用说明
+# ================================
+# 1. 文件名建议：AI.list
+# 2. 适用于：Quantumult X [filter_remote]
+# 3. 策略组名称：人工智能
+# 4. 推荐人工智能策略组手动选择：🇰🇷 Oracle春川-Vless
+# 5. 这份规则只放 AI 专用域名，不加入 googleapis.com / googleusercontent.com / cloudflare.com 这种大范围域名，避免误伤
+# 6. 建议放在 YouTube / Google / GitHub / Apple / China 这些规则前面
+#
+# QX 远程订阅示例：
+# https://raw.githubusercontent.com/你的用户名/你的仓库/main/Rules/AI.list, tag=AI, force-policy=人工智能, update-interval=86400, opt-parser=false, enabled=true
+#
+# ================================
+# 规则统计：自建增强版
+# ================================
+# HOST: 8
+# HOST-SUFFIX: 136
+# HOST-KEYWORD: 6
+# TOTAL: 150
+#
+# ================================
+# 规则内容
+# ================================
+# OpenAI / ChatGPT
+HOST,chat.openai.com.cdn.cloudflare.net,人工智能
+HOST,openai-api.arkoselabs.com,人工智能
+HOST,openaicom-api-bdcpf8c6d2e9atf6.z01.azurefd.net,人工智能
+HOST,openaicomproductionae4b.blob.core.windows.net,人工智能
+HOST,production-openaicom-storage.azureedge.net,人工智能
+HOST-SUFFIX,openai.com,人工智能
+HOST-SUFFIX,chatgpt.com,人工智能
+HOST-SUFFIX,auth.openai.com,人工智能
+HOST-SUFFIX,auth0.openai.com,人工智能
+HOST-SUFFIX,oaistatic.com,人工智能
+HOST-SUFFIX,oaiusercontent.com,人工智能
+HOST-SUFFIX,ai.com,人工智能
+HOST-SUFFIX,cdn.openaimerge.com,人工智能
+HOST-SUFFIX,openaiapi-site.azureedge.net,人工智能
+HOST-SUFFIX,openaicom.imgix.net,人工智能
+HOST-SUFFIX,chatgpt.livekit.cloud,人工智能
+HOST-SUFFIX,host.livekit.cloud,人工智能
+HOST-SUFFIX,turn.livekit.cloud,人工智能
+HOST-SUFFIX,client-api.arkoselabs.com,人工智能
+HOST-SUFFIX,featuregates.org,人工智能
+HOST-SUFFIX,api.statsig.com,人工智能
+HOST-SUFFIX,events.statsigapi.net,人工智能
+HOST-SUFFIX,statsig.com,人工智能
+HOST-SUFFIX,intercom.io,人工智能
+HOST-SUFFIX,intercomcdn.com,人工智能
+HOST-SUFFIX,cdn.workos.com,人工智能
+HOST-SUFFIX,ct.sendgrid.net,人工智能
+HOST-SUFFIX,identrust.com,人工智能
+HOST-SUFFIX,launchdarkly.com,人工智能
+HOST-SUFFIX,segment.io,人工智能
+HOST-SUFFIX,sentry.io,人工智能
+HOST-KEYWORD,openai,人工智能
+HOST-KEYWORD,chatgpt,人工智能
+# Claude / Anthropic
+HOST,api.anthropic.com,人工智能
+HOST,console.anthropic.com,人工智能
+HOST-SUFFIX,claude.ai,人工智能
+HOST-SUFFIX,anthropic.com,人工智能
+HOST-SUFFIX,claudeusercontent.com,人工智能
+HOST-KEYWORD,claude,人工智能
+HOST-KEYWORD,anthropic,人工智能
+# Perplexity
+HOST-SUFFIX,perplexity.ai,人工智能
+HOST-SUFFIX,pplx.ai,人工智能
+HOST-KEYWORD,perplexity,人工智能
+# Poe / Quora
+HOST-SUFFIX,poe.com,人工智能
+HOST-SUFFIX,poecdn.net,人工智能
+HOST-SUFFIX,quora.com,人工智能
+# Gemini / Google AI
+HOST,alkalimakersuite-pa.clients6.google.com,人工智能
+HOST-SUFFIX,gemini.google.com,人工智能
+HOST-SUFFIX,bard.google.com,人工智能
+HOST-SUFFIX,generativelanguage.googleapis.com,人工智能
+HOST-SUFFIX,ai.google.dev,人工智能
+HOST-SUFFIX,aistudio.google.com,人工智能
+HOST-SUFFIX,makersuite.google.com,人工智能
+HOST-SUFFIX,notebooklm.google.com,人工智能
+HOST-SUFFIX,labs.google,人工智能
+HOST-SUFFIX,deepmind.google,人工智能
+HOST-SUFFIX,aitestkitchen.withgoogle.com,人工智能
+HOST-KEYWORD,gemini,人工智能
+# Microsoft AI / Copilot
+# 注意：如果你希望 GitHub Copilot 走 GitHub 策略组，不要把 AI.list 放在 GitHub.list 前面
+HOST-SUFFIX,copilot.microsoft.com,人工智能
+HOST-SUFFIX,bing.com,人工智能
+HOST-SUFFIX,bingapis.com,人工智能
+HOST-SUFFIX,edgeservices.bing.com,人工智能
+HOST-SUFFIX,sydney.bing.com,人工智能
+# GitHub Copilot / Coding AI
+# 如果你更希望 GitHub Copilot 跟 GitHub 走同一策略，可以注释这一段
+HOST-SUFFIX,githubcopilot.com,人工智能
+HOST-SUFFIX,copilot-proxy.githubusercontent.com,人工智能
+HOST-SUFFIX,origin-tracker.githubusercontent.com,人工智能
+HOST-SUFFIX,copilot-telemetry.githubusercontent.com,人工智能
+HOST-SUFFIX,cursor.com,人工智能
+HOST-SUFFIX,cursor.sh,人工智能
+HOST-SUFFIX,anysphere.co,人工智能
+HOST-SUFFIX,tabnine.com,人工智能
+HOST-SUFFIX,codeium.com,人工智能
+HOST-SUFFIX,windsurf.com,人工智能
+HOST-SUFFIX,codeiumdata.com,人工智能
+# AI 模型 / API 平台
+HOST-SUFFIX,cohere.com,人工智能
+HOST-SUFFIX,cohere.ai,人工智能
+HOST-SUFFIX,huggingface.co,人工智能
+HOST-SUFFIX,huggingface.com,人工智能
+HOST-SUFFIX,hf.co,人工智能
+HOST-SUFFIX,replicate.com,人工智能
+HOST-SUFFIX,replicate.delivery,人工智能
+HOST-SUFFIX,groq.com,人工智能
+HOST-SUFFIX,groqcloud.com,人工智能
+HOST-SUFFIX,mistral.ai,人工智能
+HOST-SUFFIX,mistralcdn.net,人工智能
+HOST-SUFFIX,together.ai,人工智能
+HOST-SUFFIX,together.xyz,人工智能
+HOST-SUFFIX,openrouter.ai,人工智能
+HOST-SUFFIX,openrouter.com,人工智能
+HOST-SUFFIX,fireworks.ai,人工智能
+HOST-SUFFIX,fireworks.com,人工智能
+HOST-SUFFIX,modal.com,人工智能
+HOST-SUFFIX,modal.run,人工智能
+HOST-SUFFIX,baseten.co,人工智能
+HOST-SUFFIX,runpod.io,人工智能
+HOST-SUFFIX,lambda.ai,人工智能
+HOST-SUFFIX,scale.com,人工智能
+HOST-SUFFIX,scaleapi.com,人工智能
+# xAI / Grok
+HOST-SUFFIX,x.ai,人工智能
+HOST-SUFFIX,grok.com,人工智能
+HOST-SUFFIX,xai-org.com,人工智能
+# Meta AI / Character AI
+HOST-SUFFIX,meta.ai,人工智能
+HOST-SUFFIX,character.ai,人工智能
+HOST-SUFFIX,characterai.io,人工智能
+HOST-SUFFIX,c.ai,人工智能
+# DeepSeek
+HOST-SUFFIX,deepseek.com,人工智能
+HOST-SUFFIX,deepseek.ai,人工智能
+HOST-SUFFIX,deepseekapi.com,人工智能
+# 国内 AI，可按需保留
+# 如果你希望国内 AI 走 direct，可以注释这一段，并交给 China.list 处理
+HOST-SUFFIX,kimi.com,人工智能
+HOST-SUFFIX,moonshot.cn,人工智能
+HOST-SUFFIX,moonshot.ai,人工智能
+HOST-SUFFIX,zhipuai.cn,人工智能
+HOST-SUFFIX,chatglm.cn,人工智能
+HOST-SUFFIX,bigmodel.cn,人工智能
+HOST-SUFFIX,qwenlm.ai,人工智能
+HOST-SUFFIX,tongyi.com,人工智能
+HOST-SUFFIX,dashscope.aliyuncs.com,人工智能
+HOST-SUFFIX,doubao.com,人工智能
+HOST-SUFFIX,doubao.com.cn,人工智能
+HOST-SUFFIX,volcengine.com,人工智能
+HOST-SUFFIX,wenxin.baidu.com,人工智能
+HOST-SUFFIX,yiyan.baidu.com,人工智能
+# 图片 / 视频 / 音频生成
+HOST-SUFFIX,midjourney.com,人工智能
+HOST-SUFFIX,cdn.midjourney.com,人工智能
+HOST-SUFFIX,stability.ai,人工智能
+HOST-SUFFIX,stablediffusionweb.com,人工智能
+HOST-SUFFIX,clipdrop.co,人工智能
+HOST-SUFFIX,leonardo.ai,人工智能
+HOST-SUFFIX,runwayml.com,人工智能
+HOST-SUFFIX,runwayml.cloud,人工智能
+HOST-SUFFIX,luma.ai,人工智能
+HOST-SUFFIX,klingai.com,人工智能
+HOST-SUFFIX,pika.art,人工智能
+HOST-SUFFIX,ideogram.ai,人工智能
+HOST-SUFFIX,elevenlabs.io,人工智能
+HOST-SUFFIX,elevenlabs.com,人工智能
+HOST-SUFFIX,suno.com,人工智能
+HOST-SUFFIX,suno.ai,人工智能
+HOST-SUFFIX,udio.com,人工智能
+# AI 搜索 / Agent / 工作流
+HOST-SUFFIX,you.com,人工智能
+HOST-SUFFIX,phind.com,人工智能
+HOST-SUFFIX,genspark.ai,人工智能
+HOST-SUFFIX,manus.im,人工智能
+HOST-SUFFIX,notion.so,人工智能
+HOST-SUFFIX,notion.com,人工智能
+HOST-SUFFIX,gamma.app,人工智能
+HOST-SUFFIX,bolt.new,人工智能
+HOST-SUFFIX,lovable.dev,人工智能
+HOST-SUFFIX,replit.com,人工智能
+HOST-SUFFIX,v0.dev,人工智能
