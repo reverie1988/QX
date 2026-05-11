@@ -1,0 +1,152 @@
+# NAME: GitHub
+# AUTHOR: steak
+# TYPE: Quantumult X Filter
+# DESCRIPTION: GitHub / GitHubusercontent / GitHub Actions / GitHub Releases / GitHub Copilot / GitHub Container Registry / NPM 分流规则
+# SOURCE: Based on blackmatrix7/ios_rule_script GitHub rules + GitHub official Copilot allowlist
+# UPDATED: 2026-05-11
+#
+# ================================
+# 使用说明
+# ================================
+# 1. 文件名建议：GitHub.list
+# 2. 适用于：Quantumult X [filter_remote]
+# 3. 策略组名称：GitHub
+# 4. 这份已经是增强版，不需要再单独做 GitHub_plus.list
+# 5. 包含你原有的本地 GitHub 规则
+# 6. 适合 GitHub 网页、Raw、Gist、Release 下载、Actions、Copilot、GHCR、NPM
+#
+# QX 远程订阅示例：
+# https://raw.githubusercontent.com/你的用户名/你的仓库/main/Rules/GitHub.list, tag=GitHub, force-policy=GitHub, update-interval=86400, opt-parser=false, enabled=true
+#
+# ================================
+# 规则说明
+# ================================
+# - github.com：GitHub 主站、Gist、Codeload、API 等
+# - githubusercontent.com：Raw、Objects、Actions、Release、Copilot telemetry 等资源
+# - githubcopilot.com：GitHub Copilot 服务
+# - ghcr.io：GitHub Container Registry
+# - npmjs.com / npmjs.org：NPM 相关服务
+# - 不加入大段 IP-CIDR，GitHub IP 会变化，建议以域名规则为主
+#
+# ================================
+# 规则统计：自建增强版
+# ================================
+# HOST: 16
+# HOST-SUFFIX: 44
+# HOST-WILDCARD: 3
+# HOST-KEYWORD: 1
+#
+# ================================
+# GitHub 精确域名
+# ================================
+
+HOST,api.github.com,GitHub
+HOST,codeload.github.com,GitHub
+HOST,gist.github.com,GitHub
+HOST,lfs.github.com,GitHub
+HOST,raw.githubusercontent.com,GitHub
+HOST,objects.githubusercontent.com,GitHub
+HOST,actions.githubusercontent.com,GitHub
+HOST,github-cloud.githubusercontent.com,GitHub
+HOST,github-releases.githubusercontent.com,GitHub
+HOST,github-registry-files.githubusercontent.com,GitHub
+HOST,copilot-proxy.githubusercontent.com,GitHub
+HOST,origin-tracker.githubusercontent.com,GitHub
+HOST,copilot-telemetry.githubusercontent.com,GitHub
+HOST,collector.github.com,GitHub
+HOST,scanning-api.github.com,GitHub
+HOST,api.mcp.github.com,GitHub
+
+# ================================
+# GitHub 主域名 / 官方服务
+# ================================
+
+HOST-SUFFIX,github.com,GitHub
+HOST-SUFFIX,github.io,GitHub
+HOST-SUFFIX,githubusercontent.com,GitHub
+HOST-SUFFIX,githubassets.com,GitHub
+HOST-SUFFIX,github.dev,GitHub
+HOST-SUFFIX,githubstatus.com,GitHub
+HOST-SUFFIX,github.blog,GitHub
+HOST-SUFFIX,githubapp.com,GitHub
+HOST-SUFFIX,githubpreview.dev,GitHub
+HOST-SUFFIX,github.community,GitHub
+HOST-SUFFIX,githubnext.com,GitHub
+HOST-SUFFIX,githubhackathon.com,GitHub
+HOST-SUFFIX,githubuniverse.com,GitHub
+HOST-SUFFIX,thegithubshop.com,GitHub
+HOST-SUFFIX,myoctocat.com,GitHub
+HOST-SUFFIX,repo.new,GitHub
+
+# ================================
+# GitHub Raw / Release / Actions / Assets
+# ================================
+
+HOST-SUFFIX,raw.githubusercontent.com,GitHub
+HOST-SUFFIX,objects.githubusercontent.com,GitHub
+HOST-SUFFIX,actions.githubusercontent.com,GitHub
+HOST-SUFFIX,github-cloud.githubusercontent.com,GitHub
+HOST-SUFFIX,github-releases.githubusercontent.com,GitHub
+HOST-SUFFIX,github-registry-files.githubusercontent.com,GitHub
+HOST-SUFFIX,github-cloud.s3.amazonaws.com,GitHub
+HOST-SUFFIX,github-avatars.oss-cn-hongkong.aliyuncs.com,GitHub
+
+# ================================
+# GitHub Release / 用户资源 S3 补充
+# ================================
+# 这些用于部分 Release 附件、仓库文件、用户上传资源
+# 使用 HOST-WILDCARD 限定 GitHub 前缀，避免误伤整个 S3
+
+HOST-WILDCARD,github-production-release-asset-*.s3.amazonaws.com,GitHub
+HOST-WILDCARD,github-production-repository-file-*.s3.amazonaws.com,GitHub
+HOST-WILDCARD,github-production-user-asset-*.s3.amazonaws.com,GitHub
+
+# ================================
+# GitHub Copilot
+# ================================
+# Copilot 官方 allowlist 包含 githubcopilot.com、individual/business/enterprise 子域
+# 以及 copilot-proxy / origin-tracker / telemetry 等 githubusercontent 域名
+
+HOST-SUFFIX,githubcopilot.com,GitHub
+HOST-SUFFIX,individual.githubcopilot.com,GitHub
+HOST-SUFFIX,business.githubcopilot.com,GitHub
+HOST-SUFFIX,enterprise.githubcopilot.com,GitHub
+
+# ================================
+# GitHub Container Registry / Dependabot
+# ================================
+
+HOST-SUFFIX,ghcr.io,GitHub
+HOST-SUFFIX,dependabot.com,GitHub
+
+# ================================
+# GitHub 旧服务 / 跳转 / 兼容
+# ================================
+
+HOST-SUFFIX,git.io,GitHub
+HOST-SUFFIX,atom.io,GitHub
+HOST-SUFFIX,github-atom-io-herokuapp-com.freetls.fastly.net,GitHub
+HOST-SUFFIX,rawgit.com,GitHub
+HOST-SUFFIX,rawgithub.com,GitHub
+
+# ================================
+# NPM / GitHub 生态
+# ================================
+# blackmatrix7 GitHub 规则包含 npmjs.com / npmjs.org / npm.community
+# 如果你不想让 NPM 走 GitHub 策略组，可以注释这一段
+
+HOST-SUFFIX,npmjs.com,GitHub
+HOST-SUFFIX,npmjs.org,GitHub
+HOST-SUFFIX,npm.community,GitHub
+
+# ================================
+# 开源相关
+# ================================
+
+HOST-SUFFIX,opensource.guide,GitHub
+
+# ================================
+# GitHub 关键词
+# ================================
+
+HOST-KEYWORD,github,GitHub
