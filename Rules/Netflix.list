@@ -1,0 +1,169 @@
+# NAME: Netflix
+# AUTHOR: steak
+# TYPE: Quantumult X Filter
+# DESCRIPTION: Netflix / Netflix CDN / Netflix Open Connect / Fast.com 分流规则
+# SOURCE: Based on blackmatrix7/ios_rule_script Netflix rules + Netflix Open Connect AS2906
+# UPDATED: 2026-05-11
+#
+# ================================
+# 使用说明
+# ================================
+# 1. 文件名建议：Netflix.list
+# 2. 适用于：Quantumult X [filter_remote]
+# 3. 策略组名称：Netflix
+# 4. 如果你的策略组不是 Netflix，请在 QX 的 force-policy 中指定实际策略组
+# 5. 本规则采用「域名完整 + ASN/IP 精简」方案，避免大量 AWS IP 误伤其他服务
+#
+# QX 远程订阅示例：
+# https://raw.githubusercontent.com/你的用户名/你的仓库/main/Rules/Netflix.list, tag=Netflix, force-policy=Netflix, update-interval=86400, opt-parser=false, enabled=true
+#
+# ================================
+# 规则说明
+# ================================
+# - 域名部分：覆盖 Netflix 官网、App、CDN、图片、视频、测速、DNS 测试等
+# - IP 部分：保留 Netflix Open Connect 常见专属网段
+# - ASN 部分：加入 Netflix 官方 Open Connect ASN：AS2906
+# - 不默认加入大批 AWS IP，避免 Amazon / 其他网站被误分流到 Netflix 策略组
+#
+# ================================
+# 规则统计：自建增强版
+# ================================
+# HOST: 3
+# HOST-SUFFIX: 31
+# HOST-WILDCARD: 1
+# HOST-KEYWORD: 4
+# USER-AGENT: 1
+# IP-CIDR: 18
+# IP6-CIDR: 4
+# IP-ASN: 1
+#
+# ================================
+# Netflix 精确域名
+# ================================
+
+HOST,e13252.dscg.akamaiedge.net,Netflix
+HOST,h-netflix.online-metrix.net,Netflix
+HOST,netflix.com.edgesuite.net,Netflix
+
+# ================================
+# Netflix 主域名
+# ================================
+
+HOST-SUFFIX,netflix.com,Netflix
+HOST-SUFFIX,netflix.net,Netflix
+HOST-SUFFIX,netflix.ca,Netflix
+HOST-SUFFIX,netflix.com.au,Netflix
+HOST-SUFFIX,netflix.com.edgesuite.net,Netflix
+
+# ================================
+# Netflix CDN / 图片 / 视频
+# ================================
+
+HOST-SUFFIX,nflxvideo.net,Netflix
+HOST-SUFFIX,nflximg.net,Netflix
+HOST-SUFFIX,nflximg.com,Netflix
+HOST-SUFFIX,nflxext.com,Netflix
+HOST-SUFFIX,nflxso.net,Netflix
+HOST-SUFFIX,nflxsearch.net,Netflix
+
+# ================================
+# Netflix 测速 / DNS 测试 / 检测
+# ================================
+
+HOST-SUFFIX,fast.com,Netflix
+HOST-SUFFIX,flxvpn.net,Netflix
+HOST-SUFFIX,netflixdnstest0.com,Netflix
+HOST-SUFFIX,netflixdnstest1.com,Netflix
+HOST-SUFFIX,netflixdnstest2.com,Netflix
+HOST-SUFFIX,netflixdnstest3.com,Netflix
+HOST-SUFFIX,netflixdnstest4.com,Netflix
+HOST-SUFFIX,netflixdnstest5.com,Netflix
+HOST-SUFFIX,netflixdnstest6.com,Netflix
+HOST-SUFFIX,netflixdnstest7.com,Netflix
+HOST-SUFFIX,netflixdnstest8.com,Netflix
+HOST-SUFFIX,netflixdnstest9.com,Netflix
+HOST-SUFFIX,netflixdnstest10.com,Netflix
+HOST-WILDCARD,netflixdnstest*.com,Netflix
+
+# ================================
+# Netflix 相关站点
+# ================================
+
+HOST-SUFFIX,netflixinvestor.com,Netflix
+HOST-SUFFIX,netflixstudios.com,Netflix
+HOST-SUFFIX,netflixtechblog.com,Netflix
+
+# ================================
+# Netflix 第三方依赖
+# ================================
+# online-metrix：部分 Netflix 风控 / 设备检测相关
+# cookielaw / onetrust：Netflix 网页 Cookie / 隐私弹窗相关
+# 如果你非常在意减少误伤，可以把 cookielaw.org 和 onetrust.com 注释掉
+
+HOST-SUFFIX,cookielaw.org,Netflix
+HOST-SUFFIX,onetrust.com,Netflix
+
+# ================================
+# Netflix 关键词规则
+# ================================
+
+HOST-KEYWORD,netflixdnstest,Netflix
+HOST-KEYWORD,apiproxy-device-prod-nlb-,Netflix
+HOST-KEYWORD,dualstack.apiproxy-,Netflix
+HOST-KEYWORD,dualstack.ichnaea-web-,Netflix
+
+# ================================
+# Netflix App UA
+# ================================
+
+USER-AGENT,Argo*,Netflix
+
+# ================================
+# Netflix Open Connect / 专属 IPv4 网段
+# ================================
+# no-resolve：IP 规则无需 DNS 解析，减少不必要解析
+
+IP-CIDR,23.246.0.0/18,Netflix,no-resolve
+IP-CIDR,37.77.184.0/21,Netflix,no-resolve
+IP-CIDR,45.57.0.0/17,Netflix,no-resolve
+IP-CIDR,64.120.128.0/17,Netflix,no-resolve
+IP-CIDR,66.197.128.0/17,Netflix,no-resolve
+IP-CIDR,69.53.224.0/19,Netflix,no-resolve
+IP-CIDR,103.87.204.0/22,Netflix,no-resolve
+IP-CIDR,108.175.32.0/20,Netflix,no-resolve
+IP-CIDR,185.2.220.0/22,Netflix,no-resolve
+IP-CIDR,185.9.188.0/22,Netflix,no-resolve
+IP-CIDR,192.173.64.0/18,Netflix,no-resolve
+IP-CIDR,198.38.96.0/19,Netflix,no-resolve
+IP-CIDR,198.45.48.0/20,Netflix,no-resolve
+IP-CIDR,203.75.84.0/24,Netflix,no-resolve
+IP-CIDR,203.83.220.0/22,Netflix,no-resolve
+IP-CIDR,207.45.72.0/22,Netflix,no-resolve
+IP-CIDR,208.75.76.0/22,Netflix,no-resolve
+IP-CIDR,216.137.32.0/19,Netflix,no-resolve
+
+# ================================
+# Netflix IPv6 网段
+# ================================
+
+IP6-CIDR,2406:da00:ff00::/48,Netflix,no-resolve
+IP6-CIDR,2600:1f14::/35,Netflix,no-resolve
+IP6-CIDR,2600:1f18::/35,Netflix,no-resolve
+IP6-CIDR,2a00:86c0::/32,Netflix,no-resolve
+
+# ================================
+# Netflix ASN
+# ================================
+# AS2906 = Netflix Open Connect
+# 这条可以补足 Open Connect 动态变化的前缀，比硬塞大量 IP-CIDR 更适合自建规则库
+
+IP-ASN,2906,Netflix
+
+# ================================
+# 不建议默认启用的宽泛 AWS 规则
+# ================================
+# blackmatrix7 的完整 Netflix 规则包含大量 AWS IP-CIDR。
+# Netflix 网页、登录、接口可能使用 AWS，但 AWS IP 很容易误伤其他网站和 App。
+# 如你遇到 Netflix 能打开但播放/登录异常，再考虑单独补充，而不是一开始全量加入。
+#
+# HOST-SUFFIX,us-west-2.amazonaws.com,Netflix
