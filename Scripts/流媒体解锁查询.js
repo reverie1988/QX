@@ -8,7 +8,7 @@ console.log("PolicyCheck start");
 
 const POLICIES = {
   HOME: "内网穿透",
-  PROXY: "策略选择",
+  PROXY: "基础支持",
   GPT: "GPT",
   GEMINI: "Gemini",
   GITHUB: "GitHub",
