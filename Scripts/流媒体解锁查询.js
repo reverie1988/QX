@@ -2,14 +2,16 @@ console.log("PolicyCheck start");
 
 /**
  * Quantumult X 策略 / 流媒体检测
- * 适配你的策略组命名：
- * 家里内网、策略选择、GPT、Gemini、GitHub、YouTube、Netflix、Disney+、Telegram
+ * 适配策略组：
+ * 家里内网、基础支持、人工智能、Gemini、GitHub、YouTube、Netflix、Disney+、Telegram
  */
 
 const POLICIES = {
-  HOME: "内网穿透",
+  // 如果你的策略组实际叫“内网穿透”，把这里改回“内网穿透”
+  HOME: "家里内网",
+
   PROXY: "基础支持",
-  GPT: "GPT",
+  AI: "人工智能",
   GEMINI: "Gemini",
   GITHUB: "GitHub",
   YOUTUBE: "YouTube",
@@ -19,11 +21,11 @@ const POLICIES = {
 };
 
 const UA = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148";
-const TIMEOUT = 5000;
+const TIMEOUT = 8000;
 
 function flag(code) {
   if (!code) return "";
-  code = code.toUpperCase();
+  code = String(code).toUpperCase();
   if (code === "UK") code = "GB";
   if (code.length !== 2) return code;
   return code.replace(/./g, c => String.fromCodePoint(127397 + c.charCodeAt()));
@@ -38,12 +40,8 @@ function stripHtml(text) {
     .replace(/&amp;/g, "&");
 }
 
-function timeoutPromise(name, ms = TIMEOUT) {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve(`<b>${name}: </b>检测超时 🚦`);
-    }, ms);
-  });
+function status(res) {
+  return Number(res && res.statusCode ? res.statusCode : 0);
 }
 
 function fetchWithPolicy(url, policy, extra = {}) {
@@ -68,15 +66,25 @@ function fetchWithPolicy(url, policy, extra = {}) {
 async function runCheck(name, fn) {
   console.log("Start check: " + name);
 
+  let timer;
+
   try {
     const result = await Promise.race([
       fn(),
-      timeoutPromise(name, TIMEOUT)
+      new Promise(resolve => {
+        timer = setTimeout(() => {
+          resolve(`<b>${name}: </b>检测超时 🚦`);
+        }, TIMEOUT);
+      })
     ]);
+
+    if (timer) clearTimeout(timer);
 
     console.log("Finish check: " + name);
     return result;
   } catch (e) {
+    if (timer) clearTimeout(timer);
+
     console.log("Error check " + name + ": " + e);
     return `<b>${name}: </b>检测异常 ❗️`;
   }
@@ -84,22 +92,24 @@ async function runCheck(name, fn) {
 
 async function checkHome() {
   const res = await fetchWithPolicy("http://192.168.31.1", POLICIES.HOME);
+  const code = status(res);
 
-  if (res.statusCode >= 200 && res.statusCode < 500) {
+  if (code >= 200 && code < 500) {
     return `<b>家里内网: </b>连通 ➟ 192.168.31.1 ✅`;
   }
 
-  return `<b>家里内网: </b>异常 ➟ HTTP ${res.statusCode} 🚫`;
+  return `<b>家里内网: </b>异常 ➟ HTTP ${code} 🚫`;
 }
 
 async function checkProxy() {
   const res = await fetchWithPolicy("http://www.gstatic.com/generate_204", POLICIES.PROXY);
+  const code = status(res);
 
-  if (res.statusCode === 204 || res.statusCode === 200) {
-    return `<b>策略选择: </b>基础连通 ✅`;
+  if (code === 204 || code === 200) {
+    return `<b>基础支持: </b>基础连通 ✅`;
   }
 
-  return `<b>策略选择: </b>异常 ➟ HTTP ${res.statusCode} 🚫`;
+  return `<b>基础支持: </b>异常 ➟ HTTP ${code} 🚫`;
 }
 
 async function checkGitHub() {
@@ -108,21 +118,24 @@ async function checkGitHub() {
     POLICIES.GITHUB
   );
 
-  if (res.statusCode === 200) {
+  const code = status(res);
+
+  if (code === 200) {
     return `<b>GitHub: </b>可访问 ✅`;
   }
 
-  return `<b>GitHub: </b>异常 ➟ HTTP ${res.statusCode} 🚫`;
+  return `<b>GitHub: </b>异常 ➟ HTTP ${code} 🚫`;
 }
 
 async function checkTelegram() {
   const res = await fetchWithPolicy("https://telegram.org/", POLICIES.TELEGRAM);
+  const code = status(res);
 
-  if (res.statusCode === 200) {
+  if (code >= 200 && code < 400) {
     return `<b>Telegram: </b>可访问 ✅`;
   }
 
-  return `<b>Telegram: </b>异常 ➟ HTTP ${res.statusCode} 🚫`;
+  return `<b>Telegram: </b>异常 ➟ HTTP ${code} 🚫`;
 }
 
 async function checkGPT() {
@@ -130,10 +143,12 @@ async function checkGPT() {
   let traceOk = false;
 
   try {
-    const trace = await fetchWithPolicy("https://chatgpt.com/cdn-cgi/trace", POLICIES.GPT);
+    const trace = await fetchWithPolicy("https://chatgpt.com/cdn-cgi/trace", POLICIES.AI);
+    const traceCode = status(trace);
 
-    if (trace.statusCode === 200 && trace.body) {
+    if (traceCode === 200 && trace.body) {
       traceOk = true;
+
       const m = trace.body.match(/loc=([A-Z]{2})/);
       if (m && m[1]) region = m[1];
     }
@@ -142,13 +157,13 @@ async function checkGPT() {
   }
 
   try {
-    const res = await fetchWithPolicy("https://chatgpt.com/", POLICIES.GPT, {
+    const res = await fetchWithPolicy("https://chatgpt.com/", POLICIES.AI, {
       redirection: false
     });
 
+    const code = status(res);
     const body = res.body || "";
 
-    // 明确的地区不支持页面
     if (
       body.includes("unsupported_country") ||
       body.includes("not available in your country")
@@ -156,26 +171,22 @@ async function checkGPT() {
       return `<b>ChatGPT: </b>地区疑似不支持${region ? ` ➟ ${flag(region)} ${region}` : ""} 🚫`;
     }
 
-    // 200-399 直接判定可访问
-    if (res.statusCode >= 200 && res.statusCode < 400) {
+    if (code >= 200 && code < 400) {
       return `<b>ChatGPT: </b>可访问${region ? ` ➟ ${flag(region)} ${region}` : ""} 🎉`;
     }
 
-    // 403 / 451 很多时候是 Cloudflare / WAF / 未登录页，不一定代表 GPT 不能用
-    if ((res.statusCode === 403 || res.statusCode === 451) && traceOk) {
-      return `<b>ChatGPT: </b>可访问${region ? ` ➟ ${flag(region)} ${region}` : ""} ⚠️`;
+    if ((code === 403 || code === 451) && traceOk) {
+      return `<b>ChatGPT: </b>链路可用${region ? ` ➟ ${flag(region)} ${region}` : ""} ⚠️`;
     }
 
-    // trace 能通，也认为链路可用
     if (traceOk) {
-      return `<b>ChatGPT: </b>可访问${region ? ` ➟ ${flag(region)} ${region}` : ""} 🎉`;
+      return `<b>ChatGPT: </b>链路可用${region ? ` ➟ ${flag(region)} ${region}` : ""} 🎉`;
     }
 
-    return `<b>ChatGPT: </b>异常 ➟ HTTP ${res.statusCode} ❗️`;
-
+    return `<b>ChatGPT: </b>异常 ➟ HTTP ${code} ❗️`;
   } catch (e) {
     if (traceOk) {
-      return `<b>ChatGPT: </b>可访问${region ? ` ➟ ${flag(region)} ${region}` : ""} ⚠️`;
+      return `<b>ChatGPT: </b>链路可用${region ? ` ➟ ${flag(region)} ${region}` : ""} ⚠️`;
     }
 
     return `<b>ChatGPT: </b>检测异常 ❗️`;
@@ -187,61 +198,107 @@ async function checkGemini() {
     redirection: false
   });
 
-  if (res.statusCode >= 200 && res.statusCode < 400) {
+  const code = status(res);
+
+  if (code >= 200 && code < 400) {
     return `<b>Gemini: </b>可访问 🎉`;
   }
 
-  if (res.statusCode === 403 || res.statusCode === 451) {
-    return `<b>Gemini: </b>未支持 ➟ HTTP ${res.statusCode} 🚫`;
+  if (code === 403 || code === 451) {
+    return `<b>Gemini: </b>未支持 ➟ HTTP ${code} 🚫`;
   }
 
-  return `<b>Gemini: </b>异常 ➟ HTTP ${res.statusCode} ❗️`;
+  return `<b>Gemini: </b>异常 ➟ HTTP ${code} ❗️`;
 }
 
 async function checkYouTube() {
-  const res = await fetchWithPolicy("https://www.youtube.com/premium", POLICIES.YOUTUBE);
-  const body = res.body || "";
+  let basicOk = false;
 
-  if (res.statusCode !== 200) {
-    return `<b>YouTube Premium: </b>异常 ➟ HTTP ${res.statusCode} ❗️`;
+  try {
+    const ping = await fetchWithPolicy("https://www.youtube.com/generate_204", POLICIES.YOUTUBE, {
+      redirection: false
+    });
+
+    const pingCode = status(ping);
+
+    if (pingCode === 204 || pingCode === 200 || pingCode === 301 || pingCode === 302) {
+      basicOk = true;
+    }
+  } catch (e) {
+    console.log("YouTube generate_204 error: " + e);
   }
 
-  if (body.includes("Premium is not available in your country")) {
-    return `<b>YouTube Premium: </b>未支持 🚫`;
+  try {
+    const res = await fetchWithPolicy("https://www.youtube.com/premium", POLICIES.YOUTUBE, {
+      redirection: false
+    });
+
+    const code = status(res);
+    const body = res.body || "";
+
+    let region = "";
+    let m =
+      body.match(/"GL":"([A-Z]{2})"/) ||
+      body.match(/"countryCode":"([A-Z]{2})"/) ||
+      body.match(/"regionCode":"([A-Z]{2})"/);
+
+    if (m && m[1]) region = m[1];
+
+    if (body.includes("Premium is not available in your country")) {
+      return `<b>YouTube Premium: </b>未支持${region ? ` ➟ ${flag(region)} ${region}` : ""} 🚫`;
+    }
+
+    if (code === 200) {
+      return `<b>YouTube Premium: </b>支持${region ? ` ➟ ${flag(region)} ${region}` : ""} 🎉`;
+    }
+
+    if (code >= 300 && code < 400) {
+      return `<b>YouTube: </b>网页可访问，Premium 跳转检测${region ? ` ➟ ${flag(region)} ${region}` : ""} ⚠️`;
+    }
+
+    if (basicOk) {
+      return `<b>YouTube: </b>基础可访问，Premium 检测异常 ➟ HTTP ${code} ⚠️`;
+    }
+
+    return `<b>YouTube: </b>异常 ➟ HTTP ${code} ❗️`;
+  } catch (e) {
+    if (basicOk) {
+      return `<b>YouTube: </b>基础可访问，Premium 检测失败 ⚠️`;
+    }
+
+    return `<b>YouTube: </b>检测异常 ❗️`;
   }
-
-  let region = "";
-  const m = body.match(/"GL":"([A-Z]{2})"/);
-  if (m && m[1]) region = m[1];
-
-  return `<b>YouTube Premium: </b>支持${region ? ` ➟ ${flag(region)} ${region}` : ""} 🎉`;
 }
 
 async function checkNetflix() {
-  const res = await fetchWithPolicy("https://www.netflix.com/title/81280792", POLICIES.NETFLIX);
+  const res = await fetchWithPolicy("https://www.netflix.com/title/81280792", POLICIES.NETFLIX, {
+    redirection: false
+  });
 
-  if (res.statusCode === 403) {
+  const code = status(res);
+
+  if (code === 403) {
     return `<b>Netflix: </b>未支持 🚫`;
   }
 
-  if (res.statusCode === 404) {
+  if (code === 404) {
     return `<b>Netflix: </b>仅支持自制剧 ⚠️`;
   }
 
-  if (res.statusCode === 200) {
+  if (code >= 200 && code < 400) {
     return `<b>Netflix: </b>完整支持 🎉`;
   }
 
-  return `<b>Netflix: </b>异常 ➟ HTTP ${res.statusCode} ❗️`;
+  return `<b>Netflix: </b>异常 ➟ HTTP ${code} ❗️`;
 }
 
 async function checkDisney() {
-  const res = await fetchWithPolicy("https://www.disneyplus.com/", POLICIES.DISNEY);
-  const body = res.body || "";
+  const res = await fetchWithPolicy("https://www.disneyplus.com/", POLICIES.DISNEY, {
+    redirection: false
+  });
 
-  if (res.statusCode !== 200) {
-    return `<b>Disney+: </b>异常 ➟ HTTP ${res.statusCode} ❗️`;
-  }
+  const code = status(res);
+  const body = res.body || "";
 
   if (body.includes("not available in your region")) {
     return `<b>Disney+: </b>未支持 🚫`;
@@ -251,21 +308,29 @@ async function checkDisney() {
   const m = body.match(/Region:\s*([A-Za-z]{2})/);
   if (m && m[1]) region = m[1].toUpperCase();
 
-  return `<b>Disney+: </b>可访问${region ? ` ➟ ${flag(region)} ${region}` : ""} 🎉`;
+  if (code >= 200 && code < 400) {
+    return `<b>Disney+: </b>可访问${region ? ` ➟ ${flag(region)} ${region}` : ""} 🎉`;
+  }
+
+  return `<b>Disney+: </b>异常 ➟ HTTP ${code} ❗️`;
 }
 
 async function main() {
-  const results = [];
+  const checks = [
+    ["家里内网", checkHome],
+    ["基础支持", checkProxy],
+    ["GitHub", checkGitHub],
+    ["Telegram", checkTelegram],
+    ["ChatGPT", checkGPT],
+    ["Gemini", checkGemini],
+    ["YouTube", checkYouTube],
+    ["Netflix", checkNetflix],
+    ["Disney+", checkDisney]
+  ];
 
-  results.push(await runCheck("家里内网", checkHome));
-  results.push(await runCheck("策略选择", checkProxy));
-  results.push(await runCheck("GitHub", checkGitHub));
-  results.push(await runCheck("Telegram", checkTelegram));
-  results.push(await runCheck("ChatGPT", checkGPT));
-  results.push(await runCheck("Gemini", checkGemini));
-  results.push(await runCheck("YouTube", checkYouTube));
-  results.push(await runCheck("Netflix", checkNetflix));
-  results.push(await runCheck("Disney+", checkDisney));
+  const results = await Promise.all(
+    checks.map(item => runCheck(item[0], item[1]))
+  );
 
   const html = `
   <p style="text-align:center;font-family:-apple-system;font-size:large;">
