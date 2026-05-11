@@ -1,0 +1,91 @@
+# NAME: ForeignMedia
+# AUTHOR: steak
+# TYPE: Quantumult X Filter
+# DESCRIPTION: Twitch / Hulu / HBO Max / Prime Video / Peacock / Paramount+ / ESPN / BBC iPlayer 等国外媒体规则
+# SOURCE: Split from GlobalServices.list
+# UPDATED: 2026-05-11
+#
+# ================================
+# 使用说明
+# ================================
+# 1. 文件名：ForeignMedia.list
+# 2. 适用于：Quantumult X [filter_remote]
+# 3. 策略组名称：国外媒体
+# 4. 本文件由原 GlobalServices.list 拆分，便于后续单独维护
+# 5. IP-CIDR / IP6-CIDR 已追加 no-resolve
+#
+# QX 远程订阅示例：
+# https://raw.githubusercontent.com/reverie1988/QX/refs/heads/main/Rules/ForeignMedia.list, tag=ForeignMedia, force-policy=国外媒体, update-interval=172800, opt-parser=false, enabled=true
+#
+# ================================
+# 规则统计
+# ================================
+# HOST: 0
+# HOST-SUFFIX: 39
+# HOST-KEYWORD: 4
+# USER-AGENT: 0
+# IP-CIDR: 0
+# IP6-CIDR: 0
+# IP-ASN: 0
+# TOTAL: 43
+#
+# ================================
+# 规则内容
+# ================================
+# 国外媒体
+# ================================
+
+# Twitch
+HOST-SUFFIX,twitch.tv,国外媒体
+HOST-SUFFIX,twitchcdn.net,国外媒体
+HOST-SUFFIX,ttvnw.net,国外媒体
+HOST-SUFFIX,jtvnw.net,国外媒体
+HOST-SUFFIX,ext-twitch.tv,国外媒体
+HOST-SUFFIX,twitchsvc.net,国外媒体
+HOST-KEYWORD,twitch,国外媒体
+
+# Hulu
+HOST-SUFFIX,hulu.com,国外媒体
+HOST-SUFFIX,huluim.com,国外媒体
+HOST-SUFFIX,hulustream.com,国外媒体
+HOST-SUFFIX,huluad.com,国外媒体
+HOST-SUFFIX,hulumail.com,国外媒体
+HOST-KEYWORD,hulu,国外媒体
+
+# HBO / Max
+HOST-SUFFIX,hbo.com,国外媒体
+HOST-SUFFIX,hbomax.com,国外媒体
+HOST-SUFFIX,hbomaxcdn.com,国外媒体
+HOST-SUFFIX,hbonow.com,国外媒体
+HOST-SUFFIX,hbogo.com,国外媒体
+HOST-SUFFIX,max.com,国外媒体
+HOST-SUFFIX,maxgo.com,国外媒体
+HOST-SUFFIX,cinemax.com,国外媒体
+HOST-SUFFIX,discomax.com,国外媒体
+HOST-SUFFIX,wbd.com,国外媒体
+HOST-SUFFIX,warnerbrosdiscovery.com,国外媒体
+HOST-KEYWORD,hbomax,国外媒体
+
+# Prime Video / Amazon Video
+HOST-SUFFIX,primevideo.com,国外媒体
+HOST-SUFFIX,amazonvideo.com,国外媒体
+HOST-SUFFIX,pv-cdn.net,国外媒体
+HOST-SUFFIX,atv-ext.amazon.com,国外媒体
+HOST-SUFFIX,atv-ps.amazon.com,国外媒体
+HOST-SUFFIX,media-amazon.com,国外媒体
+HOST-SUFFIX,amazon.co.uk,国外媒体
+HOST-SUFFIX,amazon.com,国外媒体
+HOST-KEYWORD,primevideo,国外媒体
+
+# 其他国外媒体，可按需保留
+HOST-SUFFIX,peacocktv.com,国外媒体
+HOST-SUFFIX,peacock.com,国外媒体
+HOST-SUFFIX,paramountplus.com,国外媒体
+HOST-SUFFIX,cbsaavideo.com,国外媒体
+HOST-SUFFIX,espn.com,国外媒体
+HOST-SUFFIX,espncdn.com,国外媒体
+HOST-SUFFIX,bbc.co.uk,国外媒体
+HOST-SUFFIX,bbci.co.uk,国外媒体
+HOST-SUFFIX,bbciplayer.co.uk,国外媒体
+
+# ================================
