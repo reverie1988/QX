@@ -1,0 +1,79 @@
+# NAME: Disney
+# AUTHOR: steak
+# TYPE: Quantumult X Filter
+# DESCRIPTION: Disney+ 日常分流规则，适合手机 / iPad / 网页轻量使用
+# SOURCE: Based on blackmatrix7/ios_rule_script Disney rules
+# UPDATED: 2026-05-11
+#
+# ================================
+# 使用说明
+# ================================
+# 1. 文件名建议：Disney.list
+# 2. 适用于：Quantumult X [filter_remote]
+# 3. 策略组名称：Disney+
+# 4. 这是日常精简版，主要覆盖 Disney+ App / 网页 / 播放 / 登录 / CDN
+# 5. 如果 QX 对策略组名里的 + 号兼容不好，可把策略组改名为 DisneyPlus，并同步替换规则里的 Disney+
+#
+# QX 远程订阅示例：
+# https://raw.githubusercontent.com/你的用户名/你的仓库/main/Rules/Disney.list, tag=Disney, force-policy=Disney+, update-interval=86400, opt-parser=false, enabled=true
+#
+# ================================
+# Disney+ 核心服务
+# ================================
+
+HOST,cdn.registerdisney.go.com,Disney+
+HOST-SUFFIX,disneyplus.com,Disney+
+HOST-SUFFIX,disney-plus.net,Disney+
+HOST-SUFFIX,dssott.com,Disney+
+HOST-SUFFIX,dssedge.com,Disney+
+HOST-SUFFIX,bamgrid.com,Disney+
+HOST-SUFFIX,disneystreaming.com,Disney+
+HOST-SUFFIX,streamingdisney.net,Disney+
+HOST-SUFFIX,disneysubscription.com,Disney+
+HOST-SUFFIX,disneyplus.bn5x.net,Disney+
+HOST-SUFFIX,disneyplus.com.ssl.sc.omtrdc.net,Disney+
+
+# ================================
+# Disney+ API / 账号 / 设备 / 播放相关
+# ================================
+
+HOST-SUFFIX,dmed.technology,Disney+
+HOST-SUFFIX,dtci.co,Disney+
+HOST-SUFFIX,dtci.technology,Disney+
+HOST-SUFFIX,edgedatg.com,Disney+
+HOST-SUFFIX,go.com,Disney+
+HOST-SUFFIX,execute-api.us-east-1.amazonaws.com,Disney+
+
+# ================================
+# Disney+ 统计 / 风控 / 体验监控
+# ================================
+
+HOST-SUFFIX,disney.demdex.net,Disney+
+HOST-SUFFIX,disney.my.sentry.io,Disney+
+HOST-SUFFIX,bam.nr-data.net,Disney+
+HOST-SUFFIX,js-agent.newrelic.com,Disney+
+HOST-SUFFIX,conviva.com,Disney+
+HOST-SUFFIX,braze.com,Disney+
+HOST-SUFFIX,adobedtm.com,Disney+
+HOST-SUFFIX,cdn.optimizely.com,Disney+
+HOST-SUFFIX,disney-portal.my.onetrust.com,Disney+
+
+# ================================
+# Disney+ 地区 / Star / Hotstar 补充
+# ================================
+
+HOST-SUFFIX,starott.com,Disney+
+HOST-SUFFIX,starplus.com,Disney+
+HOST-SUFFIX,star-brasil.com,Disney+
+HOST-SUFFIX,star-latam.com,Disney+
+HOST-SUFFIX,hotstar.com,Disney+
+HOST-SUFFIX,hotstar-cdn.net,Disney+
+HOST-SUFFIX,hotstar-labs.com,Disney+
+HOST-SUFFIX,hotstarext.com,Disney+
+HOST-SUFFIX,hsprepack.akamaized.net,Disney+
+
+# ================================
+# Disney+ App UA
+# ================================
+
+USER-AGENT,Disney+*,Disney+
