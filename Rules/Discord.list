@@ -1,0 +1,66 @@
+# NAME: Discord
+# AUTHOR: steak
+# TYPE: Quantumult X Filter
+# DESCRIPTION: Discord 语音 / 社区 / CDN 分流规则
+# SOURCE: Split from GlobalServices.list
+# UPDATED: 2026-05-11
+#
+# ================================
+# 使用说明
+# ================================
+# 1. 文件名：Discord.list
+# 2. 适用于：Quantumult X [filter_remote]
+# 3. 策略组名称：Discord
+# 4. 本文件由原 GlobalServices.list 拆分，便于后续单独维护
+# 5. IP-CIDR / IP6-CIDR 已追加 no-resolve
+#
+# QX 远程订阅示例：
+# https://raw.githubusercontent.com/reverie1988/QX/refs/heads/main/Rules/Discord.list, tag=Discord, force-policy=Discord, update-interval=172800, opt-parser=false, enabled=true
+#
+# ================================
+# 规则统计
+# ================================
+# HOST: 0
+# HOST-SUFFIX: 27
+# HOST-KEYWORD: 1
+# USER-AGENT: 0
+# IP-CIDR: 0
+# IP6-CIDR: 0
+# IP-ASN: 0
+# TOTAL: 28
+#
+# ================================
+# 规则内容
+# ================================
+# Discord
+# ================================
+HOST-SUFFIX,airhorn.solutions,Discord
+HOST-SUFFIX,airhornbot.com,Discord
+HOST-SUFFIX,bigbeans.solutions,Discord
+HOST-SUFFIX,dis.gd,Discord
+HOST-SUFFIX,discord-activities.com,Discord
+HOST-SUFFIX,discord-attachments-uploads-prd.storage.googleapis.com,Discord
+HOST-SUFFIX,discord.co,Discord
+HOST-SUFFIX,discord.com,Discord
+HOST-SUFFIX,discord.design,Discord
+HOST-SUFFIX,discord.dev,Discord
+HOST-SUFFIX,discord.gg,Discord
+HOST-SUFFIX,discord.gift,Discord
+HOST-SUFFIX,discord.gifts,Discord
+HOST-SUFFIX,discord.media,Discord
+HOST-SUFFIX,discord.new,Discord
+HOST-SUFFIX,discord.store,Discord
+HOST-SUFFIX,discord.tools,Discord
+HOST-SUFFIX,discordactivities.com,Discord
+HOST-SUFFIX,discordapp.com,Discord
+HOST-SUFFIX,discordapp.io,Discord
+HOST-SUFFIX,discordapp.net,Discord
+HOST-SUFFIX,discordapp.page.link,Discord
+HOST-SUFFIX,discordcdn.com,Discord
+HOST-SUFFIX,discordmerch.com,Discord
+HOST-SUFFIX,discordpartygames.com,Discord
+HOST-SUFFIX,discordsays.com,Discord
+HOST-SUFFIX,discordstatus.com,Discord
+HOST-KEYWORD,discord,Discord
+
+# ================================
