@@ -195,3 +195,7 @@ HOST-SUFFIX,bolt.new,人工智能
 HOST-SUFFIX,lovable.dev,人工智能
 HOST-SUFFIX,replit.com,人工智能
 HOST-SUFFIX,v0.dev,人工智能
+# 把网页转成适合 AI 阅读的文本
+HOST-SUFFIX,jina.ai,人工智能
+HOST-SUFFIX,r.jina.ai,人工智能
+HOST-SUFFIX,s.jina.ai,人工智能
