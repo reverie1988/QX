@@ -1,0 +1,128 @@
+# NAME: Game
+# AUTHOR: steak
+# TYPE: Quantumult X Filter
+# DESCRIPTION: Steam / Epic / PlayStation / Nintendo / Battle.net / Ubisoft / EA / Xbox 等游戏平台分流规则
+# SOURCE: Split from GlobalServices.list
+# UPDATED: 2026-05-11
+#
+# ================================
+# 使用说明
+# ================================
+# 1. 文件名：Game.list
+# 2. 适用于：Quantumult X [filter_remote]
+# 3. 策略组名称：游戏平台
+# 4. 本文件由原 GlobalServices.list 拆分，便于后续单独维护
+# 5. IP-CIDR / IP6-CIDR 已追加 no-resolve
+#
+# QX 远程订阅示例：
+# https://raw.githubusercontent.com/reverie1988/QX/refs/heads/main/Rules/Game.list, tag=Game, force-policy=游戏平台, update-interval=172800, opt-parser=false, enabled=true
+#
+# ================================
+# 规则统计
+# ================================
+# HOST: 8
+# HOST-SUFFIX: 61
+# HOST-KEYWORD: 7
+# USER-AGENT: 0
+# IP-CIDR: 0
+# IP6-CIDR: 0
+# IP-ASN: 0
+# TOTAL: 76
+#
+# ================================
+# 规则内容
+# ================================
+# 游戏平台
+# ================================
+
+# Steam / Valve
+HOST,steambroadcast.akamaized.net,游戏平台
+HOST,steamcdn-a.akamaihd.net,游戏平台
+HOST,steamcommunity-a.akamaihd.net,游戏平台
+HOST,steammobile.akamaized.net,游戏平台
+HOST,steampipe.akamaized.net,游戏平台
+HOST,steamstore-a.akamaihd.net,游戏平台
+HOST,steamusercontent-a.akamaihd.net,游戏平台
+HOST,steamuserimages-a.akamaihd.net,游戏平台
+HOST-SUFFIX,steamcommunity.com,游戏平台
+HOST-SUFFIX,steampowered.com,游戏平台
+HOST-SUFFIX,steamstatic.com,游戏平台
+HOST-SUFFIX,steamcontent.com,游戏平台
+HOST-SUFFIX,steamgames.com,游戏平台
+HOST-SUFFIX,steam-chat.com,游戏平台
+HOST-SUFFIX,steam.tv,游戏平台
+HOST-SUFFIX,steamdeck.com,游戏平台
+HOST-SUFFIX,steamstat.us,游戏平台
+HOST-SUFFIX,valvesoftware.com,游戏平台
+HOST-SUFFIX,s.team,游戏平台
+HOST-KEYWORD,steam,游戏平台
+
+# Epic Games
+HOST-SUFFIX,epicgames.com,游戏平台
+HOST-SUFFIX,epicgames.dev,游戏平台
+HOST-SUFFIX,epicgamescdn.com,游戏平台
+HOST-SUFFIX,epicgames-download1.akamaized.net,游戏平台
+HOST-SUFFIX,unrealengine.com,游戏平台
+HOST-SUFFIX,fortnite.com,游戏平台
+HOST-KEYWORD,epicgames,游戏平台
+HOST-KEYWORD,fortnite,游戏平台
+
+# PlayStation / Sony
+HOST-SUFFIX,playstation.com,游戏平台
+HOST-SUFFIX,playstation.net,游戏平台
+HOST-SUFFIX,playstationnetwork.com,游戏平台
+HOST-SUFFIX,sonyentertainmentnetwork.com,游戏平台
+HOST-SUFFIX,sony.com,游戏平台
+HOST-SUFFIX,sony.net,游戏平台
+HOST-KEYWORD,playstation,游戏平台
+
+# Nintendo
+HOST-SUFFIX,nintendo.com,游戏平台
+HOST-SUFFIX,nintendo.net,游戏平台
+HOST-SUFFIX,nintendo-europe.com,游戏平台
+HOST-SUFFIX,nintendowifi.net,游戏平台
+HOST-SUFFIX,nintendo.co.jp,游戏平台
+HOST-SUFFIX,nintendo.com.hk,游戏平台
+HOST-SUFFIX,nintendo.com.au,游戏平台
+HOST-SUFFIX,nintendo.co.uk,游戏平台
+
+# Blizzard / Battle.net
+HOST-SUFFIX,battle.net,游戏平台
+HOST-SUFFIX,battlenet.com,游戏平台
+HOST-SUFFIX,blizzard.com,游戏平台
+HOST-SUFFIX,blzstatic.cn,游戏平台
+HOST-SUFFIX,blzddist1-a.akamaihd.net,游戏平台
+HOST-SUFFIX,blzddistkr1-a.akamaihd.net,游戏平台
+HOST-SUFFIX,blzmedia-a.akamaihd.net,游戏平台
+HOST-SUFFIX,worldofwarcraft.com,游戏平台
+HOST-SUFFIX,diablo3.com,游戏平台
+HOST-KEYWORD,battle,游戏平台
+HOST-KEYWORD,blizzard,游戏平台
+
+# Ubisoft / EA / Origin / Xbox
+HOST-SUFFIX,ubisoft.com,游戏平台
+HOST-SUFFIX,ubisoftconnect.com,游戏平台
+HOST-SUFFIX,ubi.com,游戏平台
+HOST-SUFFIX,uplay.com,游戏平台
+HOST-KEYWORD,ubisoft,游戏平台
+HOST-SUFFIX,ea.com,游戏平台
+HOST-SUFFIX,eac-cdn.com,游戏平台
+HOST-SUFFIX,origin.com,游戏平台
+HOST-SUFFIX,origin-a.akamaihd.net,游戏平台
+HOST-SUFFIX,xbox.com,游戏平台
+HOST-SUFFIX,xboxlive.com,游戏平台
+HOST-SUFFIX,xboxservices.com,游戏平台
+HOST-SUFFIX,xboxab.com,游戏平台
+HOST-SUFFIX,gamepass.com,游戏平台
+
+# GOG / Riot / Rockstar
+HOST-SUFFIX,gog.com,游戏平台
+HOST-SUFFIX,gog-statics.com,游戏平台
+HOST-SUFFIX,riotgames.com,游戏平台
+HOST-SUFFIX,riotcdn.net,游戏平台
+HOST-SUFFIX,leagueoflegends.com,游戏平台
+HOST-SUFFIX,valorant.com,游戏平台
+HOST-SUFFIX,rockstargames.com,游戏平台
+HOST-SUFFIX,rockstargames.com.cdn.cloudflare.net,游戏平台
+
+# ================================
