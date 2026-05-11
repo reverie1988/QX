@@ -1,0 +1,86 @@
+# NAME: Microsoft
+# AUTHOR: steak
+# TYPE: Quantumult X Filter
+# DESCRIPTION: Microsoft / Office / Outlook / OneDrive / Azure / Skype / Edge / Visual Studio 分流规则
+# SOURCE: Split from GlobalServices.list
+# UPDATED: 2026-05-11
+#
+# ================================
+# 使用说明
+# ================================
+# 1. 文件名：Microsoft.list
+# 2. 适用于：Quantumult X [filter_remote]
+# 3. 策略组名称：微软服务
+# 4. 本文件由原 GlobalServices.list 拆分，便于后续单独维护
+# 5. IP-CIDR / IP6-CIDR 已追加 no-resolve
+#
+# QX 远程订阅示例：
+# https://raw.githubusercontent.com/reverie1988/QX/refs/heads/main/Rules/Microsoft.list, tag=Microsoft, force-policy=微软服务, update-interval=172800, opt-parser=false, enabled=true
+#
+# ================================
+# 规则统计
+# ================================
+# HOST: 0
+# HOST-SUFFIX: 46
+# HOST-KEYWORD: 3
+# USER-AGENT: 0
+# IP-CIDR: 0
+# IP6-CIDR: 0
+# IP-ASN: 0
+# TOTAL: 49
+#
+# ================================
+# 规则内容
+# ================================
+# Microsoft
+# ================================
+
+HOST-SUFFIX,microsoft.com,微软服务
+HOST-SUFFIX,microsoft.net,微软服务
+HOST-SUFFIX,microsoftonline.com,微软服务
+HOST-SUFFIX,microsoftonline-p.com,微软服务
+HOST-SUFFIX,microsoftstore.com,微软服务
+HOST-SUFFIX,microsoft365.com,微软服务
+HOST-SUFFIX,office.com,微软服务
+HOST-SUFFIX,office.net,微软服务
+HOST-SUFFIX,office365.com,微软服务
+HOST-SUFFIX,officeppe.net,微软服务
+HOST-SUFFIX,live.com,微软服务
+HOST-SUFFIX,live.net,微软服务
+HOST-SUFFIX,outlook.com,微软服务
+HOST-SUFFIX,outlook.office.com,微软服务
+HOST-SUFFIX,hotmail.com,微软服务
+HOST-SUFFIX,msn.com,微软服务
+HOST-SUFFIX,msauth.net,微软服务
+HOST-SUFFIX,msftauth.net,微软服务
+HOST-SUFFIX,msftauthimages.net,微软服务
+HOST-SUFFIX,msftidentity.com,微软服务
+HOST-SUFFIX,msidentity.com,微软服务
+HOST-SUFFIX,windows.net,微软服务
+HOST-SUFFIX,windows.com,微软服务
+HOST-SUFFIX,windowsupdate.com,微软服务
+HOST-SUFFIX,azure.com,微软服务
+HOST-SUFFIX,azure.net,微软服务
+HOST-SUFFIX,azureedge.net,微软服务
+HOST-SUFFIX,azurewebsites.net,微软服务
+HOST-SUFFIX,azurefd.net,微软服务
+HOST-SUFFIX,trafficmanager.net,微软服务
+HOST-SUFFIX,onedrive.com,微软服务
+HOST-SUFFIX,onedrive.live.com,微软服务
+HOST-SUFFIX,sharepoint.com,微软服务
+HOST-SUFFIX,sharepointonline.com,微软服务
+HOST-SUFFIX,skype.com,微软服务
+HOST-SUFFIX,skypeassets.com,微软服务
+HOST-SUFFIX,sfx.ms,微软服务
+HOST-SUFFIX,msedge.net,微软服务
+HOST-SUFFIX,edge.microsoft.com,微软服务
+HOST-SUFFIX,bing.com,微软服务
+HOST-SUFFIX,bing.net,微软服务
+HOST-SUFFIX,bingapis.com,微软服务
+HOST-SUFFIX,visualstudio.com,微软服务
+HOST-SUFFIX,vsassets.io,微软服务
+HOST-SUFFIX,vscode.dev,微软服务
+HOST-SUFFIX,github.dev,微软服务
+HOST-KEYWORD,microsoft,微软服务
+HOST-KEYWORD,onedrive,微软服务
+HOST-KEYWORD,outlook,微软服务
