@@ -1,0 +1,72 @@
+# NAME: Spotify
+# AUTHOR: steak
+# TYPE: Quantumult X Filter
+# DESCRIPTION: 音乐 / 播客 / CDN 分流规则
+# SOURCE: Split from GlobalServices.list
+# UPDATED: 2026-05-11
+#
+# ================================
+# 使用说明
+# ================================
+# 1. 文件名：Spotify.list
+# 2. 适用于：Quantumult X [filter_remote]
+# 3. 策略组名称：Spotify
+# 4. 本文件由原 GlobalServices.list 拆分，便于后续单独维护
+# 5. IP-CIDR / IP6-CIDR 已追加 no-resolve
+#
+# QX 远程订阅示例：
+# https://raw.githubusercontent.com/reverie1988/QX/refs/heads/main/Rules/Spotify.list, tag=Spotify, force-policy=Spotify, update-interval=172800, opt-parser=false, enabled=true
+#
+# ================================
+# 规则统计
+# ================================
+# HOST: 6
+# HOST-SUFFIX: 20
+# HOST-KEYWORD: 1
+# USER-AGENT: 1
+# IP-CIDR: 2
+# IP6-CIDR: 0
+# IP-ASN: 0
+# TOTAL: 30
+#
+# ================================
+# 规则内容
+# ================================
+# Spotify
+# ================================
+HOST,audio4-ak-spotify-com.akamaized.net,Spotify
+HOST,cdn-spotify-experiments.conductrics.com,Spotify
+HOST,heads-ak-spotify-com.akamaized.net,Spotify
+HOST,spotify.com.edgesuite.net,Spotify
+HOST,spotify.map.fastly.net,Spotify
+HOST,spotify.map.fastlylb.net,Spotify
+HOST-SUFFIX,audio-ak-spotify-com.akamaized.net,Spotify
+HOST-SUFFIX,byspotify.com,Spotify
+HOST-SUFFIX,heads4-ak-spotify-com.akamaized.net,Spotify
+HOST-SUFFIX,pscdn.co,Spotify
+HOST-SUFFIX,scdn.co,Spotify
+HOST-SUFFIX,spoti.fi,Spotify
+HOST-SUFFIX,spotify-com.akamaized.net,Spotify
+HOST-SUFFIX,spotify-everywhere.com,Spotify
+HOST-SUFFIX,spotify.app.link,Spotify
+HOST-SUFFIX,spotify.com,Spotify
+HOST-SUFFIX,spotify.design,Spotify
+HOST-SUFFIX,spotifycdn.com,Spotify
+HOST-SUFFIX,spotifycdn.net,Spotify
+HOST-SUFFIX,spotifycharts.com,Spotify
+HOST-SUFFIX,spotifycodes.com,Spotify
+HOST-SUFFIX,spotifyforbrands.com,Spotify
+HOST-SUFFIX,spotifyjobs.com,Spotify
+HOST-SUFFIX,spotifynewsroom.jp,Spotify
+HOST-SUFFIX,spotilocal.com,Spotify
+HOST-SUFFIX,tospotify.com,Spotify
+HOST-KEYWORD,spotify,Spotify
+USER-AGENT,Spotify*,Spotify
+IP-CIDR,104.154.127.126/32,Spotify,no-resolve
+IP-CIDR,35.186.224.47/32,Spotify,no-resolve
+# 以下依赖容易误伤，默认不启用
+# HOST-SUFFIX,measurement.com,Spotify
+# HOST-SUFFIX,app-measurement.com,Spotify
+# HOST-SUFFIX,cdn.branch.io,Spotify
+
+# ================================
