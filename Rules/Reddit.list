@@ -1,0 +1,46 @@
+# NAME: Reddit
+# AUTHOR: steak
+# TYPE: Quantumult X Filter
+# DESCRIPTION: Reddit 分流规则
+# SOURCE: Split from GlobalServices.list
+# UPDATED: 2026-05-11
+#
+# ================================
+# 使用说明
+# ================================
+# 1. 文件名：Reddit.list
+# 2. 适用于：Quantumult X [filter_remote]
+# 3. 策略组名称：Reddit
+# 4. 本文件由原 GlobalServices.list 拆分，便于后续单独维护
+# 5. IP-CIDR / IP6-CIDR 已追加 no-resolve
+#
+# QX 远程订阅示例：
+# https://raw.githubusercontent.com/reverie1988/QX/refs/heads/main/Rules/Reddit.list, tag=Reddit, force-policy=Reddit, update-interval=172800, opt-parser=false, enabled=true
+#
+# ================================
+# 规则统计
+# ================================
+# HOST: 0
+# HOST-SUFFIX: 8
+# HOST-KEYWORD: 0
+# USER-AGENT: 0
+# IP-CIDR: 0
+# IP6-CIDR: 0
+# IP-ASN: 0
+# TOTAL: 8
+#
+# ================================
+# 规则内容
+# ================================
+# Reddit
+# ================================
+HOST-SUFFIX,redd.it,Reddit
+HOST-SUFFIX,reddit.com,Reddit
+HOST-SUFFIX,redditmail.com,Reddit
+HOST-SUFFIX,redditmedia.com,Reddit
+HOST-SUFFIX,redditstatic.com,Reddit
+HOST-SUFFIX,reddituploads.com,Reddit
+HOST-SUFFIX,reddituploads.com.cdn-cf.behance.net,Reddit
+HOST-SUFFIX,reddituploads.com.cdn-cf.dropbox.com,Reddit
+
+# ================================
