@@ -1,0 +1,68 @@
+# NAME: Google
+# AUTHOR: steak
+# TYPE: Quantumult X Filter
+# DESCRIPTION: Google 通用服务分流规则
+# SOURCE: Split from GeneralServices.list Google section
+# UPDATED: 2026-05-11
+#
+# ================================
+# 使用说明
+# ================================
+# 1. 文件名建议：Google.list
+# 2. 适用于：Quantumult X [filter_remote]
+# 3. 策略组名称：策略选择
+# 4. Google 通用规则较宽，必须放在 YouTube / AI / Finance / GitHub 等专用规则后面
+# 5. 如果使用 force-policy，建议 force-policy=策略选择
+# 6. 不建议放在 China.list 前面太早的位置之外，避免抢走专用服务规则
+#
+# QX 远程订阅示例：
+# https://raw.githubusercontent.com/你的用户名/你的仓库/main/Rules/Google.list, tag=Google, force-policy=策略选择, update-interval=86400, opt-parser=false, enabled=true
+#
+# 如果不想强制覆盖，也可以不写 force-policy：
+# https://raw.githubusercontent.com/你的用户名/你的仓库/main/Rules/Google.list, tag=Google, update-interval=86400, opt-parser=false, enabled=true
+#
+# ================================
+# 规则统计
+# ================================
+# HOST: 0
+# HOST-SUFFIX: 29
+# HOST-KEYWORD: 1
+# TOTAL: 30
+#
+# ================================
+# 规则内容
+# ================================
+# Google 通用
+# 注意：放在 YouTube / AI / Finance / GitHub 后面，避免抢规则
+# ================================
+
+HOST-SUFFIX,google.com,策略选择
+HOST-SUFFIX,googleapis.com,策略选择
+HOST-SUFFIX,gstatic.com,策略选择
+HOST-SUFFIX,googleusercontent.com,策略选择
+HOST-SUFFIX,ggpht.com,策略选择
+HOST-SUFFIX,gmail.com,策略选择
+HOST-SUFFIX,google.com.hk,策略选择
+HOST-SUFFIX,google.co.jp,策略选择
+HOST-SUFFIX,google.de,策略选择
+HOST-SUFFIX,google.co.uk,策略选择
+HOST-SUFFIX,google.com.sg,策略选择
+HOST-SUFFIX,google.com.tw,策略选择
+HOST-SUFFIX,google.com.au,策略选择
+HOST-SUFFIX,google.ca,策略选择
+HOST-SUFFIX,android.com,策略选择
+HOST-SUFFIX,google-analytics.com,策略选择
+HOST-SUFFIX,googletagmanager.com,策略选择
+HOST-SUFFIX,googletagservices.com,策略选择
+HOST-SUFFIX,googlesyndication.com,策略选择
+HOST-SUFFIX,googleadservices.com,策略选择
+HOST-SUFFIX,googleads.g.doubleclick.net,策略选择
+HOST-SUFFIX,doubleclick.net,策略选择
+HOST-SUFFIX,googlevideo.com,策略选择
+HOST-SUFFIX,googleblog.com,策略选择
+HOST-SUFFIX,googleusercontent.cn,策略选择
+HOST-SUFFIX,googleapis.cn,策略选择
+HOST-SUFFIX,chrome.com,策略选择
+HOST-SUFFIX,chromium.org,策略选择
+HOST-SUFFIX,withgoogle.com,策略选择
+HOST-KEYWORD,google,策略选择
