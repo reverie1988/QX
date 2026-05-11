@@ -91,14 +91,6 @@ HOST-SUFFIX,labs.google,人工智能
 HOST-SUFFIX,deepmind.google,人工智能
 HOST-SUFFIX,aitestkitchen.withgoogle.com,人工智能
 HOST-KEYWORD,gemini,人工智能
-# Microsoft AI / Copilot
-# 注意：如果你希望 GitHub Copilot 走 GitHub 策略组，不要把 AI.list 放在 GitHub.list 前面
-# HOST-SUFFIX,copilot.microsoft.com,人工智能
-# HOST-SUFFIX,bing.com,人工智能
-# HOST-SUFFIX,bingapis.com,人工智能
-# HOST-SUFFIX,edgeservices.bing.com,人工智能
-# HOST-SUFFIX,sydney.bing.com,人工智能
-# GitHub Copilot / Coding AI
 # 如果你更希望 GitHub Copilot 跟 GitHub 走同一策略，可以注释这一段
 HOST-SUFFIX,githubcopilot.com,人工智能
 HOST-SUFFIX,copilot-proxy.githubusercontent.com,人工智能
@@ -145,26 +137,6 @@ HOST-SUFFIX,meta.ai,人工智能
 HOST-SUFFIX,character.ai,人工智能
 HOST-SUFFIX,characterai.io,人工智能
 HOST-SUFFIX,c.ai,人工智能
-# DeepSeek
-HOST-SUFFIX,deepseek.com,人工智能
-HOST-SUFFIX,deepseek.ai,人工智能
-HOST-SUFFIX,deepseekapi.com,人工智能
-# 国内 AI，可按需保留
-# 如果你希望国内 AI 走 direct，可以注释这一段，并交给 China.list 处理
-HOST-SUFFIX,kimi.com,人工智能
-HOST-SUFFIX,moonshot.cn,人工智能
-HOST-SUFFIX,moonshot.ai,人工智能
-HOST-SUFFIX,zhipuai.cn,人工智能
-HOST-SUFFIX,chatglm.cn,人工智能
-HOST-SUFFIX,bigmodel.cn,人工智能
-HOST-SUFFIX,qwenlm.ai,人工智能
-HOST-SUFFIX,tongyi.com,人工智能
-HOST-SUFFIX,dashscope.aliyuncs.com,人工智能
-HOST-SUFFIX,doubao.com,人工智能
-HOST-SUFFIX,doubao.com.cn,人工智能
-HOST-SUFFIX,volcengine.com,人工智能
-HOST-SUFFIX,wenxin.baidu.com,人工智能
-HOST-SUFFIX,yiyan.baidu.com,人工智能
 # 图片 / 视频 / 音频生成
 HOST-SUFFIX,midjourney.com,人工智能
 HOST-SUFFIX,cdn.midjourney.com,人工智能
@@ -199,3 +171,31 @@ HOST-SUFFIX,v0.dev,人工智能
 HOST-SUFFIX,jina.ai,人工智能
 HOST-SUFFIX,r.jina.ai,人工智能
 HOST-SUFFIX,s.jina.ai,人工智能
+# # 国内 AI，可按需保留
+# # 如果你希望国内 AI 走 direct，可以注释这一段，并交给 China.list 处理
+# HOST-SUFFIX,kimi.com,人工智能
+# HOST-SUFFIX,moonshot.cn,人工智能
+# HOST-SUFFIX,moonshot.ai,人工智能
+# HOST-SUFFIX,zhipuai.cn,人工智能
+# HOST-SUFFIX,chatglm.cn,人工智能
+# HOST-SUFFIX,bigmodel.cn,人工智能
+# HOST-SUFFIX,qwenlm.ai,人工智能
+# HOST-SUFFIX,tongyi.com,人工智能
+# HOST-SUFFIX,dashscope.aliyuncs.com,人工智能
+# HOST-SUFFIX,doubao.com,人工智能
+# HOST-SUFFIX,doubao.com.cn,人工智能
+# HOST-SUFFIX,volcengine.com,人工智能
+# HOST-SUFFIX,wenxin.baidu.com,人工智能
+# HOST-SUFFIX,yiyan.baidu.com,人工智能
+# DeepSeek
+# HOST-SUFFIX,deepseek.com,人工智能
+# HOST-SUFFIX,deepseek.ai,人工智能
+# HOST-SUFFIX,deepseekapi.com,人工智能
+# Microsoft AI / Copilot
+# 注意：如果你希望 GitHub Copilot 走 GitHub 策略组，不要把 AI.list 放在 GitHub.list 前面
+# HOST-SUFFIX,copilot.microsoft.com,人工智能
+# HOST-SUFFIX,bing.com,人工智能
+# HOST-SUFFIX,bingapis.com,人工智能
+# HOST-SUFFIX,edgeservices.bing.com,人工智能
+# HOST-SUFFIX,sydney.bing.com,人工智能
+# GitHub Copilot / Coding AI
