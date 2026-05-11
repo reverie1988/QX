@@ -93,11 +93,11 @@ HOST-SUFFIX,aitestkitchen.withgoogle.com,人工智能
 HOST-KEYWORD,gemini,人工智能
 # Microsoft AI / Copilot
 # 注意：如果你希望 GitHub Copilot 走 GitHub 策略组，不要把 AI.list 放在 GitHub.list 前面
-HOST-SUFFIX,copilot.microsoft.com,人工智能
-HOST-SUFFIX,bing.com,人工智能
-HOST-SUFFIX,bingapis.com,人工智能
-HOST-SUFFIX,edgeservices.bing.com,人工智能
-HOST-SUFFIX,sydney.bing.com,人工智能
+# HOST-SUFFIX,copilot.microsoft.com,人工智能
+# HOST-SUFFIX,bing.com,人工智能
+# HOST-SUFFIX,bingapis.com,人工智能
+# HOST-SUFFIX,edgeservices.bing.com,人工智能
+# HOST-SUFFIX,sydney.bing.com,人工智能
 # GitHub Copilot / Coding AI
 # 如果你更希望 GitHub Copilot 跟 GitHub 走同一策略，可以注释这一段
 HOST-SUFFIX,githubcopilot.com,人工智能
