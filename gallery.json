@@ -3,6 +3,14 @@
   "description": "Reverie の Quantumult X 脚本任务仓库",
   "task": [
     {
+      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/kong.js, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/YouTube_04.png, tag=YouTube 净化, enabled=false",
+      "addons": "https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/Youtube.snippet, tag=YouTube 净化, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/ad(7).png, update-interval=172800, opt-parser=false, enabled=true"
+    },
+    {
+      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/kong.js, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/ximalaya.png, tag=喜马拉雅 净化, enabled=false",
+      "addons": "https://raw.githubusercontent.com/ddgksf2013/Rewrite/master/AdBlock/Ximalaya.conf, tag=喜马拉雅 净化, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/ad(7).png, update-interval=172800, opt-parser=false, enabled=true"
+    },
+    {
       "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/Google_Chinese_Redirect.js, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Google_03.png, tag=Google 自动中文跳转, enabled=false",
       "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/GoogleCN.snippet, tag=Google 自动中文跳转, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Google_03.png, update-interval=172800, opt-parser=false, enabled=true"
     },
@@ -11,7 +19,7 @@
       "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/TwitterCN.snippet, tag=X 自动中文跳转, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Twitter_04.png, update-interval=172800, opt-parser=false, enabled=true"
     },
     {
-      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/YouTube_Chinese_Redirect.js, img-url=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/YouTube.png, tag=YouTube 自动中文跳转, enabled=false",
+      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/YouTube_Chinese_Redirect.js, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/YouTube_04.png, tag=YouTube 自动中文跳转, enabled=false",
       "addons": "https://raw.githubusercontent.com/reverie1988/QX/main/Rewrite/YouTubeCN.snippet, tag=YouTube 自动中文跳转, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/YouTube_04.png, update-interval=172800, opt-parser=false, enabled=true"
     },
     {
