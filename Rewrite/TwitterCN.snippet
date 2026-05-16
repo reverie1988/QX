@@ -1,0 +1,11 @@
+# X / Twitter 自动中文跳转
+# 功能：
+# 1. twitter.com / mobile.twitter.com 跳转到 x.com
+# 2. www.x.com / mobile.x.com 统一为 x.com
+# 3. 自动添加 lang=zh-Hans
+
+hostname = x.com, www.x.com, mobile.x.com, twitter.com, www.twitter.com, mobile.twitter.com
+
+^https?:\/\/(?:www\.|mobile\.)?twitter\.com(?:\/.*)?$ url script-echo-response https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/X_Chinese_Redirect.js
+
+^https?:\/\/(?:www\.|mobile\.)?x\.com(?!.*[?&]lang=zh-Hans)(?:\/.*)?$ url script-echo-response https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/X_Chinese_Redirect.js
