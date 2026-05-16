@@ -3,10 +3,6 @@
   "description": "Reverie の Quantumult X 脚本任务仓库",
   "task": [
     {
-      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/kong2.js, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/YouTube_04.png, tag=YouTube 字幕, enabled=false",
-      "addons": "https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/Yt-zh.snippet, tag=YouTube 字幕, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/YouTube_04.png, update-interval=172800, opt-parser=false, enabled=true"
-    },
-    {
       "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/kong1.js, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/YouTube_04.png, tag=YouTube 净化, enabled=false",
       "addons": "https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/Youtube.snippet, tag=YouTube 净化, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/ad(7).png, update-interval=172800, opt-parser=false, enabled=true"
     },
