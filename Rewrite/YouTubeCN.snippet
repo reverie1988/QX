@@ -1,0 +1,14 @@
+# YouTube 自动中文跳转
+# 功能：
+# 1. youtube.com / m.youtube.com 跳转到 www.youtube.com
+# 2. youtu.be 短链接跳转到 youtube.com/watch?v=
+# 3. YouTube 页面自动添加 hl=zh-CN
+# 4. 可选添加 gl=TW / HK / US 等地区参数
+
+hostname = youtu.be, youtube.com, www.youtube.com, m.youtube.com, music.youtube.com
+
+^https?:\/\/youtu\.be\/.+ url script-echo-response https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/YouTube_Chinese_Redirect.js
+
+^https?:\/\/(?:www\.|m\.)?youtube\.com(?!.*[?&]hl=zh-CN)(?:\/.*)?$ url script-echo-response https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/YouTube_Chinese_Redirect.js
+
+^https?:\/\/music\.youtube\.com(?!.*[?&]hl=zh-CN)(?:\/.*)?$ url script-echo-response https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/YouTube_Chinese_Redirect.js
