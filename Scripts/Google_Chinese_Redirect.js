@@ -15,7 +15,7 @@ const LANGUAGE = "zh-CN";
 // "HK" = 偏香港地区
 // "TW" = 偏台湾地区
 // "CN" = 偏中国大陆地区
-const REGION = "TW";
+const REGION = "CN";
 
 const rawUrl = $request.url;
 const url = new URL(rawUrl);
