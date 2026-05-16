@@ -7,8 +7,8 @@
       "addons": "https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/Youtube.snippet, tag=YouTube 净化, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/ad(7).png, update-interval=172800, opt-parser=false, enabled=true"
     },
     {
-      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/kong.js, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/ximalaya.png, tag=喜马拉雅 净化, enabled=false",
-      "addons": "https://raw.githubusercontent.com/ddgksf2013/Rewrite/master/AdBlock/Ximalaya.snippet, tag=喜马拉雅 净化, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/ad(7).png, update-interval=172800, opt-parser=false, enabled=true"
+      "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/kong1.js, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/ximalaya.png, tag=喜马拉雅 净化, enabled=false",
+      "addons": "https://raw.githubusercontent.com/ddgksf2013/Rewrite/master/AdBlock/Ximalaya.conf, tag=喜马拉雅 净化, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/ad(7).png, update-interval=172800, opt-parser=false, enabled=true"
     },
     {
       "config": "event-interaction https://raw.githubusercontent.com/reverie1988/QX/main/Scripts/Google_Chinese_Redirect.js, img-url=https://raw.githubusercontent.com/fmz200/wool_scripts/main/icons/apps/Google_03.png, tag=Google 自动中文跳转, enabled=false",
